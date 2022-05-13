@@ -36,16 +36,16 @@ TEST(MPMCQueue, IntensiveThreading)
 {
     constexpr auto ThreadCount = KUBE_DEBUG_BUILD ? 2 : 4;
     constexpr auto Counter = KUBE_DEBUG_BUILD ? 64 : 4096;
-    constexpr std::size_t queueSize = KUBE_DEBUG_BUILD ? 64 : 4096;
+    constexpr std::size_t QueueSize = KUBE_DEBUG_BUILD ? 128 : 4096;
 
     static std::atomic<bool> running { true };
     static std::atomic<std::size_t> pushingThds { 0 };
     static std::atomic<std::size_t> popCount { 0 };
 
-    std::thread pushThds[ThreadCount];
-    std::thread popThds[ThreadCount];
+    std::vector<std::thread> pushThds(ThreadCount);
+    std::vector<std::thread> popThds(ThreadCount);
 
-    Core::MPMCQueue<int> queue(queueSize);
+    Core::MPMCQueue<int> queue(QueueSize);
 
     for (auto i = 0; i < ThreadCount; ++i)
         pushThds[i] = std::thread([&queue] {

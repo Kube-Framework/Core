@@ -7,10 +7,10 @@ template<typename Base, typename Type, std::integral Range, bool IsSmallOptimize
 template<typename ...Args> requires std::constructible_from<Type, Args...>
 inline Type &kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>::push(Args &&...args) noexcept
 {
-    if (!data())
+    if (!isSafe())
         reserveUnsafe<false>(static_cast<Range>(2));
     else if (sizeUnsafe() == capacityUnsafe())
-        grow();
+        grow(static_cast<Range>(1));
     const Range currentSize = sizeUnsafe();
     Type * const elem = dataUnsafe() + currentSize;
     setSize(static_cast<Range>(currentSize + static_cast<Range>(1)));
@@ -253,13 +253,14 @@ inline kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, Is
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
 inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>::resizeUninitialized(const Range count) noexcept
 {
-    if (!data()) {
+    if (!isSafe()) {
         reserveUnsafe<false>(count);
     } else {
         clearUnsafe();
         reserveUnsafe<true>(count);
     }
-    setSize(count);
+    if (isSafe()) [[likely]]
+        setSize(count);
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
@@ -324,7 +325,7 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
 inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>::clear(void) noexcept
 {
-    if (data()) [[likely]]
+    if (isSafe()) [[likely]]
         clearUnsafe();
 }
 
@@ -338,7 +339,7 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
 inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>::release(void) noexcept
 {
-    if (data()) [[likely]]
+    if (isSafe()) [[likely]]
         releaseUnsafe();
 }
 
@@ -355,22 +356,22 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
-inline bool kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>::reserve(const Range capacity) noexcept
+inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>::reserve(const Range capacity) noexcept
 {
-    if (data())
-        return reserveUnsafe<true>(capacity);
+    if (isSafe())
+        reserveUnsafe<true>(capacity);
     else
-        return reserveUnsafe<false>(capacity);
+        reserveUnsafe<false>(capacity);
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
 template<bool IsSafe>
-inline bool kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>::reserveUnsafe(const Range capacity) noexcept
+inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>::reserveUnsafe(const Range capacity) noexcept
 {
     if constexpr (IsSafe) {
         const Range currentCapacity = capacityUnsafe();
         if (currentCapacity >= capacity) [[unlikely]]
-            return false;
+            return;
         const auto currentSize = sizeUnsafe();
         const auto currentData = dataUnsafe();
         const auto tmpData = allocate(capacity);
@@ -379,19 +380,17 @@ inline bool kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
         setCapacity(capacity);
         if constexpr (IsSmallOptimized) {
             if (tmpData == currentData)
-                return false;
+                return;
         }
         std::uninitialized_move_n(currentData, currentSize, tmpData);
         std::destroy_n(currentData, currentSize);
         deallocate(currentData, currentCapacity);
-        return true;
     } else {
         if (capacity == 0)
-            return false;
+            return;
         setData(allocate(capacity));
         setSize(0);
         setCapacity(capacity);
-        return true;
     }
 }
 
@@ -403,8 +402,6 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
     const Range currentCapacity = capacityUnsafe();
     const Range desiredCapacity = static_cast<Range>(currentCapacity + static_cast<Range>(std::max(currentCapacity, minimum)));
     const auto tmpData = allocate(desiredCapacity);
-
-
 
     setData(tmpData);
     setSize(currentSize);

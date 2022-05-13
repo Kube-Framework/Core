@@ -6,14 +6,14 @@
 #include "FixedString.hpp"
 
 template<typename CharType, std::size_t N>
-constexpr kF::Core::FixedStringBase<CharType, N>::FixedStringBase(const CharType(&array)[N]) noexcept
+constexpr kF::Core::FixedStringBase<CharType, N>::FixedStringBase(const CharType (&array)[N]) noexcept
 {
     for (std::size_t i = 0; i != N; ++i)
         cache[i] = array[i];
 }
 
 template<typename CharType, std::size_t N>
-constexpr kF::Core::FixedStringBase<CharType, N> &kF::Core::FixedStringBase<CharType, N>::operator=(const CharType(&array)[N]) noexcept
+constexpr kF::Core::FixedStringBase<CharType, N> &kF::Core::FixedStringBase<CharType, N>::operator=(const CharType (&array)[N]) noexcept
 {
     for (std::size_t i = 0; i != N; ++i)
         cache[i] = array[i];

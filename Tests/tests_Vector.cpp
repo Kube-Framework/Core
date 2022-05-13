@@ -129,11 +129,11 @@ TEST(Vector, Resize) \
         ASSERT_EQ(elem, str); \
     vector.resize(count2, [](const std::size_t i) { return std::to_string(i); }); \
     ASSERT_EQ(vector.size(), count2); \
-    for (std::size_t i = 0; i != count2; ++i) \
+    for (decltype(vector)::RangeType i = 0; i != count2; ++i) \
         ASSERT_EQ(vector[i], std::to_string(i)); \
     vector.resize(count2, [i = static_cast<std::size_t>(0)](void) mutable { return std::to_string(++i); }); \
     ASSERT_EQ(vector.size(), count2); \
-    for (std::size_t i = 0; i != count2; ++i) \
+    for (decltype(vector)::RangeType i = 0; i != count2; ++i) \
         ASSERT_EQ(vector[i], std::to_string(i + 1)); \
 } \
  \
@@ -198,16 +198,16 @@ TEST(Vector, InsertIterators) \
 } \
 TEST(Vector, InsertMap) \
 { \
-    std::vector<std::string> tmp(10, "42"); \
-    std::vector<std::string> tmp2(5, "32"); \
-    Vector<int __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(vector, AllocatorMode, tmp.begin(), tmp.end(), [](const auto &str) { \
+    std::vector<std::string> tmp(10, std::string("42")); \
+    std::vector<std::string> tmp2(5, std::string("32")); \
+    Vector<int __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(vector, AllocatorMode, tmp.begin(), tmp.end(), [](const std::string &str) { \
         return std::stoi(str); \
     }); \
  \
     ASSERT_EQ(vector.size(), 10u); \
     for (auto elem : vector) \
         ASSERT_EQ(elem, 42); \
-    vector.insert(vector.begin() + 1, tmp2.begin(), tmp2.end(), [](const auto &str) { \
+    vector.insert(vector.begin() + 1, tmp2.begin(), tmp2.end(), [](const std::string &str) { \
         return std::stoi(str); \
     }); \
     ASSERT_EQ(vector[0], 42); \

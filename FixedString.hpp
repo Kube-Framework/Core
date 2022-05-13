@@ -71,7 +71,7 @@ struct kF::Core::FixedStringBase
     static_assert(std::is_same_v<CharType, char> || std::is_same_v<CharType, wchar_t>, "FixedStringBase only supports char & wchar");
 
     /** @brief Iterator detectors */
-    using ValueType = typename CharType;
+    using ValueType = CharType;
 
     /** @brief Iterator detectors */
     using Iterator = ValueType *;
@@ -100,16 +100,16 @@ struct kF::Core::FixedStringBase
     constexpr FixedStringBase(void) noexcept = default;
 
     /** @brief Copy constructor */
-    constexpr FixedStringBase(const FixedStringBase &str) noexcept = default;
+    // constexpr FixedStringBase(const FixedStringBase &str) noexcept = default; // Ambigous on gcc
 
     /** @brief Copy array constructor */
-    constexpr FixedStringBase(const CharType(&array)[N]) noexcept;
+    constexpr FixedStringBase(const CharType (&array)[N]) noexcept;
 
     /** @brief Copy assignment */
     constexpr FixedStringBase &operator=(const FixedStringBase &str) noexcept = default;
 
     /** @brief Copy array assignment */
-    constexpr FixedStringBase &operator=(const CharType(&array)[N]) noexcept;
+    constexpr FixedStringBase &operator=(const CharType (&array)[N]) noexcept;
 
 
     /** @brief Generate default comparison functions */

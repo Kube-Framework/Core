@@ -126,7 +126,7 @@ namespace kF::Core
 
         /** @brief Range size */
         template<std::integral Range = std::size_t>
-        [[nodisard]] inline Range size(void) const noexcept { return static_cast<Range>(std::distance(from, to)); }
+        [[nodiscard]] inline Range size(void) const noexcept { return static_cast<Range>(std::distance(from, to)); }
 
         /** @brief Dereference element at */
         template<std::integral Range = std::size_t>

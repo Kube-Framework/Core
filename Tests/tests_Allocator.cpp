@@ -9,6 +9,7 @@
 
 #include <gtest/gtest.h>
 
+#include <Kube/Core/Debug.hpp>
 #include <Kube/Core/UnsafeAllocator.hpp>
 #include <Kube/Core/SafeAllocator.hpp>
 
@@ -21,6 +22,8 @@ struct Allocation
     std::size_t alignment {};
 };
 
+constexpr std::size_t ConfigMediumSize = KUBE_DEBUG_BUILD ? 1 << 8 : 1 << 14;
+constexpr std::size_t ConfigMaxSize = KUBE_DEBUG_BUILD ? 1 << 12 : 1 << 18;
 
 template<typename Allocator>
 [[nodiscard]] static void *TestAllocationRetention(Allocator &allocator, const std::size_t size, const std::size_t align)
@@ -63,11 +66,13 @@ static bool TestDeallocateRetention(Allocator &allocator, const Vector &retentio
 template<typename Allocator, std::size_t MinAlignment, std::size_t MaxAlignment, std::size_t MaxSize, std::size_t RetentionCount>
 static bool TestAllocatorRetention(Allocator &allocator)
 {
+    constexpr auto Cycles = KUBE_DEBUG_BUILD ? 1ul : 4ul;
+
     std::vector<Allocation> retentions(RetentionCount);
 
     std::size_t index = 0ul;
     std::size_t cycles = 0ul;
-    while (cycles < 4u) {
+    while (cycles < Cycles) {
         for (std::size_t align = MinAlignment; align != MaxAlignment; align <<= 1) {
             for (std::size_t size = align; size != MaxSize ; size <<= 1) {
                 retentions[index] = Allocation {
@@ -101,8 +106,10 @@ static bool TestAllocationNoRetention(Allocator &allocator, const std::size_t si
 template<typename Allocator, std::size_t MinAlignment, std::size_t MaxAlignment, std::size_t MaxSize>
 static bool TestAllocatorNoRetention(Allocator &allocator)
 {
+    constexpr auto Cycles = KUBE_DEBUG_BUILD ? 10ul : 1000ul;
+
     std::size_t cycles = 0ul;
-    while (cycles != 1000u) {
+    while (cycles != Cycles) {
         for (std::size_t align = MinAlignment; align != MaxAlignment; align <<= 1) {
             for (std::size_t size = align; size != MaxSize ; size <<= 1) {
                 if (!TestAllocationNoRetention(allocator, size, align))
@@ -119,7 +126,7 @@ TEST(UnsafeAllocator, NoRetention)
     using Allocator = Core::UnsafeAllocator<>;
 
     Allocator allocator;
-    bool success = TestAllocatorNoRetention<Allocator, 8u, 256u, 1u << 18u>(allocator);
+    bool success = TestAllocatorNoRetention<Allocator, 8u, 256u, ConfigMaxSize>(allocator);
     ASSERT_TRUE(success);
 
 }
@@ -129,9 +136,9 @@ TEST(UnsafeAllocator, Retention)
     using Allocator = Core::UnsafeAllocator<>;
 
     Allocator allocator;
-    bool success = TestAllocatorRetention<Allocator, 8u, 256u, 1u << 18u, 10>(allocator)
-        && TestAllocatorRetention<Allocator, 8u, 256u, 1u << 18u, 100>(allocator)
-        && TestAllocatorRetention<Allocator, 8u, 256u, 1u << 18u, 1000>(allocator);
+    bool success = TestAllocatorRetention<Allocator, 8u, 256u, ConfigMaxSize, 10>(allocator)
+        && TestAllocatorRetention<Allocator, 8u, 256u, ConfigMaxSize, 100>(allocator)
+        && TestAllocatorRetention<Allocator, 8u, 256u, ConfigMaxSize, 1000>(allocator);
     ASSERT_TRUE(success);
 }
 
@@ -140,7 +147,7 @@ TEST(SafeAllocator, NoRetention)
     using Allocator = Core::SafeAllocator<>;
 
     Allocator allocator;
-    bool success = TestAllocatorNoRetention<Allocator, 8u, 256u, 1u << 18u>(allocator);
+    bool success = TestAllocatorNoRetention<Allocator, 8u, 256u, ConfigMaxSize>(allocator);
     ASSERT_TRUE(success);
 
 }
@@ -150,9 +157,9 @@ TEST(SafeAllocator, Retention)
     using Allocator = Core::SafeAllocator<>;
 
     Allocator allocator;
-    bool success = TestAllocatorRetention<Allocator, 8u, 256u, 1u << 18u, 10>(allocator)
-        && TestAllocatorRetention<Allocator, 8u, 256u, 1u << 18u, 100>(allocator)
-        && TestAllocatorRetention<Allocator, 8u, 256u, 1u << 18u, 1000>(allocator);
+    bool success = TestAllocatorRetention<Allocator, 8u, 256u, ConfigMaxSize, 10>(allocator)
+        && TestAllocatorRetention<Allocator, 8u, 256u, ConfigMaxSize, 100>(allocator)
+        && TestAllocatorRetention<Allocator, 8u, 256u, ConfigMaxSize, 1000>(allocator);
     ASSERT_TRUE(success);
 }
 
@@ -166,10 +173,10 @@ TEST(SafeAllocator, ThreadingNoRetention)
     // Allocator allocator("ThreadingNoRetention");
     Allocator allocator;
     auto testFunc = [&allocator] {
-        TestAllocatorNoRetention<Allocator, 8u, 256u, 1u << 13u>(allocator);
+        TestAllocatorNoRetention<Allocator, 8u, 256u, ConfigMediumSize>(allocator);
     };
 
-    std::vector<std::unique_ptr<std::thread>> thds(8);
+    std::vector<std::unique_ptr<std::thread>> thds(std::thread::hardware_concurrency());
     for (auto &thd : thds) {
         thd = std::make_unique<std::thread>(testFunc);
     }
@@ -185,12 +192,12 @@ TEST(SafeAllocator, ThreadingRetention)
 
     Allocator allocator;
     auto testFunc = [&allocator] {
-        TestAllocatorRetention<Allocator, 8u, 256u, 1u << 14u, 10>(allocator);
-        TestAllocatorRetention<Allocator, 8u, 256u, 1u << 14u, 100>(allocator);
-        TestAllocatorRetention<Allocator, 8u, 256u, 1u << 14u, 1000>(allocator);
+        TestAllocatorRetention<Allocator, 8u, 256u, ConfigMediumSize, 10>(allocator);
+        TestAllocatorRetention<Allocator, 8u, 256u, ConfigMediumSize, 100>(allocator);
+        TestAllocatorRetention<Allocator, 8u, 256u, ConfigMediumSize, 1000>(allocator);
     };
 
-    std::vector<std::unique_ptr<std::thread>> thds(8);
+    std::vector<std::unique_ptr<std::thread>> thds(std::thread::hardware_concurrency());
     for (auto &thd : thds) {
         thd = std::make_unique<std::thread>(testFunc);
     }

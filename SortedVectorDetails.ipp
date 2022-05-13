@@ -7,10 +7,8 @@ template<typename Base, typename Type, typename Compare, std::integral Range, bo
 template<typename ...Args> requires std::constructible_from<Type, Args...>
 inline Type &kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::push(Args &&...args) noexcept
 {
-    if (!DetailsBase::data()) [[unlikely]]
-        return DetailsBase::push(std::forward<Args>(args)...);
     Type value(std::forward<Args>(args)...);
-    auto it = findSortedPlacement(value);
+    const auto it = findSortedPlacement(value);
     return *DetailsBase::insert(it, { std::move(value) });
 }
 

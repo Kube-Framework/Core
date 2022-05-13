@@ -28,7 +28,10 @@ class kF::Core::Internal::VectorDetails : public Base
 {
 public:
     /** @brief Iterator detectors */
-    using ValueType = typename Type;
+    using ValueType = Type;
+
+    /** @brief Type of the vector range */
+    using RangeType = Range;
 
     /** @brief Iterator detectors */
     using Iterator = decltype(std::declval<Base &>().begin());
@@ -285,9 +288,8 @@ public:
 
 
     /** @brief Reserve memory for fast emplace only if asked capacity is higher than current capacity
-     *  The data is either preserved or moved
-     *  @return True if the reserve happened and the data has been moved */
-    bool reserve(const Range capacity) noexcept;
+     *  The data is either preserved or moved  */
+    void reserve(const Range capacity) noexcept;
 
 
     /** @brief Move range [from, to] at [output, to - from] */
@@ -383,7 +385,7 @@ public:
 
 
     /** @brief Grow internal buffer of a given minimum */
-    void grow(const Range minimum = Range()) noexcept;
+    void grow(const Range minimum) noexcept;
 
 protected:
     using Base::setSize;
@@ -394,7 +396,7 @@ protected:
 
     /** @brief Reserve unsafe takes IsSafe as template parameter */
     template<bool IsSafe = true>
-    bool reserveUnsafe(const Range capacity) noexcept;
+    void reserveUnsafe(const Range capacity) noexcept;
 };
 
 #include "VectorDetails.ipp"
