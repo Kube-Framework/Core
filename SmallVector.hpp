@@ -19,7 +19,7 @@ namespace kF::Core
      * @tparam Allocator Static Allocator
      * @tparam Range Range of container
      */
-    template<typename Type, std::size_t OptimizedCapacity, Utils::StaticAllocator Allocator = Utils::DefaultStaticAllocator,
+    template<typename Type, std::size_t OptimizedCapacity, StaticAllocatorRequirements Allocator = DefaultStaticAllocator,
             std::integral Range = std::size_t>
     using SmallVector = Internal::VectorDetails<Internal::SmallVectorBase<Type, OptimizedCapacity, Allocator, Range>, Type, Range, true, false>;
 
@@ -30,6 +30,6 @@ namespace kF::Core
      * @tparam OptimizedCapacity Count of element in the optimized cache
      * @tparam Allocator Static Allocator
     */
-    template<typename Type, std::size_t OptimizedCapacity, Utils::StaticAllocator Allocator = Utils::DefaultStaticAllocator>
+    template<typename Type, std::size_t OptimizedCapacity, StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
     using TinySmallVector = SmallVector<Type, OptimizedCapacity, Allocator, std::uint32_t>;
 }

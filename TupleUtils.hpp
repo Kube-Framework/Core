@@ -7,7 +7,7 @@
 
 #include <tuple>
 
-namespace kF::Core::Utils
+namespace kF::Core
 {
     namespace Internal
     {

@@ -38,7 +38,7 @@ static void TestTaggedPtr(const Core::TaggedPtr<Type, Alignment> &tagged, Type *
 TEST(TaggedPtr, Basics)
 {
     constexpr auto Alignment = 16ul;
-    auto ptr = reinterpret_cast<std::uint32_t *>(Core::Utils::AlignedAlloc(sizeof(std::uint32_t), Alignment));
+    auto ptr = reinterpret_cast<std::uint32_t *>(Core::AlignedAlloc(sizeof(std::uint32_t), Alignment));
     *ptr = 42;
     std::uint32_t tag = Alignment / 2;
 
@@ -60,7 +60,7 @@ TEST(TaggedPtr, Basics)
     tagged.set(ptr, tag);
     TestTaggedPtr<Alignment, std::uint32_t, std::uint32_t>(tagged, ptr, 0u);
 
-    Core::Utils::AlignedFree(tagged.get(), sizeof(std::uint32_t), Alignment);
+    Core::AlignedFree(tagged.get(), sizeof(std::uint32_t), Alignment);
 }
 
 TEST(TaggedPtr, AmbigousComparison)

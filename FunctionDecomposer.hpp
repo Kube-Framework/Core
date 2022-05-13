@@ -9,7 +9,7 @@
 
 #include "Utils.hpp"
 
-namespace kF::Core::Utils
+namespace kF::Core
 {
     template<typename Type, typename = void>
     struct FunctionDecomposer;

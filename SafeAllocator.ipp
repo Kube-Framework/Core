@@ -77,7 +77,7 @@ inline kF::Core::SafeAllocator<MinSizePower, MaxSizePower, MaxStackSizePower>::~
             break;
     }
 
-    AllocatorUtils::Internal::DestroySafeAllocator(_pageSize, _busyStack.load().get());
+    AllocatorUtils::DestroySafeAllocator(_pageSize, _busyStack.load().get());
 }
 
 template<std::size_t MinSizePower, std::size_t MaxSizePower, std::size_t MaxStackSizePower>

@@ -9,15 +9,15 @@
 
 namespace kF::Core::Internal
 {
-    template<typename Type, std::size_t OptimizedCapacity, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+    template<typename Type, std::size_t OptimizedCapacity, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
     class SmallVectorBase;
 
-    template<typename Type, std::size_t OptimizedCapacity, kF::Core::Utils::StaticAllocator Allocator, std::integral Range, typename IntrusiveBase>
+    template<typename Type, std::size_t OptimizedCapacity, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range, typename IntrusiveBase>
     class IntrusiveSmallVectorBase;
 }
 
 /** @brief Base implementation of a vector with size and capacity cached and a small optimization */
-template<typename Type, std::size_t OptimizedCapacity, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, std::size_t OptimizedCapacity, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 class kF::Core::Internal::SmallVectorBase
 {
 public:
@@ -111,7 +111,7 @@ private:
 
 /** @brief Base implementation of a vector with size and capacity cached and a small optimization
  *  This class inherits from both SmallVectorBase and IntrusiveBase */
-template<typename Type, std::size_t OptimizedCapacity, kF::Core::Utils::StaticAllocator Allocator, std::integral Range,
+template<typename Type, std::size_t OptimizedCapacity, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range,
         typename IntrusiveBase>
 class kF::Core::Internal::IntrusiveSmallVectorBase
         : protected IntrusiveBase, public SmallVectorBase<Type, OptimizedCapacity, Allocator, Range>

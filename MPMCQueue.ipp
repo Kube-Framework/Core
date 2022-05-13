@@ -5,14 +5,14 @@
 
 #include "Abort.hpp"
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 inline kF::Core::MPMCQueue<Type, Allocator>::~MPMCQueue(void) noexcept
 {
     clear();
     Allocator::Deallocate(_headCache.buffer.data, sizeof(Cell) * (_headCache.buffer.mask + 1), alignof(Cell));
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 inline kF::Core::MPMCQueue<Type, Allocator>::MPMCQueue(const std::size_t capacity) noexcept
     : _tailCache(Cache { Buffer { capacity - 1, nullptr } })
 {
@@ -28,13 +28,13 @@ inline kF::Core::MPMCQueue<Type, Allocator>::MPMCQueue(const std::size_t capacit
     _headCache = _tailCache;
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 inline std::size_t kF::Core::MPMCQueue<Type, Allocator>::size(void) const noexcept
 {
     return _tail.load(std::memory_order_relaxed) - _head.load(std::memory_order_relaxed);
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 template<bool MoveOnSuccess, typename ...Args>
 inline bool kF::Core::MPMCQueue<Type, Allocator>::push(Args &&...args) noexcept
     requires std::constructible_from<Type, Args...>
@@ -63,7 +63,7 @@ inline bool kF::Core::MPMCQueue<Type, Allocator>::push(Args &&...args) noexcept
     return true;
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 inline bool kF::Core::MPMCQueue<Type, Allocator>::pop(Type &value) noexcept
 {
     auto pos = _head.load(std::memory_order_relaxed);

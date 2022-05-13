@@ -8,35 +8,13 @@
 template<std::size_t MinSizePower>
 inline std::size_t kF::Core::AllocatorUtils::GetBucketIndex(const std::size_t size) noexcept
 {
-    std::size_t bucketIndex { Utils::NextPowerOf2Bit(size) };
+    std::size_t bucketIndex { NextPowerOf2Bit(size) };
 
     if (bucketIndex >= MinSizePower) [[likely]]
         bucketIndex -= MinSizePower;
     else [[unlikely]]
         bucketIndex = 0;
     return bucketIndex;
-}
-
-template<std::size_t MinSizePower, std::size_t MaxSizePower, std::size_t BucketFragmentationRange, typename BucketIterator>
-inline std::size_t kF::Core::AllocatorUtils::FindBucketSubdivisionCount(BucketIterator &begin, const BucketIterator end) noexcept
-{
-    static_assert(BucketFragmentationRange != 0u,
-            "FindBucketSubdivisionCount cannot have a fragmentation range of 0");
-
-    constexpr std::size_t SubdivisionLimit = BucketFragmentationRange + 1u;
-
-    std::size_t subdivisions { 1u };
-
-    if constexpr (BucketFragmentationRange < (MaxSizePower - MinSizePower)) {
-        while (++begin != end && !*begin && subdivisions != SubdivisionLimit) {
-            ++subdivisions;
-        }
-    } else {
-        while (++begin != end && !*begin) {
-            ++subdivisions;
-        }
-    }
-    return subdivisions;
 }
 
 template<std::size_t MaxSizePower>

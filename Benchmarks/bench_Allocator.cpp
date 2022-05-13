@@ -27,10 +27,10 @@ struct Allocation
 struct NoAllocator
 {
     [[nodiscard]] void *allocate(const std::size_t size, const std::size_t alignment) noexcept
-        { return Core::Utils::AlignedAlloc(size, alignment); }
+        { return Core::AlignedAlloc(size, alignment); }
 
     void deallocate(void * const data, const std::size_t size, const std::size_t alignment) noexcept
-        { return Core::Utils::AlignedFree(data, size, alignment); }
+        { return Core::AlignedFree(data, size, alignment); }
 };
 
 #include <iostream>
@@ -42,7 +42,7 @@ public:
 
     [[nodiscard]] void *do_allocate(std::size_t size, std::size_t alignment) override
     {
-        auto ptr = Core::Utils::AlignedAlloc(size, alignment);
+        auto ptr = Core::AlignedAlloc(size, alignment);
         std::cout << "[Allocate] " << ptr << " | " << size << " | " << alignment << std::endl;
         return ptr;
     }
@@ -50,7 +50,7 @@ public:
     void do_deallocate(void *data, std::size_t size, std::size_t alignment) override
     {
         std::cout << "[Deallocate] " << data << " | " << size << " | " << alignment << std::endl;
-        return Core::Utils::AlignedFree(data, size, alignment);
+        return Core::AlignedFree(data, size, alignment);
     }
 
     [[nodiscard]] bool do_is_equal(const memory_resource &other) const noexcept override { return this == &other; }
@@ -177,12 +177,12 @@ void NoisyThread_VectorPushBack_FixedSize(benchmark::State &state)
             std::vector<void *> allocs;
             for (std::size_t i = 8; i < (1u << 12u); i <<= 1) {
                 allocs.push_back(
-                    Core::Utils::AlignedAlloc(i, std::max(i, static_cast<std::size_t>(4096u)))
+                    Core::AlignedAlloc(i, std::max(i, static_cast<std::size_t>(4096u)))
                 );
             }
             auto it = allocs.begin();
             for (std::size_t i = 8; i < (1u << 12u); i <<= 1) {
-                Core::Utils::AlignedFree(*it, i, std::max(i, static_cast<std::size_t>(4096u)));
+                Core::AlignedFree(*it, i, std::max(i, static_cast<std::size_t>(4096u)));
                 ++it;
             }
         }

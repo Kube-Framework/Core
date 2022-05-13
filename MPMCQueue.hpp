@@ -12,7 +12,7 @@
 
 namespace kF::Core
 {
-    template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+    template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
     class MPMCQueue;
 }
 
@@ -22,7 +22,7 @@ namespace kF::Core
  * @tparam Type to be inserted
  * @tparam Allocator Static allocator
  */
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator = kF::Core::Utils::DefaultStaticAllocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator = kF::Core::DefaultStaticAllocator>
 class alignas_double_cacheline kF::Core::MPMCQueue
 {
 public:

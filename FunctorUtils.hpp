@@ -7,7 +7,7 @@
 
 #include <cstddef>
 
-namespace kF::Core::Utils
+namespace kF::Core
 {
     /** @brief Types of functor implementations */
     enum class FunctorType

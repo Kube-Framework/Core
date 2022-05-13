@@ -182,7 +182,7 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
 {
     constexpr auto MapCopy = [](InputIterator from, InputIterator to, auto &map, Iterator begin) {
         while (from != to) {
-            if constexpr (Utils::IsMoveIterator<InputIterator>::Value)
+            if constexpr (IsMoveIterator<InputIterator>::Value)
                 new (begin) Type(std::invoke(map, std::move(*from)));
             else
                 new (begin) Type(std::invoke(map, *from));
@@ -312,7 +312,7 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
     resizeUninitialized(count);
     auto begin = beginUnsafe();
     while (from != to) {
-        if constexpr (Utils::IsMoveIterator<InputIterator>::Value)
+        if constexpr (IsMoveIterator<InputIterator>::Value)
             new (begin) Type(std::invoke(map, std::move(*from)));
         else
             new (begin) Type(std::invoke(map, *from));

@@ -17,11 +17,11 @@ namespace kF::Core::Internal
 /** @brief Base implementation of a vector with size and capacity allocated with data */
 template<typename Type, std::integral Range>
 class kF::Core::Internal::AllocatedVectorBase
-        : public VectorBase<Type, Utils::DefaultStaticAllocator, Range>
+        : public VectorBase<Type, DefaultStaticAllocator, Range>
 {
 public:
     /** @brief Base class */
-    using Base = VectorBase<Type, Utils::DefaultStaticAllocator, Range>;
+    using Base = VectorBase<Type, DefaultStaticAllocator, Range>;
 
 
     /** @brief Default constructor, unsafe state */

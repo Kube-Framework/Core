@@ -11,7 +11,7 @@
 
 namespace kF::Core
 {
-    template<typename Signature, Utils::StaticAllocator Allocator = Utils::DefaultStaticAllocator, std::size_t CacheSize = CacheLineQuarterSize>
+    template<typename Signature, StaticAllocatorRequirements Allocator = DefaultStaticAllocator, std::size_t CacheSize = CacheLineQuarterSize>
     class Functor;
 
     namespace Internal
@@ -35,7 +35,7 @@ namespace kF::Core
 }
 
 /** @brief Very fast opaque functor but only takes trivial types less or equal sized than cacheline eighth */
-template<typename Return, typename ...Args, kF::Core::Utils::StaticAllocator Allocator, std::size_t CacheSize>
+template<typename Return, typename ...Args, kF::Core::StaticAllocatorRequirements Allocator, std::size_t CacheSize>
 class kF::Core::Functor<Return(Args...), Allocator, CacheSize>
 {
 public:

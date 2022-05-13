@@ -3,7 +3,7 @@
  * @ Description: HeapArray
  */
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 template<typename ...Args>
     requires std::constructible_from<Type, Args...>
 inline void kF::Core::HeapArray<Type, Allocator, Range>::allocateUnsafe(const Range size, Args ...args) noexcept
@@ -14,7 +14,7 @@ inline void kF::Core::HeapArray<Type, Allocator, Range>::allocateUnsafe(const Ra
         new (&_data[i]) Type(args...);
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline void kF::Core::HeapArray<Type, Allocator, Range>::release(void) noexcept
 {
     if (!_data)

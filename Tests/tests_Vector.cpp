@@ -378,10 +378,10 @@ public:
     virtual ~DummyAllocator(void) override = default;
 
     [[nodiscard]] virtual void *allocate(const std::size_t size, const std::size_t alignment) noexcept
-        { return Utils::AlignedAlloc(size, alignment); }
+        { return AlignedAlloc(size, alignment); }
 
     virtual void deallocate(void * const data, const std::size_t size, const std::size_t alignment) noexcept
-        { return Utils::AlignedFree(data, size, alignment); }
+        { return AlignedFree(data, size, alignment); }
 };
 
 #include <Kube/Core/UnsafeAllocator.hpp>

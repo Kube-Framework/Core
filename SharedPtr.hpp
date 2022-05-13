@@ -11,12 +11,12 @@
 
 namespace kF::Core
 {
-    template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+    template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
     class SharedPtr;
 }
 
 /** @brief Shared pointer class */
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator = kF::Core::Utils::DefaultStaticAllocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator = kF::Core::DefaultStaticAllocator>
 class kF::Core::SharedPtr
 {
 public:

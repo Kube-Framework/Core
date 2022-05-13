@@ -20,7 +20,7 @@ namespace kF::Core
      * @tparam Allocator Static Allocator
      * @tparam Range Range of container
      */
-    template<typename Type, typename Compare = std::less<Type>, Utils::StaticAllocator Allocator = Utils::DefaultStaticAllocator, std::integral Range = std::size_t>
+    template<typename Type, typename Compare = std::less<Type>, StaticAllocatorRequirements Allocator = DefaultStaticAllocator, std::integral Range = std::size_t>
     using SortedVector = Internal::SortedVectorDetails<Internal::VectorBase<Type, Allocator, Range>, Type, Compare, Range, false, false>;
 
     /**
@@ -31,6 +31,6 @@ namespace kF::Core
      * @tparam Compare Compare operator
      * @tparam Allocator Static Allocator
      */
-    template<typename Type, typename Compare = std::less<Type>, Utils::StaticAllocator Allocator = Utils::DefaultStaticAllocator>
+    template<typename Type, typename Compare = std::less<Type>, StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
     using SortedTinyVector = SortedVector<Type, Compare, Allocator, std::uint32_t>;
 }

@@ -3,7 +3,7 @@
  * @ Description: Small Vector
  */
 
-template<typename Type, std::size_t OptimizedCapacity, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, std::size_t OptimizedCapacity, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline void kF::Core::Internal::SmallVectorBase<Type, OptimizedCapacity, Allocator, Range>::
         steal(SmallVectorBase &other) noexcept
 {
@@ -24,7 +24,7 @@ inline void kF::Core::Internal::SmallVectorBase<Type, OptimizedCapacity, Allocat
     other._capacity = Range {};
 }
 
-template<typename Type, std::size_t OptimizedCapacity, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, std::size_t OptimizedCapacity, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline void kF::Core::Internal::SmallVectorBase<Type, OptimizedCapacity, Allocator, Range>::
         swap(SmallVectorBase &other) noexcept
 {
@@ -60,7 +60,7 @@ inline void kF::Core::Internal::SmallVectorBase<Type, OptimizedCapacity, Allocat
     std::swap(_capacity, other._capacity);
 }
 
-template<typename Type, std::size_t OptimizedCapacity, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, std::size_t OptimizedCapacity, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline Type *kF::Core::Internal::SmallVectorBase<Type, OptimizedCapacity, Allocator, Range>::
         allocate(const Range capacity) noexcept
 {
@@ -70,7 +70,7 @@ inline Type *kF::Core::Internal::SmallVectorBase<Type, OptimizedCapacity, Alloca
         return reinterpret_cast<Type *>(Allocator::Allocate(sizeof(Type) * capacity, alignof(Type)));
 }
 
-template<typename Type, std::size_t OptimizedCapacity, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, std::size_t OptimizedCapacity, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline void kF::Core::Internal::SmallVectorBase<Type, OptimizedCapacity, Allocator, Range>::
         deallocate(Type * const data, const Range capacity) noexcept
 {

@@ -30,34 +30,31 @@ namespace kF::Core
     template<std::size_t N>
     using FixedWString = FixedStringBase<wchar_t, N>;
 
-    namespace Utils
+    namespace Internal
     {
-        namespace Internal
+        /** @brief Tagged type checker
+         *  @note Can detect types that are or derive from a template class with only FixedString as arguments */
+        template<class Derived, template<FixedString...> class Base>
+        class TagDetector
         {
-            /** @brief Tagged type checker
-             *  @note Can detect types that are or derive from a template class with only FixedString as arguments */
-            template<class Derived, template<FixedString...> class Base>
-            class TagDetector
-            {
-                /** @brief Success case */
-                template<FixedString ...Names>
-                    requires std::same_as<Derived, Base<Names...>> || std::derived_from<Derived, Base<Names...>>
-                static std::true_type test(const Base<Names...> &) noexcept;
+            /** @brief Success case */
+            template<FixedString ...Names>
+                requires std::same_as<Derived, Base<Names...>> || std::derived_from<Derived, Base<Names...>>
+            static std::true_type test(const Base<Names...> &) noexcept;
 
-                /** @brief Failure case */
-                static std::false_type test(...) noexcept;
+            /** @brief Failure case */
+            static std::false_type test(...) noexcept;
 
-            public:
-                /** @brief Extract final value from detector */
-                static constexpr bool Value = decltype(TagDetector::test(std::declval<Derived>()))::value;
-            };
-        }
-
-        /** @brief Utility tag checker
-         *  @note A tag is template structure that only has FixedString as arguments */
-        template<typename TagType, template<FixedString...> class Base>
-        constexpr bool IsTag = Internal::TagDetector<TagType, Base>::Value;
+        public:
+            /** @brief Extract final value from detector */
+            static constexpr bool Value = decltype(TagDetector::test(std::declval<Derived>()))::value;
+        };
     }
+
+    /** @brief Utility tag checker
+     *  @note A tag is template structure that only has FixedString as arguments */
+    template<typename TagType, template<FixedString...> class Base>
+    constexpr bool IsTag = Internal::TagDetector<TagType, Base>::Value;
 
     namespace Literal
     {

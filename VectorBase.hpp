@@ -9,12 +9,12 @@
 
 namespace kF::Core::Internal
 {
-    template<typename Type, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+    template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
     class VectorBase;
 }
 
 /** @brief Base implementation of a vector with size and capacity cached */
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 class kF::Core::Internal::VectorBase
 {
 public:

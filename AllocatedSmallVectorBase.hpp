@@ -23,11 +23,11 @@ namespace kF::Core::Internal
 /** @brief Base implementation of a vector with size and capacity cached */
 template<typename Type, std::size_t OptimizedCapacity, std::integral Range>
 class kF::Core::Internal::AllocatedSmallVectorBase
-        : public IntrusiveSmallVectorBase<Type, OptimizedCapacity, Utils::DefaultStaticAllocator, Range, IntrusiveSmallVectorRuntimeAllocator>
+        : public IntrusiveSmallVectorBase<Type, OptimizedCapacity, DefaultStaticAllocator, Range, IntrusiveSmallVectorRuntimeAllocator>
 {
 public:
     /** @brief Base class */
-    using Base = IntrusiveSmallVectorBase<Type, OptimizedCapacity, Utils::DefaultStaticAllocator, Range, IntrusiveSmallVectorRuntimeAllocator>;
+    using Base = IntrusiveSmallVectorBase<Type, OptimizedCapacity, DefaultStaticAllocator, Range, IntrusiveSmallVectorRuntimeAllocator>;
 
     /** @brief Output iterator */
     using Iterator = Type *;

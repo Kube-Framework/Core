@@ -18,7 +18,7 @@ namespace kF::Core
      * @tparam CustomHeaderType Custom header of the flat vector
      * @tparam Range Range of container
      */
-    template<typename Type, Utils::StaticAllocator Allocator = Utils::DefaultStaticAllocator, typename CustomHeaderType = Internal::NoCustomHeaderType, std::integral Range = std::size_t>
+    template<typename Type, StaticAllocatorRequirements Allocator = DefaultStaticAllocator, typename CustomHeaderType = Internal::NoCustomHeaderType, std::integral Range = std::size_t>
     using FlatVector = Internal::VectorDetails<Internal::FlatVectorBase<Type, Allocator, CustomHeaderType, Range>, Type, Range, false, false>;
 
     /**
@@ -28,6 +28,6 @@ namespace kF::Core
      * @tparam Allocator Static Allocator
      * @tparam CustomHeaderType Custom header of the flat vector
      */
-    template<typename Type, Utils::StaticAllocator Allocator = Utils::DefaultStaticAllocator, typename CustomHeaderType = Internal::NoCustomHeaderType>
+    template<typename Type, StaticAllocatorRequirements Allocator = DefaultStaticAllocator, typename CustomHeaderType = Internal::NoCustomHeaderType>
     using TinyFlatVector = FlatVector<Type, Allocator, CustomHeaderType, std::uint32_t>;
 }

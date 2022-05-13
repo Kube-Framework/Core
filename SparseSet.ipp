@@ -6,7 +6,7 @@
 #include "Assert.hpp"
 #include "SparseSet.hpp"
 
-template<typename Type, std::size_t PageSize, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 template<typename ...Args>
 inline Type &kF::Core::SparseSet<Type, PageSize, Allocator, Range>::add(const Range index, Args &&...args) noexcept
 {
@@ -23,7 +23,7 @@ inline Type &kF::Core::SparseSet<Type, PageSize, Allocator, Range>::add(const Ra
 
 }
 
-template<typename Type, std::size_t PageSize, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline void kF::Core::SparseSet<Type, PageSize, Allocator, Range>::remove(const Range index) noexcept
 {
     if constexpr (!std::is_trivially_destructible_v<Type>) {
@@ -31,7 +31,7 @@ inline void kF::Core::SparseSet<Type, PageSize, Allocator, Range>::remove(const 
     }
 }
 
-template<typename Type, std::size_t PageSize, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline void kF::Core::SparseSet<Type, PageSize, Allocator, Range>::remove(const Range pageIndex, const Range elementIndex) noexcept
 {
     if constexpr (!std::is_trivially_destructible_v<Type>) {
@@ -39,7 +39,7 @@ inline void kF::Core::SparseSet<Type, PageSize, Allocator, Range>::remove(const 
     }
 }
 
-template<typename Type, std::size_t PageSize, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline Type kF::Core::SparseSet<Type, PageSize, Allocator, Range>::extract(const Range pageIndex, const Range elementIndex) noexcept
 {
     auto &ref = at(pageIndex, elementIndex);

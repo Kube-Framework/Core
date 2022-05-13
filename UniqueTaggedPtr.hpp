@@ -9,12 +9,12 @@
 
 namespace kF::Core
 {
-    template<typename Type, std::size_t Alignment, kF::Core::Utils::StaticAllocator Allocator>
+    template<typename Type, std::size_t Alignment, kF::Core::StaticAllocatorRequirements Allocator>
     class UniqueTaggedPtr;
 }
 
 /** @brief Unique pointer class */
-template<typename Type, std::size_t Alignment = alignof(Type), kF::Core::Utils::StaticAllocator Allocator = kF::Core::Utils::DefaultStaticAllocator>
+template<typename Type, std::size_t Alignment = alignof(Type), kF::Core::StaticAllocatorRequirements Allocator = kF::Core::DefaultStaticAllocator>
 class kF::Core::UniqueTaggedPtr : public TaggedPtr<Type, Alignment>
 {
 public:

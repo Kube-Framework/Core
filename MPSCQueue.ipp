@@ -3,14 +3,14 @@
  * @ Description: MPSC Queue
  */
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 inline kF::Core::MPSCQueue<Type, Allocator>::~MPSCQueue(void) noexcept
 {
     clear();
     Allocator::Deallocate(_headCache.buffer.data, sizeof(Type) * _headCache.buffer.capacity, alignof(Type));
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 inline kF::Core::MPSCQueue<Type, Allocator>::MPSCQueue(const std::size_t capacity, const bool usedAsBuffer) noexcept
 {
     _tailCache.buffer.capacity = capacity + usedAsBuffer;
@@ -18,7 +18,7 @@ inline kF::Core::MPSCQueue<Type, Allocator>::MPSCQueue(const std::size_t capacit
     _headCache.buffer = _tailCache.buffer;
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 template<typename ...Args>
 inline bool kF::Core::MPSCQueue<Type, Allocator>::push(Args &&...args) noexcept
     requires std::constructible_from<Type, Args...>
@@ -47,7 +47,7 @@ inline bool kF::Core::MPSCQueue<Type, Allocator>::push(Args &&...args) noexcept
     return true;
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 inline bool kF::Core::MPSCQueue<Type, Allocator>::pop(Type &value) noexcept
 {
     const auto head = _head.load(std::memory_order_relaxed);
@@ -70,7 +70,7 @@ inline bool kF::Core::MPSCQueue<Type, Allocator>::pop(Type &value) noexcept
     return true;
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 template<bool AllowLess, std::input_iterator InputIterator>
 inline std::size_t kF::Core::MPSCQueue<Type, Allocator>::pushRangeImpl(const InputIterator from, const InputIterator to) noexcept
 {
@@ -126,7 +126,7 @@ inline std::size_t kF::Core::MPSCQueue<Type, Allocator>::pushRangeImpl(const Inp
     return toPush;
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 template<bool AllowLess, typename OutputIterator> requires std::output_iterator<OutputIterator, Type>
 inline std::size_t kF::Core::MPSCQueue<Type, Allocator>::popRangeImpl(const OutputIterator from, const OutputIterator to) noexcept
 {
@@ -166,13 +166,13 @@ inline std::size_t kF::Core::MPSCQueue<Type, Allocator>::popRangeImpl(const Outp
     return toPop;
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 inline void kF::Core::MPSCQueue<Type, Allocator>::clear(void) noexcept
 {
     for (Type type; pop(type););
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 inline std::size_t kF::Core::MPSCQueue<Type, Allocator>::size(void) const noexcept
 {
     const auto tail = _tail.load(std::memory_order_seq_cst);

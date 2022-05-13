@@ -79,157 +79,154 @@ namespace kF::Core
     constexpr std::size_t CacheLineQuarterSize = CacheLineSize / 4;
     constexpr std::size_t CacheLineEighthSize = CacheLineSize / 8;
 
-    namespace Utils
+    /** @brief Similar to std::aligned_alloc, but ensure arguments, you must use AlignedFree to free the memory */
+    template<typename Cast = void>
+    [[nodiscard]] inline Cast *AlignedAlloc(const std::size_t bytes, const std::size_t alignment) noexcept
+        { return reinterpret_cast<Cast *>(::operator new(bytes, static_cast<std::align_val_t>(alignment), std::nothrow)); }
+
+    /** @brief Free a pointer allocated with AlignedAlloc */
+    inline void AlignedFree(void * const data, const std::size_t bytes, const std::size_t alignment) noexcept
+        { ::operator delete(data, bytes, static_cast<std::align_val_t>(alignment)); }
+
+
+    /** @brief Concept of a static allocator */
+    template<typename Type>
+    concept StaticAllocatorRequirements = requires(void *data, std::size_t bytes, std::size_t alignment)
     {
-        /** @brief Similar to std::aligned_alloc, but ensure arguments, you must use AlignedFree to free the memory */
-        template<typename Cast = void>
-        [[nodiscard]] inline Cast *AlignedAlloc(const std::size_t bytes, const std::size_t alignment) noexcept
-            { return reinterpret_cast<Cast *>(::operator new(bytes, static_cast<std::align_val_t>(alignment), std::nothrow)); }
+        { Type::Allocate(bytes, alignment) } -> std::same_as<void *>;
+        { Type::Deallocate(data, bytes, alignment) } -> std::same_as<void>;
+    };
 
-        /** @brief Free a pointer allocated with AlignedAlloc */
-        inline void AlignedFree(void * const data, const std::size_t bytes, const std::size_t alignment) noexcept
-            { ::operator delete(data, bytes, static_cast<std::align_val_t>(alignment)); }
+    /** @brief Default static allocator */
+    struct DefaultStaticAllocator
+    {
+        /** @brief Allocate function that forward to AlignedAlloc */
+        [[nodiscard]] static inline void *Allocate(const std::size_t bytes, const std::size_t alignment) noexcept
+            { return AlignedAlloc(bytes, alignment); }
 
+        /** @brief Deallocate function that forward to AlignedFree */
+        static inline void Deallocate(void * const data, const std::size_t bytes, const std::size_t alignment) noexcept
+            { return AlignedFree(data, bytes, alignment); }
+    };
+    static_assert(StaticAllocatorRequirements<DefaultStaticAllocator>, "Default static allocator doesn't meet requirements");
 
-        /** @brief Concept of a static allocator */
-        template<typename Type>
-        concept StaticAllocator = requires(void *data, std::size_t bytes, std::size_t alignment)
-        {
-            { Type::Allocate(bytes, alignment) } -> std::same_as<void *>;
-            { Type::Deallocate(data, bytes, alignment) } -> std::same_as<void>;
-        };
+    /** @brief Simple pair of random access begin / end iterators */
+    template<std::random_access_iterator Type>
+    struct IteratorRange
+    {
+        Type from {};
+        Type to {};
 
-        /** @brief Default static allocator */
-        struct DefaultStaticAllocator
-        {
-            /** @brief Allocate function that forward to AlignedAlloc */
-            [[nodiscard]] static inline void *Allocate(const std::size_t bytes, const std::size_t alignment) noexcept
-                { return AlignedAlloc(bytes, alignment); }
+        /** @brief Empty check */
+        [[nodiscard]] inline bool empty(void) const noexcept { return from == to; }
 
-            /** @brief Deallocate function that forward to AlignedFree */
-            static inline void Deallocate(void * const data, const std::size_t bytes, const std::size_t alignment) noexcept
-                { return AlignedFree(data, bytes, alignment); }
-        };
-        static_assert(StaticAllocator<DefaultStaticAllocator>, "Default static allocator doesn't meet requirements");
+        /** @brief Begin / End iterators */
+        [[nodiscard]] inline Type begin(void) const noexcept { return from; }
+        [[nodiscard]] inline Type end(void) const noexcept { return to; }
 
-        /** @brief Simple pair of random access begin / end iterators */
-        template<std::random_access_iterator Type>
-        struct IteratorRange
-        {
-            Type from {};
-            Type to {};
+        /** @brief Range size */
+        template<std::integral Range = std::size_t>
+        [[nodisard]] inline Range size(void) const noexcept { return static_cast<Range>(std::distance(from, to)); }
 
-            /** @brief Empty check */
-            [[nodiscard]] inline bool empty(void) const noexcept { return from == to; }
+        /** @brief Dereference element at */
+        template<std::integral Range = std::size_t>
+        [[nodiscard]] inline Type &operator[](const Range index) const noexcept { return from[index]; }
 
-            /** @brief Begin / End iterators */
-            [[nodiscard]] inline Type begin(void) const noexcept { return from; }
-            [[nodiscard]] inline Type end(void) const noexcept { return to; }
+        /** @brief Dereference element at */
+        template<std::integral Range = std::size_t>
+        [[nodiscard]] inline Type &at(const Range index) const noexcept { return from[index]; }
+    };
 
-            /** @brief Range size */
-            template<std::integral Range = std::size_t>
-            [[nodisard]] inline Range size(void) const noexcept { return static_cast<Range>(std::distance(from, to)); }
+    /** @brief Helper to know if a given type is a std::move_iterator */
+    template<typename Type>
+    struct IsMoveIterator;
 
-            /** @brief Dereference element at */
-            template<std::integral Range = std::size_t>
-            [[nodiscard]] inline Type &operator[](const Range index) const noexcept { return from[index]; }
+    /** @brief Helper that match non-move iterators */
+    template<typename Type>
+    struct IsMoveIterator
+    {
+        static constexpr bool Value = false;
+    };
 
-            /** @brief Dereference element at */
-            template<std::integral Range = std::size_t>
-            [[nodiscard]] inline Type &at(const Range index) const noexcept { return from[index]; }
-        };
+    /** @brief Helper that match move iterators */
+    template<typename Iterator>
+    struct IsMoveIterator<std::move_iterator<Iterator>> : public IsMoveIterator<Iterator>
+    {
+        static constexpr bool Value = true;
+    };
 
-        /** @brief Helper to know if a given type is a std::move_iterator */
-        template<typename Type>
-        struct IsMoveIterator;
+    /** @brief Helper that match reverse iterators */
+    template<typename Iterator>
+    struct IsMoveIterator<std::reverse_iterator<Iterator>> : public IsMoveIterator<Iterator>
+    {};
 
-        /** @brief Helper that match non-move iterators */
-        template<typename Type>
-        struct IsMoveIterator
-        {
-            static constexpr bool Value = false;
-        };
-
-        /** @brief Helper that match move iterators */
-        template<typename Iterator>
-        struct IsMoveIterator<std::move_iterator<Iterator>> : public IsMoveIterator<Iterator>
-        {
-            static constexpr bool Value = true;
-        };
-
-        /** @brief Helper that match reverse iterators */
-        template<typename Iterator>
-        struct IsMoveIterator<std::reverse_iterator<Iterator>> : public IsMoveIterator<Iterator>
-        {};
-
-        static_assert(IsMoveIterator<std::move_iterator<void *>>::Value, "IsMoveIterator not working");
-        static_assert(IsMoveIterator<std::reverse_iterator<std::move_iterator<void *>>>::Value, "IsMoveIterator not working");
-        static_assert(!IsMoveIterator<std::reverse_iterator<void *>>::Value, "IsMoveIterator not working");
-        static_assert(!IsMoveIterator<void *>::Value, "IsMoveIterator not working");
+    static_assert(IsMoveIterator<std::move_iterator<void *>>::Value, "IsMoveIterator not working");
+    static_assert(IsMoveIterator<std::reverse_iterator<std::move_iterator<void *>>>::Value, "IsMoveIterator not working");
+    static_assert(!IsMoveIterator<std::reverse_iterator<void *>>::Value, "IsMoveIterator not working");
+    static_assert(!IsMoveIterator<void *>::Value, "IsMoveIterator not working");
 
 
-        /** @brief Align any offset to a specific alignment */
-        template<std::integral Range>
-        [[nodiscard]] constexpr Range AlignOffset(const Range offset, const Range alignment) noexcept;
+    /** @brief Align any offset to a specific alignment */
+    template<std::integral Range>
+    [[nodiscard]] constexpr Range AlignOffset(const Range offset, const Range alignment) noexcept;
 
-        /** @brief Check if value is a power of 2 */
-        template<std::integral Unit>
-        [[nodiscard]] constexpr Unit IsPowerOf2(Unit value) noexcept;
+    /** @brief Check if value is a power of 2 */
+    template<std::integral Unit>
+    [[nodiscard]] constexpr Unit IsPowerOf2(Unit value) noexcept;
 
-        /** @brief Find the closest power of 2 of value */
-        template<std::integral Unit>
-        [[nodiscard]] constexpr Unit NextPowerOf2(Unit value) noexcept;
+    /** @brief Find the closest power of 2 of value */
+    template<std::integral Unit>
+    [[nodiscard]] constexpr Unit NextPowerOf2(Unit value) noexcept;
 
-        /** @brief Get closest power of 2 of value as bit position */
-        template<std::integral Unit, std::integral ResultUnit = std::size_t>
-        [[nodiscard]] constexpr ResultUnit NextPowerOf2Bit(Unit value) noexcept;
+    /** @brief Get closest power of 2 of value as bit position */
+    template<std::integral Unit, std::integral ResultUnit = std::size_t>
+    [[nodiscard]] constexpr ResultUnit NextPowerOf2Bit(Unit value) noexcept;
 
 
-        /** @brief Enum class flag maker */
-        template<typename Type, typename ...Args>
-            requires (std::conjunction_v<std::is_same<Type, Args>...>)
-        [[nodiscard]] constexpr Type MakeFlags(const Type first, Args ...args) noexcept
-        {
-            using Underlying = std::underlying_type_t<Type>;
-            return static_cast<Type>(((static_cast<Underlying>(first) | static_cast<Underlying>(args)) | ...));
-        }
-
-        /** @brief Enum class flag maker */
-        template<typename Type>
-        [[nodiscard]] constexpr Type MakeFlags(const Type flag) noexcept { return flag; }
-
-        /** @brief Enum class flag remover */
-        template<typename Type, typename ...Args>
-            requires (sizeof...(Args) != 0 && std::conjunction_v<std::is_same<Type, Args>...>)
-        [[nodiscard]] constexpr Type RemoveFlags(const Type flags, Args ...toRemove) noexcept
-        {
-            using Underlying = std::underlying_type_t<Type>;
-            return static_cast<Type>((static_cast<Underlying>(flags) & ~static_cast<Underlying>(MakeFlags(toRemove...))));
-        }
-
-        /** @brief Enum class flag tester, all flags must be set */
-        template<typename Type, typename ...Args>
-            requires (sizeof...(Args) != 0 && std::conjunction_v<std::is_same<Type, Args>...>)
-        [[nodiscard]] constexpr bool HasFlags(const Type value, Args ...args) noexcept
-        {
-            using Underlying = std::underlying_type_t<Type>;
-            return ((static_cast<Underlying>(value) & static_cast<Underlying>(args)) && ...);
-        }
-
-        /** @brief Enum class flag tester, at least one of the variadic flags must be set */
-        template<typename Type, typename ...Args>
-            requires (sizeof...(Args) != 0 && std::conjunction_v<std::is_same<Type, Args>...>)
-        [[nodiscard]] constexpr bool HasAnyFlags(const Type value, Args ...args) noexcept
-        {
-            using Underlying = std::underlying_type_t<Type>;
-            return static_cast<Underlying>(value) & (static_cast<Underlying>(args) | ...);
-        }
-
-        /** @brief Get underlying value of an enumeration */
-        template<typename Type>
-        [[nodiscard]] constexpr auto ToUnderlying(const Type value) noexcept
-            { return static_cast<std::underlying_type_t<Type>>(value); }
+    /** @brief Enum class flag maker */
+    template<typename Type, typename ...Args>
+        requires (std::conjunction_v<std::is_same<Type, Args>...>)
+    [[nodiscard]] constexpr Type MakeFlags(const Type first, Args ...args) noexcept
+    {
+        using Underlying = std::underlying_type_t<Type>;
+        return static_cast<Type>(((static_cast<Underlying>(first) | static_cast<Underlying>(args)) | ...));
     }
+
+    /** @brief Enum class flag maker */
+    template<typename Type>
+    [[nodiscard]] constexpr Type MakeFlags(const Type flag) noexcept { return flag; }
+
+    /** @brief Enum class flag remover */
+    template<typename Type, typename ...Args>
+        requires (sizeof...(Args) != 0 && std::conjunction_v<std::is_same<Type, Args>...>)
+    [[nodiscard]] constexpr Type RemoveFlags(const Type flags, Args ...toRemove) noexcept
+    {
+        using Underlying = std::underlying_type_t<Type>;
+        return static_cast<Type>((static_cast<Underlying>(flags) & ~static_cast<Underlying>(MakeFlags(toRemove...))));
+    }
+
+    /** @brief Enum class flag tester, all flags must be set */
+    template<typename Type, typename ...Args>
+        requires (sizeof...(Args) != 0 && std::conjunction_v<std::is_same<Type, Args>...>)
+    [[nodiscard]] constexpr bool HasFlags(const Type value, Args ...args) noexcept
+    {
+        using Underlying = std::underlying_type_t<Type>;
+        return ((static_cast<Underlying>(value) & static_cast<Underlying>(args)) && ...);
+    }
+
+    /** @brief Enum class flag tester, at least one of the variadic flags must be set */
+    template<typename Type, typename ...Args>
+        requires (sizeof...(Args) != 0 && std::conjunction_v<std::is_same<Type, Args>...>)
+    [[nodiscard]] constexpr bool HasAnyFlags(const Type value, Args ...args) noexcept
+    {
+        using Underlying = std::underlying_type_t<Type>;
+        return static_cast<Underlying>(value) & (static_cast<Underlying>(args) | ...);
+    }
+
+    /** @brief Get underlying value of an enumeration */
+    template<typename Type>
+    [[nodiscard]] constexpr auto ToUnderlying(const Type value) noexcept
+        { return static_cast<std::underlying_type_t<Type>>(value); }
 }
 
 #include "Utils.ipp"

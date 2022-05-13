@@ -3,7 +3,7 @@
  * @ Description: FlatVectorBase
  */
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, typename CustomHeaderType, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, typename CustomHeaderType, std::integral Range>
 inline const Type *kF::Core::Internal::FlatVectorBase<Type, Allocator, CustomHeaderType, Range>::
         data(void) const noexcept
 {
@@ -13,14 +13,14 @@ inline const Type *kF::Core::Internal::FlatVectorBase<Type, Allocator, CustomHea
         return nullptr;
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, typename CustomHeaderType, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, typename CustomHeaderType, std::integral Range>
 inline void kF::Core::Internal::FlatVectorBase<Type, Allocator, CustomHeaderType, Range>::
         steal(FlatVectorBase &other) noexcept
 {
     std::swap(_ptr, other._ptr);
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, typename CustomHeaderType, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, typename CustomHeaderType, std::integral Range>
 inline Type *kF::Core::Internal::FlatVectorBase<Type, Allocator, CustomHeaderType, Range>::
         allocate(const Range capacity) noexcept
 {
@@ -34,7 +34,7 @@ inline Type *kF::Core::Internal::FlatVectorBase<Type, Allocator, CustomHeaderTyp
     return reinterpret_cast<Type *>(ptr + 1);
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, typename CustomHeaderType, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, typename CustomHeaderType, std::integral Range>
 inline void kF::Core::Internal::FlatVectorBase<Type, Allocator, CustomHeaderType, Range>::
         deallocate(Type * const data, const Range capacity) noexcept
 {

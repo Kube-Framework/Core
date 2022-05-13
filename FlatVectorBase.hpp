@@ -19,7 +19,7 @@ namespace kF::Core::Internal
         constexpr std::size_t MinAlignment = alignof(Type);
 
         if constexpr (TotalHeaderSize > MinAlignment)
-            return kF::Core::Utils::NextPowerOf2(TotalHeaderSize);
+            return kF::Core::NextPowerOf2(TotalHeaderSize);
         else
             return MinAlignment;
     }
@@ -44,12 +44,12 @@ namespace kF::Core::Internal
     static_assert_fit_cacheline(TEMPLATE_TYPE(FlatVectorHeader, std::size_t, char[48], std::size_t));
     static_assert_fit_eighth_cacheline(TEMPLATE_TYPE(FlatVectorHeader, std::size_t, NoCustomHeaderType, std::uint32_t));
 
-    template<typename Type, kF::Core::Utils::StaticAllocator Allocator, typename CustomHeaderType, std::integral Range>
+    template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, typename CustomHeaderType, std::integral Range>
     class FlatVectorBase;
 }
 
 /** @brief Base implementation of a vector with size and capacity allocated with data */
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, typename CustomHeaderType, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, typename CustomHeaderType, std::integral Range>
 class kF::Core::Internal::FlatVectorBase
 {
 public:

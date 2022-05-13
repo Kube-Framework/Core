@@ -7,14 +7,14 @@ template<typename Type>
 inline kF::Core::SPSCQueue<Type>::~SPSCQueue(void) noexcept
 {
     clear();
-    Utils::AlignedFree(_headCache.buffer.data, sizeof(Type) * _headCache.buffer.capacity, alignof(Type));
+    AlignedFree(_headCache.buffer.data, sizeof(Type) * _headCache.buffer.capacity, alignof(Type));
 }
 
 template<typename Type>
 inline kF::Core::SPSCQueue<Type>::SPSCQueue(const std::size_t capacity, const bool usedAsBuffer) noexcept
 {
     _tailCache.buffer.capacity = capacity + usedAsBuffer;
-    _tailCache.buffer.data = Utils::AlignedAlloc<Type>(sizeof(Type) * _tailCache.buffer.capacity, alignof(Type));
+    _tailCache.buffer.data = AlignedAlloc<Type>(sizeof(Type) * _tailCache.buffer.capacity, alignof(Type));
     _headCache.buffer = _tailCache.buffer;
 }
 

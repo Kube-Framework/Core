@@ -10,13 +10,13 @@
 
 namespace kF::Core
 {
-    template<typename Type, std::size_t PageSize, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+    template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
     class SparseSet;
 }
 
 /** @brief The sparse index set is a container which provide O(1) look-up time at the cost of non-efficient memory consumption
  *  @note This implementation is not aware of which index is initialized the user must manage lifecycle **carefully** */
-template<typename Type, std::size_t PageSize, kF::Core::Utils::StaticAllocator Allocator = kF::Core::Utils::DefaultStaticAllocator, std::integral Range = std::uint32_t>
+template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator = kF::Core::DefaultStaticAllocator, std::integral Range = std::uint32_t>
 class kF::Core::SparseSet
 {
 public:

@@ -12,16 +12,16 @@
 
 namespace kF::Core
 {
-    template<typename Type, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+    template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
     class HeapArray;
 
     /** @brief Heap array allow fixed size allocated array and a reduced range */
-    template<typename Type, kF::Core::Utils::StaticAllocator Allocator = kF::Core::Utils::DefaultStaticAllocator>
+    template<typename Type, kF::Core::StaticAllocatorRequirements Allocator = kF::Core::DefaultStaticAllocator>
     using TinyHeapArray = HeapArray<Type, Allocator, std::uint32_t>;
 }
 
 /** @brief Heap array allow fixed size allocated array */
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator = kF::Core::Utils::DefaultStaticAllocator, std::integral Range = std::size_t>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator = kF::Core::DefaultStaticAllocator, std::integral Range = std::size_t>
 class alignas_quarter_cacheline kF::Core::HeapArray
 {
 public:

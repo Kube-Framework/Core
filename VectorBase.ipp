@@ -3,7 +3,7 @@
  * @ Description: Vector
  */
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline void kF::Core::Internal::VectorBase<Type, Allocator, Range>::
         steal(VectorBase &other) noexcept
 {
@@ -19,7 +19,7 @@ inline void kF::Core::Internal::VectorBase<Type, Allocator, Range>::
     other._capacity = Range{};
 }
 
-template<typename Type, kF::Core::Utils::StaticAllocator Allocator, std::integral Range>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
 inline void kF::Core::Internal::VectorBase<Type, Allocator, Range>::
         swap(VectorBase &other) noexcept
 {

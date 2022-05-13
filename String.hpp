@@ -18,7 +18,7 @@ namespace kF::Core
      * @tparam Allocator Static Allocator
      * @tparam Range Range of container
      */
-    template<typename Type, Utils::StaticAllocator Allocator = Utils::DefaultStaticAllocator, std::integral Range = std::size_t>
+    template<typename Type, StaticAllocatorRequirements Allocator = DefaultStaticAllocator, std::integral Range = std::size_t>
     using StringBase = Internal::StringDetails<Vector<Type, Allocator, Range>, Type, Range, false>;
 
     /**
@@ -28,7 +28,7 @@ namespace kF::Core
      * @tparam Type Internal type in container
      * @tparam Allocator Static Allocator
      */
-    template<typename Type, Utils::StaticAllocator Allocator = Utils::DefaultStaticAllocator>
+    template<typename Type, StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
     using TinyStringBase = StringBase<Type, Allocator, std::uint32_t>;
 
     /**

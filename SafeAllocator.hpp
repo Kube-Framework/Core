@@ -78,11 +78,8 @@ namespace kF::Core
         template<std::size_t Alignment>
         void InsertAtomicBucket(AtomicBucket<Alignment> &bucket, void * const data) noexcept;
 
-        namespace Internal
-        {
-            /** @brief Non-template utility that destroys safe allocator stacks */
-            void DestroySafeAllocator(const std::size_t pageSize, SafeStackMetaData * const stack) noexcept;
-        }
+        /** @brief Non-template utility that destroys safe allocator stacks */
+        void DestroySafeAllocator(const std::size_t pageSize, SafeStackMetaData * const stack) noexcept;
     }
 
 }

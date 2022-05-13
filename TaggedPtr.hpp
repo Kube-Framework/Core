@@ -18,7 +18,7 @@ template<typename Type, std::size_t Alignment = alignof(Type)>
 class alignas_eighth_cacheline kF::Core::TaggedPtr
 {
 public:
-    static_assert(Utils::IsPowerOf2(Alignment), "TaggedPtr requires a valid alignment");
+    static_assert(IsPowerOf2(Alignment), "TaggedPtr requires a valid alignment");
     static_assert(Alignment > 1, "TaggedPtr requires at least 1 bit of free space");
 
     static constexpr std::uintptr_t Max     = Alignment - 1;

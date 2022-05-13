@@ -17,11 +17,11 @@ namespace kF::Core::Internal
 /** @brief Base implementation of a vector with size and capacity allocated with data */
 template<typename Type, typename CustomHeaderType, std::integral Range>
 class kF::Core::Internal::AllocatedFlatVectorBase
-        : public FlatVectorBase<Type, Utils::DefaultStaticAllocator, CustomHeaderType, Range>
+        : public FlatVectorBase<Type, DefaultStaticAllocator, CustomHeaderType, Range>
 {
 public:
     /** @brief Base class */
-    using Base = FlatVectorBase<Type, Utils::DefaultStaticAllocator, CustomHeaderType, Range>;
+    using Base = FlatVectorBase<Type, DefaultStaticAllocator, CustomHeaderType, Range>;
 
     /** @brief Base class header */
     using Header = Base::Header;

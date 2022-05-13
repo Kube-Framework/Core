@@ -5,7 +5,7 @@
 
 #include "SafeAllocator.hpp"
 
-void kF::Core::AllocatorUtils::Internal::DestroySafeAllocator(const std::size_t pageSize, SafeStackMetaData * const stack) noexcept
+void kF::Core::AllocatorUtils::DestroySafeAllocator(const std::size_t pageSize, SafeStackMetaData * const stack) noexcept
 {
     if (!stack) [[unlikely]]
         return;
