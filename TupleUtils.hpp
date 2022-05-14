@@ -59,7 +59,7 @@ namespace kF::Core
 
     /** @brief Check if a type match a tuple element */
     template<typename Search, typename Tuple>
-    [[nodiscard]] constexpr bool TupleContainsElement = []<typename ...Types>([[maybe_unused]] const std::tuple<Types...> *) {
+    constexpr bool TupleContainsElement = []<typename ...Types>([[maybe_unused]] const std::tuple<Types...> *) {
         return (std::is_same_v<Search, Types> || ...);
     }(static_cast<const Tuple *>(nullptr));
 }
