@@ -78,9 +78,6 @@ public:
     [[nodiscard]] inline operator bool(void) const noexcept { return _invoke; }
 
 
-    /** @brief Destroy cache */
-    inline void destroy(void) noexcept { _invoke = nullptr; }
-
     /** @brief Release cache (nothing to free) */
     inline void release(void) noexcept { _invoke = nullptr; }
 

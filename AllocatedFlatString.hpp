@@ -11,29 +11,39 @@
 namespace kF::Core
 {
     /**
-     * @brief 8 bytes string that allocates its size and capacity on the heap
+     * @brief 16 bytes string that allocates its size and capacity on the heap
      * The string is non-null terminated
      *
      * @tparam Type Type of character
      * @tparam Range Range of container
      */
-    template<typename Type, std::integral Range = std::size_t>
+    template<typename Type, std::integral Range = std::uint32_t>
     using AllocatedFlatStringBase = Internal::StringDetails<AllocatedFlatVector<Type, Range>, Type, Range, true>;
 
     /**
-     * @brief 8 bytes string that allocates its size and capacity on the heap with a reduced range
+     * @brief 16 bytes string that allocates its size and capacity on the heap with a long range
      * The string is non-null terminated
      *
      * @tparam Type Type of character
      */
     template<typename Type>
-    using AllocatedTinyFlatStringBase = AllocatedFlatStringBase<Type, std::uint32_t>;
+    using AllocatedLongFlatStringBase = AllocatedFlatStringBase<Type, std::size_t>;
 
-    /** @brief 8 bytes string that allocates its size and capacity on the heap
+
+    /** @brief 16 bytes string that allocates its size and capacity on the heap
      *  The string is non-null terminated */
     using AllocatedFlatString = AllocatedFlatStringBase<char>;
 
-    /** @brief 8 bytes string that allocates its size and capacity on the heap with a reduced range
+    /** @brief 16 bytes string that allocates its size and capacity on the heap with a long range
      * The string is non-null terminated */
-    using AllocatedTinyFlatString = AllocatedTinyFlatStringBase<char>;
+    using AllocatedLongFlatString = AllocatedLongFlatStringBase<char>;
+
+
+    /** @brief 16 bytes string that allocates its size and capacity on the heap
+     *  The string is non-null terminated */
+    using AllocatedFlatWString = AllocatedFlatStringBase<wchar_t>;
+
+    /** @brief 16 bytes string that allocates its size and capacity on the heap with a long range
+     * The string is non-null terminated */
+    using AllocatedLongFlatWString = AllocatedLongFlatStringBase<wchar_t>;
 }

@@ -19,11 +19,11 @@ namespace kF::Core
      * @tparam Allocator Static Allocator
      * @tparam Range Range of container
      */
-    template<typename Type, std::size_t OptimizedCapacity, StaticAllocatorRequirements Allocator = DefaultStaticAllocator, std::integral Range = std::size_t>
+    template<typename Type, std::size_t OptimizedCapacity, StaticAllocatorRequirements Allocator = DefaultStaticAllocator, std::integral Range = std::uint32_t>
     using SmallStringBase = Internal::StringDetails<SmallVector<Type, OptimizedCapacity, Allocator, Range>, Type, Range, false>;
 
     /**
-     * @brief Small optimized string with a reduced range
+     * @brief Small optimized string with a long range
      *  The string is non-null terminated
      *
      * @tparam Type Internal type in container
@@ -31,34 +31,29 @@ namespace kF::Core
      * @tparam Allocator Static Allocator
      */
     template<typename Type, std::size_t OptimizedCapacity, StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using TinySmallStringBase = SmallStringBase<Type, OptimizedCapacity, Allocator, std::uint32_t>;
+    using LongSmallStringBase = SmallStringBase<Type, OptimizedCapacity, Allocator, std::size_t>;
 
     /**
-     * @brief 32 bytes small optimized string (cache of 8 bytes)
+     * @brief 32 bytes small optimized string (cache of 16 bytes)
      * The string is non-null terminated */
     template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using SmallString = SmallStringBase<char, CacheLineEighthSize, Allocator>;
+    using SmallString = SmallStringBase<char, CacheLineQuarterSize, Allocator>;
 
     /**
-     * @brief 32 bytes small optimized string (cache of 16 bytes) with a reduced range
+     * @brief 32 bytes small optimized string (cache of 8 bytes) with a long range
      * The string is non-null terminated */
     template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using TinySmallString = TinySmallStringBase<char, CacheLineQuarterSize, Allocator>;
+    using LongSmallString = LongSmallStringBase<char, CacheLineEighthSize, Allocator>;
 
     /**
-     * @brief 64 bytes small optimized string (cache of 40 bytes)
+     * @brief 64 bytes small optimized string (cache of 48 bytes)
      * The string is non-null terminated */
     template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using SmallWString = SmallStringBase<wchar_t, (CacheLineHalfSize + CacheLineEighthSize) / sizeof(wchar_t), Allocator>;
+    using SmallWString = SmallStringBase<wchar_t, (CacheLineHalfSize + CacheLineQuarterSize) / sizeof(wchar_t), Allocator>;
 
     /**
-     * @brief 64 bytes small optimized string (cache of 48 bytes) with a reduced range
+     * @brief 64 bytes small optimized string (cache of 40 bytes) with a long range
      * The string is non-null terminated */
     template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using TinySmallWString = TinySmallStringBase<wchar_t, (CacheLineHalfSize + CacheLineQuarterSize) / sizeof(wchar_t), Allocator>;
+    using LongSmallWString = LongSmallStringBase<wchar_t, (CacheLineHalfSize + CacheLineEighthSize) / sizeof(wchar_t), Allocator>;
 }
-
-static_assert_sizeof_half_cacheline(kF::Core::SmallString<>);
-static_assert_sizeof_half_cacheline(kF::Core::TinySmallString<>);
-static_assert_sizeof_cacheline(kF::Core::SmallWString<>);
-static_assert_sizeof_cacheline(kF::Core::TinySmallWString<>);

@@ -19,10 +19,10 @@ namespace kF::Core
      * @tparam CustomHeaderType Custom header of the flat vector
      * @tparam Range Range of container
      */
-    template<typename Type, typename Compare = std::less<Type>, typename CustomHeaderType = Internal::NoCustomHeaderType, std::integral Range = std::size_t>
+    template<typename Type, typename Compare = std::less<Type>, typename CustomHeaderType = Internal::NoCustomHeaderType, std::integral Range = std::uint32_t>
     using SortedAllocatedFlatVector = Internal::SortedVectorDetails<Internal::AllocatedFlatVectorBase<Type, CustomHeaderType, Range>, Type, Compare, Range, false, true>;
 
-    /** @brief 16 bytes vector that allocates its size and capacity on the heap with a reduced range
+    /** @brief 16 bytes vector that allocates its size and capacity on the heap with a long range
      * The vector guarantee that it will be sorted at any given time
      *
      * @tparam Type Internal type in container
@@ -30,5 +30,5 @@ namespace kF::Core
      * @tparam CustomHeaderType Custom header of the flat vector
      */
     template<typename Type, typename Compare = std::less<Type>, typename CustomHeaderType = Internal::NoCustomHeaderType>
-    using SortedAllocatedTinyFlatVector = SortedAllocatedFlatVector<Type, Compare, CustomHeaderType, std::uint32_t>;
+    using SortedAllocatedLongFlatVector = SortedAllocatedFlatVector<Type, Compare, CustomHeaderType, std::size_t>;
 }

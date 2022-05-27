@@ -146,7 +146,15 @@ public:
 
     /** @brief Get a null terminated char array pointer
      *  ! Be careful as the function is constant for convinience but it can still modify the internal pointer ! */
-    [[nodiscard]] const char *c_str(void) const noexcept;
+    [[nodiscard]] const char *c_str(void) const noexcept
+    { // MSVC Throws an internal error when compiling this inside 'ipp'
+        if (!size())
+            return nullptr;
+        else if (size() == capacity())
+            const_cast<StringDetails *>(this)->grow(1);
+        *const_cast<StringDetails *>(this)->end() = '\0';
+        return dataUnsafe();
+    }
 
 private:
     /** @brief Strlen but with null cstring check */

@@ -123,7 +123,7 @@ public:
     {
         kFAssert(handle, "RemovableDispatcherDetails::remove: Can't remove null handle");
         const auto index = handle - 1u;
-        _functors[index].destroy();
+        _functors[index].release();
         _freeList.push(index);
     }
 
@@ -152,6 +152,6 @@ public:
     }
 
 private:
-    TinyVector<InternalFunctor, Allocator> _functors {};
-    TinyVector<Handle, Allocator> _freeList {};
+    Vector<InternalFunctor, Allocator> _functors {};
+    Vector<Handle, Allocator> _freeList {};
 };

@@ -39,18 +39,6 @@ inline kF::Core::Internal::StringDetails<Base, Type, Range, IsAllocated> kF::Cor
 
 template<typename Base, typename Type, std::integral Range, bool IsAllocated>
     requires std::is_trivial_v<Type>
-inline const char *kF::Core::Internal::StringDetails<Base, Type, Range, IsAllocated>::c_str(void) const noexcept
-{
-    if (!size())
-        return nullptr;
-    else if (size() == capacity())
-        const_cast<StringDetails *>(this)->grow(1);
-    *const_cast<StringDetails *>(this)->end() = '\0';
-    return dataUnsafe();
-}
-
-template<typename Base, typename Type, std::integral Range, bool IsAllocated>
-    requires std::is_trivial_v<Type>
 inline std::size_t kF::Core::Internal::StringDetails<Base, Type, Range, IsAllocated>::SafeStrlen(const char * const cstring) noexcept
 {
     if (!cstring)

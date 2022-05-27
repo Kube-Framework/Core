@@ -20,12 +20,12 @@ namespace kF::Core
      * @tparam Compare Compare operator
      */
     template<typename Type, std::size_t OptimizedCapacity, typename Compare = std::less<Type>,
-            kF::Core::StaticAllocatorRequirements Allocator = DefaultStaticAllocator, std::integral Range = std::size_t>
+            kF::Core::StaticAllocatorRequirements Allocator = DefaultStaticAllocator, std::integral Range = std::uint32_t>
     using SortedSmallVector = Internal::SortedVectorDetails<Internal::SmallVectorBase<Type, OptimizedCapacity, Allocator, Range>, Type, Compare, Range, true, false>;
 
-    /** @brief Small optimized vector with a reduced range
+    /** @brief Small optimized vector with a long range
      * The vector guarantee that it will be sorted at any given time */
     template<typename Type, std::size_t OptimizedCapacity, typename Compare = std::less<Type>,
             kF::Core::StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using SortedTinySmallVector = SortedSmallVector<Type, OptimizedCapacity, Compare, Allocator, std::uint32_t>;
+    using SortedLongSmallVector = SortedSmallVector<Type, OptimizedCapacity, Compare, Allocator, std::size_t>;
 }

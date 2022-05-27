@@ -22,14 +22,14 @@ namespace kF::Core
     using FlatStringBase = Internal::StringDetails<FlatVector<Type, Allocator, Range>, Type, Range, false>;
 
     /**
-     * @brief 8 bytes string with a reduced range
+     * @brief 8 bytes string with a long range
      * The string is non-null terminated
      *
      * @tparam Type Internal type in container
      * @tparam Allocator Static Allocator
      */
     template<typename Type, StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using TinyFlatStringBase = FlatStringBase<Type, Allocator, std::uint32_t>;
+    using LongFlatStringBase = FlatStringBase<Type, Allocator, std::uint32_t>;
 
     /**
      * @brief 8 bytes string using signed char and size_t range
@@ -38,11 +38,11 @@ namespace kF::Core
     using FlatString = FlatStringBase<char, Allocator>;
 
     /**
-     * @brief 8 bytes string using signed char with a reduced range
+     * @brief 8 bytes string using signed char with a long range
      * The string is non-null terminated
      */
     template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using TinyFlatString = TinyFlatStringBase<char, Allocator>;
+    using LongFlatString = LongFlatStringBase<char, Allocator>;
 
     /**
      * @brief 8 bytes string using signed wchar and size_t range
@@ -51,13 +51,8 @@ namespace kF::Core
     using FlatWString = FlatStringBase<wchar_t, Allocator>;
 
     /**
-     * @brief 8 bytes string using signed wchar with a reduced range
+     * @brief 8 bytes string using signed wchar with a long range
      * The string is non-null terminated */
     template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using TinyFlatWString = TinyFlatStringBase<wchar_t, Allocator>;
+    using LongFlatWString = LongFlatStringBase<wchar_t, Allocator>;
 }
-
-static_assert_sizeof(kF::Core::FlatString<>, kF::Core::CacheLineEighthSize);
-static_assert_sizeof(kF::Core::TinyFlatString<>, kF::Core::CacheLineEighthSize);
-static_assert_sizeof(kF::Core::FlatWString<>, kF::Core::CacheLineEighthSize);
-static_assert_sizeof(kF::Core::TinyFlatWString<>, kF::Core::CacheLineEighthSize);

@@ -79,5 +79,5 @@ public:
     }
 
 private:
-    TinyVector<InternalFunctor, Allocator> _functors {};
+    Vector<InternalFunctor, Allocator> _functors {};
 };

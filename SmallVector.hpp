@@ -20,10 +20,10 @@ namespace kF::Core
      * @tparam Range Range of container
      */
     template<typename Type, std::size_t OptimizedCapacity, StaticAllocatorRequirements Allocator = DefaultStaticAllocator,
-            std::integral Range = std::size_t>
+            std::integral Range = std::uint32_t>
     using SmallVector = Internal::VectorDetails<Internal::SmallVectorBase<Type, OptimizedCapacity, Allocator, Range>, Type, Range, true, false>;
 
-    /** @brief Small optimized vector with a reduced range
+    /** @brief Small optimized vector with a long range
      * The vector may take a static allocator
      *
      * @tparam Type Internal type in container
@@ -31,5 +31,5 @@ namespace kF::Core
      * @tparam Allocator Static Allocator
     */
     template<typename Type, std::size_t OptimizedCapacity, StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
-    using TinySmallVector = SmallVector<Type, OptimizedCapacity, Allocator, std::uint32_t>;
+    using LongSmallVector = SmallVector<Type, OptimizedCapacity, Allocator, std::size_t>;
 }

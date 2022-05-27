@@ -6,7 +6,7 @@
 #pragma once
 
 #include <ostream>
-#include <string>
+#include <string_view>
 
 #include "Utils.hpp"
 

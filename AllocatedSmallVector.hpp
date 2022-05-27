@@ -17,15 +17,15 @@ namespace kF::Core
      * @tparam OptimizedCapacity Count of element in the optimized cache
      * @tparam Range Range of container
      */
-    template<typename Type, std::size_t OptimizedCapacity, std::integral Range = std::size_t>
+    template<typename Type, std::size_t OptimizedCapacity, std::integral Range = std::uint32_t>
     using AllocatedSmallVector = Internal::VectorDetails<Internal::AllocatedSmallVectorBase<Type, OptimizedCapacity, Range>, Type, Range, true, true>;
 
     /**
-     * @brief Small optimized vector with a reduced range
+     * @brief Small optimized vector with a long range
      *
      * @tparam Type Internal type in container
      * @tparam OptimizedCapacity Count of element in the optimized cache
      */
     template<typename Type, std::size_t OptimizedCapacity>
-    using AllocatedTinySmallVector = AllocatedSmallVector<Type, OptimizedCapacity, std::uint32_t>;
+    using AllocatedLongSmallVector = AllocatedSmallVector<Type, OptimizedCapacity, std::size_t>;
 }
