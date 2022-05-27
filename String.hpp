@@ -33,16 +33,30 @@ namespace kF::Core
 
     /**
      * @brief 24 bytes string using signed char
-     * The string is non-null terminated
-     */
-    using String = StringBase<char>;
+     * The string is non-null terminated */
+    template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
+    using String = StringBase<char, Allocator>;
 
     /**
      * @brief 16 bytes string using signed char with a reduced range
-     * The string is non-null terminated
-     */
-    using TinyString = TinyStringBase<char>;
+     * The string is non-null terminated */
+    template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
+    using TinyString = TinyStringBase<char, Allocator>;
+
+    /**
+     * @brief 24 bytes string using signed wchar
+     * The string is non-null terminated */
+    template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
+    using WString = StringBase<wchar_t, Allocator>;
+
+    /**
+     * @brief 16 bytes string using signed wchar with a reduced range
+     * The string is non-null terminated */
+    template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
+    using TinyWString = TinyStringBase<wchar_t, Allocator>;
 }
 
-static_assert_sizeof(kF::Core::String, 3 * kF::Core::CacheLineEighthSize);
-static_assert_sizeof_quarter_cacheline(kF::Core::TinyString);
+static_assert_sizeof(kF::Core::String<>, 3 * kF::Core::CacheLineEighthSize);
+static_assert_sizeof_quarter_cacheline(kF::Core::TinyString<>);
+static_assert_sizeof(kF::Core::WString<>, 3 * kF::Core::CacheLineEighthSize);
+static_assert_sizeof_quarter_cacheline(kF::Core::TinyWString<>);

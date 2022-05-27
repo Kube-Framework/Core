@@ -33,16 +33,31 @@ namespace kF::Core
 
     /**
      * @brief 8 bytes string using signed char and size_t range
-     * The string is non-null terminated
-     */
-    using FlatString = FlatStringBase<char>;
+     * The string is non-null terminated */
+    template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
+    using FlatString = FlatStringBase<char, Allocator>;
 
     /**
      * @brief 8 bytes string using signed char with a reduced range
      * The string is non-null terminated
      */
-    using TinyFlatString = TinyFlatStringBase<char>;
+    template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
+    using TinyFlatString = TinyFlatStringBase<char, Allocator>;
+
+    /**
+     * @brief 8 bytes string using signed wchar and size_t range
+     * The string is non-null terminated */
+    template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
+    using FlatWString = FlatStringBase<wchar_t, Allocator>;
+
+    /**
+     * @brief 8 bytes string using signed wchar with a reduced range
+     * The string is non-null terminated */
+    template<StaticAllocatorRequirements Allocator = DefaultStaticAllocator>
+    using TinyFlatWString = TinyFlatStringBase<wchar_t, Allocator>;
 }
 
-static_assert_sizeof(kF::Core::FlatString, kF::Core::CacheLineEighthSize);
-static_assert_sizeof(kF::Core::TinyFlatString, kF::Core::CacheLineEighthSize);
+static_assert_sizeof(kF::Core::FlatString<>, kF::Core::CacheLineEighthSize);
+static_assert_sizeof(kF::Core::TinyFlatString<>, kF::Core::CacheLineEighthSize);
+static_assert_sizeof(kF::Core::FlatWString<>, kF::Core::CacheLineEighthSize);
+static_assert_sizeof(kF::Core::TinyFlatWString<>, kF::Core::CacheLineEighthSize);
