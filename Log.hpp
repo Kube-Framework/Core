@@ -26,7 +26,7 @@ public:
     inline ~Log(void) noexcept = default;
 
     /** @brief Constructor */
-    inline Log(std::wostream &target) noexcept : _target(&target) {}
+    inline Log(std::ostream &target) noexcept : _target(&target) {}
 
     /** @brief Move constructor */
     inline Log(Log &&other) noexcept : _target(other._target) {}
@@ -46,7 +46,7 @@ public:
 
 
 private:
-    std::wostream *_target { nullptr };
+    std::ostream *_target { nullptr };
 };
 
 namespace kF::Core
@@ -64,6 +64,6 @@ namespace kF::Core
 #define kFErrorRaw(...)  kF::Core::ErrorLog.log<kF::Core::Log::HasNewLine::No>(__VA_ARGS__)
 
 /** @brief String view overload */
-std::wostream &operator<<(std::wostream &lhs, const std::string_view &rhs) noexcept;
+std::ostream &operator<<(std::ostream &lhs, const std::string_view &rhs) noexcept;
 
 #include "Log.ipp"
