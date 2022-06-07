@@ -141,7 +141,10 @@ public:
     [[nodiscard]] inline StringDetails operator+(const View &other) noexcept;
 
 
-    /** @brief Get a std::string from the object */
+    /** @brief Implicit converted to std::string_view */
+    [[nodiscard]] inline operator View(void) const noexcept { return toView(); }
+
+    /** @brief Get a std::string_view from the object */
     [[nodiscard]] inline View toView(void) const noexcept { return isSafe() ? View(data(), sizeUnsafe()) : View(); }
 
     /** @brief Get a null terminated char array pointer
