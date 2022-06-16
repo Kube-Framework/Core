@@ -34,7 +34,7 @@ namespace kF::Core
     }
 }
 
-/** @brief Very fast opaque functor but only takes trivial types less or equal sized than cacheline eighth */
+/** @brief General opaque functor that can optimize trivial types that fit 'CacheSize' */
 template<typename Return, typename ...Args, kF::Core::StaticAllocatorRequirements Allocator, std::size_t CacheSize>
 class kF::Core::Functor<Return(Args...), Allocator, CacheSize>
 {

@@ -30,7 +30,7 @@ namespace kF::Core
     };
 }
 
-/** @brief Very fast opaque functor but only takes trivial types less or equal sized than cacheline eighth */
+/** @brief Fast opaque functor but only takes trivial types that fit 'CacheSize' */
 template<typename Return, typename ...Args, std::size_t CacheSize>
 class kF::Core::TrivialFunctor<Return(Args...), CacheSize>
 {

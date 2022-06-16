@@ -10,16 +10,22 @@
 
 namespace kF::Core
 {
-    template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range>
+    template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range, auto Initializer>
+        requires (Initializer == nullptr || std::is_invocable_v<decltype(Initializer), Type *, Type *>)
     class SparseSet;
 }
 
 /** @brief The sparse index set is a container which provide O(1) look-up time at the cost of non-efficient memory consumption
- *  @note This implementation is not aware of which index is initialized the user must manage lifecycle **carefully** */
-template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator = kF::Core::DefaultStaticAllocator, std::integral Range = std::uint32_t>
+ *  @note This implementation is not aware of which index is initialized the user must manage lifecycle **carefully**
+ *  If you wish to ensure initialization of */
+template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator = kF::Core::DefaultStaticAllocator, std::integral Range = std::uint32_t, auto Initializer = nullptr>
+    requires (Initializer == nullptr || std::is_invocable_v<decltype(Initializer), Type *, Type *>)
 class kF::Core::SparseSet
 {
 public:
+    /** @brief True if initializer is not null */
+    static constexpr bool HasInitializer = !std::is_same_v<decltype(Initializer), std::nullptr_t>;
+
     /** @brief Page containing values */
     struct alignas(alignof(Type)) Page
     {
@@ -41,19 +47,23 @@ public:
 
 
     /** @brief Default destructor */
-    ~SparseSet(void) noexcept = default;
+    inline ~SparseSet(void) noexcept = default;
 
     /** @brief Default constructor */
-    SparseSet(void) noexcept = default;
+    inline SparseSet(void) noexcept = default;
 
     /** @brief Default move constructor */
-    SparseSet(SparseSet &&other) noexcept = default;
+    inline SparseSet(SparseSet &&other) noexcept = default;
 
     /** @brief Move assignment */
-    SparseSet &operator=(SparseSet &&other) noexcept = default;
+    inline SparseSet &operator=(SparseSet &&other) noexcept = default;
 
     /** @brief Swap two instances */
     inline void swap(SparseSet &other) noexcept { _pages.swap(other._pages); }
+
+
+    /** @brief Check if the page of an index exists */
+    [[nodiscard]] inline bool pageExists(const Range index) const noexcept { return _pages.size() > GetPageIndex(index); }
 
 
     /** @brief Add a new value to the set */

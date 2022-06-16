@@ -111,18 +111,21 @@ namespace kF::Core
     static_assert(StaticAllocatorRequirements<DefaultStaticAllocator>, "Default static allocator doesn't meet requirements");
 
     /** @brief Simple pair of random access begin / end iterators */
-    template<std::random_access_iterator Type>
+    template<std::random_access_iterator Iterator>
     struct IteratorRange
     {
-        Type from {};
-        Type to {};
+        /** @brief Underlying type */
+        using Type = std::remove_cvref_t<decltype(*std::declval<Iterator>())>;
+
+        Iterator from {};
+        Iterator to {};
 
         /** @brief Empty check */
         [[nodiscard]] inline bool empty(void) const noexcept { return from == to; }
 
         /** @brief Begin / End iterators */
-        [[nodiscard]] inline Type begin(void) const noexcept { return from; }
-        [[nodiscard]] inline Type end(void) const noexcept { return to; }
+        [[nodiscard]] inline Iterator begin(void) const noexcept { return from; }
+        [[nodiscard]] inline Iterator end(void) const noexcept { return to; }
 
         /** @brief Range size */
         template<std::integral Range = std::size_t>
@@ -130,11 +133,11 @@ namespace kF::Core
 
         /** @brief Dereference element at */
         template<std::integral Range = std::size_t>
-        [[nodiscard]] inline Type &operator[](const Range index) const noexcept { return from[index]; }
+        [[nodiscard]] inline auto &operator[](const Range index) const noexcept { return from[index]; }
 
         /** @brief Dereference element at */
         template<std::integral Range = std::size_t>
-        [[nodiscard]] inline Type &at(const Range index) const noexcept { return from[index]; }
+        [[nodiscard]] inline auto &at(const Range index) const noexcept { return from[index]; }
     };
 
     /** @brief Helper to know if a given type is a std::move_iterator */

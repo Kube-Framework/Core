@@ -387,6 +387,15 @@ public:
     /** @brief Grow internal buffer of a given minimum */
     void grow(const Range minimum) noexcept;
 
+
+    /** @brief Convert instance into an output IteratorRange */
+    [[nodiscard]] inline Core::IteratorRange<Iterator> toRange(void) noexcept
+        { return Core::IteratorRange<Iterator> { begin(), end() }; }
+
+    /** @brief Convert instance into an input IteratorRange */
+    [[nodiscard]] inline Core::IteratorRange<ConstIterator> toRange(void) const noexcept
+        { return Core::IteratorRange<ConstIterator> { begin(), end() }; }
+
 protected:
     using Base::setSize;
     using Base::setData;
