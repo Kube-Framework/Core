@@ -78,7 +78,7 @@ TEST(Vector, Insert) \
     ASSERT_EQ(vector[i++], 42u); \
     ASSERT_EQ(vector[i++], 42u); \
  \
-    vector.insertCopy(2u, 24u); \
+    vector.insertFill(2u, 24u); \
     ASSERT_TRUE(std::is_sorted(vector.begin(), vector.end())); \
     ASSERT_EQ(vector.size(), 6); \
     i = 0u; \
@@ -160,7 +160,7 @@ TEST(Vector, NullArgs) \
     Vector<std::size_t __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(g, AllocatorMode); \
     Vector<std::size_t __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(h, AllocatorMode); \
     e.insertDefault(0u); \
-    f.insertCopy(0u, 42u); \
+    f.insertFill(0u, 42u); \
     g.insert(ptr, ptr); \
     h.insert(strPtr, strPtr, [](auto &x) { return std::stoul(x); }); \
     ASSERT_EQ(e.size(), 0ul); ASSERT_TRUE(e.empty()); \

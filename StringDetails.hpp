@@ -16,14 +16,14 @@ namespace kF::Core
 
     namespace Internal
     {
-        template<typename Base, typename Type, std::integral Range, bool IsAllocated>
+        template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
             requires std::is_trivial_v<Type>
         class StringDetails;
     }
 }
 
 /** @brief String details bring facilities to manipulate a vector as a string */
-template<typename Base, typename Type, std::integral Range, bool IsAllocated>
+template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
     requires std::is_trivial_v<Type>
 class kF::Core::Internal::StringDetails : public Base
 {
@@ -54,11 +54,11 @@ public:
 
     /** @brief Default constructor */
     inline StringDetails(void) noexcept
-            requires (!IsAllocated) = default;
+            requires (!IsRuntimeAllocated) = default;
 
     /** @brief Default constructor - Allocated version*/
     inline StringDetails(IAllocator &allocator) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : Base(allocator) {}
 
 
@@ -71,34 +71,34 @@ public:
 
     /** @brief CString constructor */
     inline StringDetails(const char * const cstring) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         { resize(cstring, cstring + SafeStrlen(cstring)); }
 
     /** @brief CString constructor - Allocated version */
     inline StringDetails(IAllocator &allocator, const char * const cstring) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : Base(allocator) { resize(cstring, cstring + SafeStrlen(cstring)); }
 
 
     /** @brief CString length constructor */
     inline StringDetails(const char * const cstring, const std::size_t length) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         { resize(cstring, cstring + length); }
 
     /** @brief CString length constructor - Allocated version */
     inline StringDetails(IAllocator &allocator, const char * const cstring, const std::size_t length) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : Base(allocator) { resize(cstring, cstring + length); }
 
 
     /** @brief View constructor */
     inline StringDetails(const View &other) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         { resize(other.begin(), other.end()); }
 
     /** @brief View constructor - Allocated version */
     inline StringDetails(IAllocator &allocator, const View &other) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : Base(allocator) { resize(other.begin(), other.end()); }
 
 

@@ -93,19 +93,19 @@ public:
 
 
     /** @brief Comparison operators */
-    [[nodiscard]] auto operator<=>(const UniquePtr &other) const noexcept = default;
+    [[nodiscard]] inline auto operator<=>(const UniquePtr &other) const noexcept = default;
 
     /** @brief Raw pointer comparison */
-    [[nodiscard]] bool operator==(const Type * const other) const noexcept { return _ptr == other; }
-    [[nodiscard]] bool operator!=(const Type * const other) const noexcept { return _ptr != other; }
+    [[nodiscard]] inline bool operator==(const Type * const other) const noexcept { return _ptr == other; }
+    [[nodiscard]] inline bool operator!=(const Type * const other) const noexcept { return _ptr != other; }
 
 private:
-    Type *_ptr { nullptr };
-
-
     /** @brief Instance constructor */
     inline UniquePtr(Type * const ptr) : _ptr(ptr) {}
 
     /** @brief Unsafe implementation of the release function */
     inline void releaseUnsafe(void) noexcept { _ptr->~Type(); Allocator::Deallocate(_ptr, sizeof(Type), alignof(Type)); _ptr = nullptr; }
+
+
+    Type *_ptr { nullptr };
 };

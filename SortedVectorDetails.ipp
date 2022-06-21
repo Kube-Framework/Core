@@ -3,33 +3,33 @@
  * @ Description: SortedVectorDetails
  */
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<typename ...Args> requires std::constructible_from<Type, Args...>
-inline Type &kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::push(Args &&...args) noexcept
+inline Type &kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::push(Args &&...args) noexcept
 {
     Type value(std::forward<Args>(args)...);
     const auto it = findSortedPlacement(value);
     return *DetailsBase::insert(it, { std::move(value) });
 }
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::insertDefault(const Range count) noexcept
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
+inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insertDefault(const Range count) noexcept
 {
     if (count) [[likely]]
         DetailsBase::insertDefault(findSortedPlacement(Type{}), count);
 }
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::insertCopy(
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
+inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insertFill(
         const Range count, const Type &value) noexcept
 {
     if (count) [[likely]]
-        DetailsBase::insertCopy(findSortedPlacement(value), count, value);
+        DetailsBase::insertFill(findSortedPlacement(value), count, value);
 }
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<std::input_iterator InputIterator>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::insert(
+inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insert(
         InputIterator from, InputIterator to) noexcept
 {
     if (from != to) [[likely]] {
@@ -38,9 +38,9 @@ inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, 
     }
 }
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<std::input_iterator InputIterator, typename Map>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::insert(
+inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insert(
         InputIterator from, InputIterator to, Map &&map) noexcept
 {
     if (from != to) [[likely]] {
@@ -49,9 +49,9 @@ inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, 
     }
 }
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<std::input_iterator InputIterator>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::resize(
+inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::resize(
         InputIterator from, InputIterator to) noexcept
 {
     if (from != to) [[likely]] {
@@ -60,9 +60,9 @@ inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, 
     }
 }
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<std::input_iterator InputIterator, typename Map>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::resize(
+inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::resize(
         InputIterator from, InputIterator to, Map &&map) noexcept
 {
     if (from != to) [[likely]] {
@@ -71,25 +71,25 @@ inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, 
     }
 }
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<typename Initializer>
     requires std::is_invocable_r_v<Type, Initializer> || std::is_invocable_r_v<Type, Initializer, Range>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::resize(const Range count, Initializer &&initializer) noexcept
+inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::resize(const Range count, Initializer &&initializer) noexcept
 {
     DetailsBase::resize(count, std::forward<Initializer>(initializer));
     if (count) [[likely]]
         sort();
 }
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::sort(void) noexcept
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
+inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::sort(void) noexcept
 {
     std::sort(DetailsBase::beginUnsafe(), DetailsBase::endUnsafe(), Compare{});
 }
 
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<typename AssignType>
-inline Range kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsAllocated>::assign(const Range index, AssignType &&value) noexcept
+inline Range kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::assign(const Range index, AssignType &&value) noexcept
 {
     const auto count = DetailsBase::sizeUnsafe();
     auto &elem = DetailsBase::at(index);

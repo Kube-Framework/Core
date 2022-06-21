@@ -24,18 +24,6 @@ inline Type &kF::Core::SparseSet<Type, PageSize, Allocator, Range, Initializer>:
     }
 
     return *new (&at(pageIndex, elementIndex)) Type(std::forward<Args>(args)...);
-
-}
-
-template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range, auto Initializer>
-    requires (Initializer == nullptr || std::is_invocable_v<decltype(Initializer), Type *, Type *>)
-inline void kF::Core::SparseSet<Type, PageSize, Allocator, Range, Initializer>::remove(const Range index) noexcept
-{
-    auto &ref = at(GetPageIndex(index), GetElementIndex(index));
-    if constexpr (!std::is_trivially_destructible_v<Type>)
-        ref.~Type();
-    if constexpr (HasInitializer)
-        Initializer(&ref, &ref + 1);
 }
 
 template<typename Type, std::size_t PageSize, kF::Core::StaticAllocatorRequirements Allocator, std::integral Range, auto Initializer>

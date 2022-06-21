@@ -72,7 +72,8 @@ public:
 
 
     /** @brief Remove a value from the set and return it */
-    void remove(const Range index) noexcept;
+    void remove(const Range index) noexcept
+        { remove(GetPageIndex(index), GetElementIndex(index)); }
 
     /** @brief Remove a value by page & elemnt index */
     void remove(const Range pageIndex, const Range elementIndex) noexcept;

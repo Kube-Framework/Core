@@ -18,15 +18,21 @@ namespace kF::Core
 
     namespace Internal
     {
-        template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+        template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
         class VectorDetails;
     }
 }
 
-template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 class kF::Core::Internal::VectorDetails : public Base
 {
 public:
+    /** @brief Static tag which indicates that the vector is not sorted */
+    static constexpr bool IsSorted = false;
+
+    /** @brief Static tag which indicates that the vector is not sorted */
+    static constexpr bool HasRuntimeAllocator = IsRuntimeAllocated;
+
     /** @brief Iterator detectors */
     using ValueType = Type;
 
@@ -63,22 +69,22 @@ public:
 
     /** @brief Default constructor */
     inline VectorDetails(void) noexcept
-            requires (!IsAllocated) = default;
+            requires (!IsRuntimeAllocated) = default;
 
     /** @brief Default constructor - Allocated version */
     inline VectorDetails(IAllocator &allocator) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : Base(allocator) {}
 
 
     /** @brief Copy constructor */
     inline VectorDetails(const VectorDetails &other) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         { resize(other.begin(), other.end()); }
 
     /** @brief Copy constructor - Allocated version */
     inline VectorDetails(const VectorDetails &other) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : Base(other.allocator()) { resize(other.begin(), other.end()); }
 
 
@@ -89,23 +95,23 @@ public:
 
     /** @brief Resize with default constructor */
     inline VectorDetails(const Range count) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         { resize(count); }
 
     /** @brief Resize with default constructor - Allocated version */
     inline VectorDetails(IAllocator &allocator, const Range count) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : Base(allocator) { resize(count); }
 
 
     /** @brief Resize with copy constructor */
     inline VectorDetails(const Range count, const Type &value) noexcept
-            requires (std::copy_constructible<Type> && !IsAllocated)
+            requires (std::copy_constructible<Type> && !IsRuntimeAllocated)
         { resize(count, value); }
 
     /** @brief Resize with copy constructor - Allocated version */
     inline VectorDetails(IAllocator &allocator, const Range count, const Type &value) noexcept
-            requires (std::copy_constructible<Type> && IsAllocated)
+            requires (std::copy_constructible<Type> && IsRuntimeAllocated)
         : Base(allocator) { resize(count, value); }
 
 
@@ -124,38 +130,38 @@ public:
 
     /** @brief Resize constructor */
     template<std::input_iterator InputIterator>
-    inline VectorDetails(InputIterator from, InputIterator to) noexcept
-            requires (!IsAllocated)
+    inline VectorDetails(const InputIterator from, const InputIterator to) noexcept
+            requires (!IsRuntimeAllocated)
         { resize(from, to); }
 
     /** @brief Resize constructor - Allocated version */
     template<std::input_iterator InputIterator>
-    inline VectorDetails(IAllocator &allocator, InputIterator from, InputIterator to) noexcept
-            requires (IsAllocated)
+    inline VectorDetails(IAllocator &allocator, const InputIterator from, const InputIterator to) noexcept
+            requires (IsRuntimeAllocated)
         : Base(allocator) { resize(from, to); }
 
 
     /** @brief Resize map constructor */
     template<std::input_iterator InputIterator, typename Map>
-    inline VectorDetails(InputIterator from, InputIterator to, Map &&map) noexcept
-            requires (!IsAllocated)
+    inline VectorDetails(const InputIterator from, const InputIterator to, Map &&map) noexcept
+            requires (!IsRuntimeAllocated)
         { resize(from, to, std::forward<Map>(map)); }
 
     /** @brief Resize map constructor - Allocated version */
     template<std::input_iterator InputIterator, typename Map>
-    inline VectorDetails(IAllocator &allocator, InputIterator from, InputIterator to, Map &&map) noexcept
-            requires (IsAllocated)
+    inline VectorDetails(IAllocator &allocator, const InputIterator from, const InputIterator to, Map &&map) noexcept
+            requires (IsRuntimeAllocated)
         : Base(allocator) { resize(from, to, std::forward<Map>(map)); }
 
 
     /** @brief Initializer list constructor */
     inline VectorDetails(std::initializer_list<Type> &&init) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         : VectorDetails(init.begin(), init.end()) {}
 
     /** @brief Initializer list constructorr - Allocated version */
     inline VectorDetails(IAllocator &allocator, std::initializer_list<Type> &&init) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : VectorDetails(allocator, init.begin(), init.end()) {}
 
 
@@ -209,30 +215,30 @@ public:
 
 
     /** @brief Insert a range of copies */
-    Iterator insertDefault(Iterator pos, const Range count) noexcept;
+    Iterator insertDefault(const Iterator pos, const Range count) noexcept;
 
     /** @brief Insert a range of copies */
-    Iterator insertCopy(Iterator pos, const Range count, const Type &value) noexcept;
+    Iterator insertFill(const Iterator pos, const Range count, const Type &value) noexcept;
 
     /** @brief Insert a value by copy */
-    inline Iterator insert(Iterator pos, const Type &value) noexcept
+    inline Iterator insert(const Iterator pos, const Type &value) noexcept
         { return insert(pos, &value, &value + 1); }
 
     /** @brief Insert a value by move */
-    inline Iterator insert(Iterator pos, Type &&value) noexcept
+    inline Iterator insert(const Iterator pos, Type &&value) noexcept
         { return insert(pos, std::make_move_iterator(&value), std::make_move_iterator(&value + 1)); }
 
     /** @brief Insert an initializer list */
-    inline Iterator insert(Iterator pos, std::initializer_list<Type> &&init) noexcept
+    inline Iterator insert(const Iterator pos, std::initializer_list<Type> &&init) noexcept
         { return insert(pos, init.begin(), init.end()); }
 
     /** @brief Insert a range of element by iterating over iterators */
     template<std::input_iterator InputIterator>
-    Iterator insert(Iterator pos, InputIterator from, InputIterator to) noexcept;
+    Iterator insert(const Iterator pos, const InputIterator from, const InputIterator to) noexcept;
 
     /** @brief Insert a range of element by using a map function over iterators */
     template<std::input_iterator InputIterator, typename Map>
-    Iterator insert(Iterator pos, InputIterator from, InputIterator to, Map &&map) noexcept;
+    Iterator insert(const Iterator pos, const InputIterator from, const InputIterator to, Map &&map) noexcept;
 
 
     /** @brief Remove a range of elements */
@@ -243,7 +249,7 @@ public:
         { return erase(from, from + count); }
 
     /** @brief Remove a specific element */
-    inline Iterator erase(Iterator pos) noexcept
+    inline Iterator erase(const Iterator pos) noexcept
         { return erase(pos, pos + 1); }
 
 
@@ -266,11 +272,11 @@ public:
 
     /** @brief Resize the vector with input iterators */
     template<std::input_iterator InputIterator>
-    void resize(InputIterator from, InputIterator to) noexcept;
+    void resize(const InputIterator from, const InputIterator to) noexcept;
 
     /** @brief Resize the vector using a map function with input iterators */
     template<std::input_iterator InputIterator, typename Map>
-    void resize(InputIterator from, InputIterator to, Map &&map) noexcept;
+    void resize(const InputIterator from, const InputIterator to, Map &&map) noexcept;
 
 
     /** @brief Destroy all elements */
@@ -402,6 +408,10 @@ protected:
     using Base::setCapacity;
     using Base::allocate;
     using Base::deallocate;
+
+    /** @brief Implementation of all 'insert' functions */
+    template<typename InsertFunc>
+    Iterator insertImpl(const Iterator pos, const Range count, InsertFunc &&insertFunc) noexcept;
 
     /** @brief Reserve unsafe takes IsSafe as template parameter */
     template<bool IsSafe = true>

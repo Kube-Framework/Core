@@ -14,34 +14,38 @@ namespace kF::Core
 
     namespace Internal
     {
-        template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
+        template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
         class SortedVectorDetails;
     }
 }
 
 /** @brief Implementation details of any sorted vector.
  *  The compare function must not throw ! */
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsAllocated>
-class kF::Core::Internal::SortedVectorDetails : public VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
+class kF::Core::Internal::SortedVectorDetails : public VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>
 {
 public:
+    /** @brief Static tag which indicates that the vector is sorted */
+    static constexpr bool IsSorted = true;
+
     /** @brief Type alias to VectorDetails */
-    using DetailsBase = VectorDetails<Base, Type, Range, IsSmallOptimized, IsAllocated>;
+    using DetailsBase = VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>;
 
     /** @brief Iterator detectors */
     using Iterator = typename DetailsBase::Iterator;
     using ConstIterator = typename DetailsBase::ConstIterator;
+
 
     /** @brief Release the vector */
     inline ~SortedVectorDetails(void) noexcept = default;
 
 
     /** @brief Default constructor */
-    inline SortedVectorDetails(void) noexcept requires (!IsAllocated) = default;
+    inline SortedVectorDetails(void) noexcept requires (!IsRuntimeAllocated) = default;
 
     /** @brief Default constructor - Allocated version */
     inline SortedVectorDetails(IAllocator &allocator) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : DetailsBase(allocator) {}
 
 
@@ -54,23 +58,23 @@ public:
 
     /** @brief Resize with default constructor */
     inline SortedVectorDetails(const Range count) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         { resize(count); }
 
     /** @brief Resize with default constructor - Allocated version */
     inline SortedVectorDetails(IAllocator &allocator, const Range count) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : DetailsBase(allocator) { resize(count); }
 
 
     /** @brief Resize with copy constructor */
     inline SortedVectorDetails(const Range count, const Type &value) noexcept
-            requires (std::copy_constructible<Type> && !IsAllocated)
+            requires (std::copy_constructible<Type> && !IsRuntimeAllocated)
         { resize(count, value); }
 
     /** @brief Resize with copy constructor - Allocated version */
     inline SortedVectorDetails(IAllocator &allocator, const Range count, const Type &value) noexcept
-            requires (std::copy_constructible<Type> && IsAllocated)
+            requires (std::copy_constructible<Type> && IsRuntimeAllocated)
         : DetailsBase(allocator) { resize(count, value); }
 
 
@@ -90,37 +94,37 @@ public:
     /** @brief Resize constructor */
     template<std::input_iterator InputIterator>
     inline SortedVectorDetails(InputIterator from, InputIterator to) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         { resize(from, to); }
 
     /** @brief Resize constructor - Allocated version */
     template<std::input_iterator InputIterator>
     inline SortedVectorDetails(IAllocator &allocator, InputIterator from, InputIterator to) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : DetailsBase(allocator) { resize(from, to); }
 
 
     /** @brief Resize map constructor */
     template<std::input_iterator InputIterator, typename Map>
     inline SortedVectorDetails(InputIterator from, InputIterator to, Map &&map) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         { resize(from, to, std::forward<Map>(map)); }
 
     /** @brief Resize map constructor - Allocated version */
     template<std::input_iterator InputIterator, typename Map>
     inline SortedVectorDetails(IAllocator &allocator, InputIterator from, InputIterator to, Map &&map) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : DetailsBase(allocator) { resize(from, to, std::forward<Map>(map)); }
 
 
     /** @brief Initializer list constructor */
     inline SortedVectorDetails(std::initializer_list<Type> &&init) noexcept
-            requires (!IsAllocated)
+            requires (!IsRuntimeAllocated)
         : SortedVectorDetails(init.begin(), init.end()) {}
 
     /** @brief Initializer list constructor - Allocated version */
     inline SortedVectorDetails(IAllocator &allocator, std::initializer_list<Type> &&init) noexcept
-            requires (IsAllocated)
+            requires (IsRuntimeAllocated)
         : SortedVectorDetails(allocator, init.begin(), init.end()) {}
 
 
@@ -141,7 +145,7 @@ public:
     void insertDefault(const Range count) noexcept;
 
     /** @brief Insert a range of copies */
-    void insertCopy(const Range count, const Type &value) noexcept;
+    void insertFill(const Range count, const Type &value) noexcept;
 
     /** @brief Insert an initializer list */
     inline void insert(std::initializer_list<Type> &&init) noexcept
