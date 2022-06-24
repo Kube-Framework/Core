@@ -138,6 +138,14 @@ namespace kF::Core
         /** @brief Dereference element at */
         template<std::integral Range = std::size_t>
         [[nodiscard]] inline auto &at(const Range index) const noexcept { return from[index]; }
+
+        /** @brief Get first element */
+        [[nodiscard]] inline Type &front(void) noexcept { return at(0); }
+        [[nodiscard]] inline const Type &front(void) const noexcept { return at(0); }
+
+        /** @brief Get last element */
+        [[nodiscard]] inline Type &back(void) noexcept { return at(size() - 1); }
+        [[nodiscard]] inline const Type &back(void) const noexcept { return at(size() - 1); }
     };
 
     /** @brief Helper to know if a given type is a std::move_iterator */

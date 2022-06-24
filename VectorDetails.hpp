@@ -240,6 +240,11 @@ public:
     template<std::input_iterator InputIterator, typename Map>
     Iterator insert(const Iterator pos, const InputIterator from, const InputIterator to, Map &&map) noexcept;
 
+    /** @brief Insert a range of element by using a custom insert functor
+     *  @note The functor must have the following signature: void(Range count, Iterator output) */
+    template<typename InsertFunc>
+    Iterator insertCustom(const Iterator pos, const Range count, InsertFunc &&insertFunc) noexcept;
+
 
     /** @brief Remove a range of elements */
     Iterator erase(Iterator from, Iterator to) noexcept;
@@ -299,7 +304,7 @@ public:
 
 
     /** @brief Move range [from, to] at [output, to - from] */
-    void move(Range from, Range to, Range output) noexcept;
+    void move(const Range from, const Range to, const Range output) noexcept;
 
 
     /** @brief Comparison operators */
@@ -408,10 +413,6 @@ protected:
     using Base::setCapacity;
     using Base::allocate;
     using Base::deallocate;
-
-    /** @brief Implementation of all 'insert' functions */
-    template<typename InsertFunc>
-    Iterator insertImpl(const Iterator pos, const Range count, InsertFunc &&insertFunc) noexcept;
 
     /** @brief Reserve unsafe takes IsSafe as template parameter */
     template<bool IsSafe = true>

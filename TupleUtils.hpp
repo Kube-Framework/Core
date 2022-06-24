@@ -54,8 +54,8 @@ namespace kF::Core
     }
 
     /** @brief Get the index of a type inside a tuple */
-    template<typename Search, typename Tuple>
-    constexpr std::size_t TupleElementIndex = Internal::SearchTupleElementIndex<Search, Tuple>::Value;
+    template<typename Search, typename Tuple, typename Range = std::size_t>
+    constexpr Range TupleElementIndex = static_cast<Range>(Internal::SearchTupleElementIndex<Search, Tuple>::Value);
 
     /** @brief Check if a type match a tuple element */
     template<typename Search, typename Tuple>

@@ -31,7 +31,7 @@ template<typename Base, typename Type, std::integral Range, bool IsSmallOptimize
 inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::Iterator
     kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::insertDefault(const Iterator pos, const Range count) noexcept
 {
-    return insertImpl(
+    return insertCustom(
         pos,
         count,
         [](const auto count, const auto out) {
@@ -45,7 +45,7 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
     kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::insertFill(
         const Iterator pos, const Range count, const Type &value) noexcept
 {
-    return insertImpl(
+    return insertCustom(
         pos,
         count,
         [&value](const auto count, const auto out) {
@@ -60,7 +60,7 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
     kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::insert(
         const Iterator pos, const InputIterator from, const InputIterator to) noexcept
 {
-    return insertImpl(
+    return insertCustom(
         pos,
         std::distance(from, to),
         [from](const auto count, const auto out) {
@@ -84,7 +84,7 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
         }
     };
 
-    return insertImpl(
+    return insertCustom(
         pos,
         std::distance(from, to),
         [from, map = std::forward<Map>(map)](const auto count, const auto out) {
@@ -96,7 +96,7 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<typename InsertFunc>
 inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::Iterator
-    kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::insertImpl(
+    kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::insertCustom(
         const Iterator pos, const Range count, InsertFunc &&insertFunc) noexcept
 {
     Range position;
@@ -328,10 +328,14 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
-inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::move(Range from, Range to, Range output) noexcept
+inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::move(const Range from_, const Range to_, const Range output_) noexcept
 {
-    kFAssert(output < from || output > to,
-        "VectorDetails::move: Invalid move range [", from, ", ", to, "] -> ", output);
+    kFAssert(output_ < from_ || output_ > to_,
+        "Core::VectorDetails::move: Invalid move range [", from_, ", ", to_, "] -> ", output_);
+
+    auto from = from_;
+    auto to = to_;
+    auto output = output_;
     if (output < from) {
         const auto tmp = from;
         from = output;
