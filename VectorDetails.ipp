@@ -62,7 +62,7 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
 {
     return insertCustom(
         pos,
-        std::distance(from, to),
+        static_cast<Range>(std::distance(from, to)),
         [from](const auto count, const auto out) {
             std::uninitialized_copy_n(from, count, out);
         }
@@ -78,15 +78,15 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
     constexpr auto MapCopy = [](const InputIterator input, const Range count, const Iterator out, auto &map) {
         for (Range i { 0 }; i != count; ++i) {
             if constexpr (IsMoveIterator<InputIterator>::Value)
-                new (out[i]) Type(std::invoke(map, std::move(from[i])));
+                new (out[i]) Type(map(std::move(input[i])));
             else
-                new (out[i]) Type(std::invoke(map, from[i]));
+                new (out[i]) Type(map(input[i]));
         }
     };
 
     return insertCustom(
         pos,
-        std::distance(from, to),
+        static_cast<Range>(std::distance(from, to)),
         [from, map = std::forward<Map>(map)](const auto count, const auto out) {
             MapCopy(from, count, out, map);
         }
@@ -200,9 +200,9 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
     auto ptr = beginUnsafe();
     for (Range i = 0; i != count; ++i) {
         if constexpr (std::is_invocable_r_v<Type, Initializer, Range>)
-            new (ptr + i) Type(std::invoke(initializer, i));
+            new (ptr + i) Type(initializer(i));
         else
-            new (ptr + i) Type(std::invoke(initializer));
+            new (ptr + i) Type(initializer());
     }
 }
 
@@ -226,9 +226,9 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
     auto begin = beginUnsafe();
     while (from != to) {
         if constexpr (IsMoveIterator<InputIterator>::Value)
-            new (begin) Type(std::invoke(map, std::move(*from)));
+            new (begin) Type(map(std::move(*from)));
         else
-            new (begin) Type(std::invoke(map, *from));
+            new (begin) Type(map(*from));
         ++from;
         ++begin;
     }

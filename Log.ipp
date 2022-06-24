@@ -4,6 +4,7 @@
  */
 
 #include "Log.hpp"
+#include "StringUtils.hpp"
 
 template<kF::Core::Log::HasNewLine NewLine, typename ...Args>
 inline void kF::Core::Log::log(Args &&...args) noexcept

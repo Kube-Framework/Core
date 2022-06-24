@@ -3,6 +3,8 @@
  * @ Description: FixedString
  */
 
+#include <algorithm>
+
 #include "FixedString.hpp"
 
 template<typename CharType, std::size_t N>
