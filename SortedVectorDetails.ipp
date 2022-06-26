@@ -82,12 +82,6 @@ inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, 
 }
 
 template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::sort(void) noexcept
-{
-    std::sort(DetailsBase::beginUnsafe(), DetailsBase::endUnsafe(), Compare{});
-}
-
-template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<typename AssignType>
 inline Range kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::assign(const Range index, AssignType &&value) noexcept
 {

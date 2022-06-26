@@ -203,7 +203,7 @@ public:
 
 
     /** @brief Sort the vector */
-    void sort(void) noexcept;
+    inline void sort(void) noexcept { std::sort(DetailsBase::beginUnsafe(), DetailsBase::endUnsafe(), Compare{}); }
 
     /** @brief Assign a new value to an existing element
      *  @return The index where the element has been moved if assignment break sort */
@@ -223,6 +223,7 @@ private:
     using DetailsBase::insert;
     using DetailsBase::resize;
     using DetailsBase::insertDefault;
+    using DetailsBase::sort;
 };
 
 #include "SortedVectorDetails.ipp"

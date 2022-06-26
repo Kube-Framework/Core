@@ -399,6 +399,16 @@ public:
     void grow(const Range minimum) noexcept;
 
 
+    /** @brief Sort the vector with default Type comparison operator */
+    inline void sort(void) noexcept
+        { std::sort(begin(), end()); }
+
+    /** @brief Sort the vector using a comparator functor */
+    template<typename Compare>
+    inline void sort(Compare &&compare) noexcept { std::sort(begin(), end(), std::forward<Compare>(compare)); }
+
+
+
     /** @brief Convert instance into an output IteratorRange */
     [[nodiscard]] inline Core::IteratorRange<Iterator> toRange(void) noexcept
         { return Core::IteratorRange<Iterator> { begin(), end() }; }
