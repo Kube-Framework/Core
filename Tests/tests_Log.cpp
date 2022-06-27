@@ -14,34 +14,29 @@
 
 using namespace kF;
 
-[[nodiscard]] static inline std::wstring BytesToWString(const std::string &s)
-{
-    return std::wstring(s.begin(), s.end());
-}
-
 TEST(Log, Singletons)
 {
-    constexpr auto Answer = L"Hello world";
+    constexpr auto Answer = "Hello world";
 
-    std::wstring output;
+    std::string output;
 
     // Info
     testing::internal::CaptureStdout();
     kFInfoRaw(Answer);
-    output = BytesToWString(testing::internal::GetCapturedStdout());
+    output = testing::internal::GetCapturedStdout();
     ASSERT_EQ(output, Answer);
 
     // Error
     testing::internal::CaptureStderr();
     kFErrorRaw(Answer);
-    output = BytesToWString(testing::internal::GetCapturedStderr());
+    output = testing::internal::GetCapturedStderr();
     ASSERT_EQ(output, Answer);
 }
 
 TEST(Log, Basics)
 {
-    std::wostringstream oss;
+    std::ostringstream oss;
     Core::Log log(oss);
     log.log("The key is ", 42);
-    ASSERT_EQ(oss.str(), L"The key is 42\n");
+    ASSERT_EQ(oss.str(), "The key is 42\n");
 }

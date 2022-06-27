@@ -203,7 +203,7 @@ public:
 
 
     /** @brief Sort the vector */
-    inline void sort(void) noexcept { std::sort(DetailsBase::beginUnsafe(), DetailsBase::endUnsafe(), Compare{}); }
+    inline void sort(void) noexcept { std::sort(DetailsBase::begin(), DetailsBase::end(), Compare{}); }
 
     /** @brief Assign a new value to an existing element
      *  @return The index where the element has been moved if assignment break sort */

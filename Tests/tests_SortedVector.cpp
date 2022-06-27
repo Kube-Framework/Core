@@ -60,7 +60,7 @@ TEST(Vector, Push) \
 TEST(Vector, Insert) \
 { \
     Vector<std::size_t __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(vector, AllocatorMode); \
-    auto tmp = { "42", "42" }; \
+    const std::string tmp[] { "42", "42" }; \
  \
     vector.insertDefault(2u); \
     ASSERT_TRUE(std::is_sorted(vector.begin(), vector.end())); \
@@ -69,7 +69,7 @@ TEST(Vector, Insert) \
     ASSERT_EQ(vector[i++], 0u); \
     ASSERT_EQ(vector[i++], 0u); \
  \
-    vector.insert(std::begin(tmp), std::end(tmp), [](auto &x) { return std::stoul(x); }); \
+    vector.insert(std::begin(tmp), std::end(tmp), [](const auto &x) { return std::stoul(x); }); \
     ASSERT_TRUE(std::is_sorted(vector.begin(), vector.end())); \
     ASSERT_EQ(vector.size(), 4); \
     i = 0u; \
@@ -114,8 +114,8 @@ TEST(Vector, Resize) \
         ASSERT_EQ(elem, 0ul); \
     } \
  \
-    auto tmp = { "42", "1", "2", "3", "4" }; \
-    vector.resize(std::begin(tmp), std::end(tmp), [](auto &x) { return std::stoul(x); }); \
+    const std::string tmp[] { "42", "1", "2", "3", "4" }; \
+    vector.resize(std::begin(tmp), std::end(tmp), [](const auto &x) { return std::stoul(x); }); \
     ASSERT_TRUE(std::is_sorted(vector.begin(), vector.end())); \
     ASSERT_EQ(vector.size(), 5); \
     ASSERT_EQ(vector[0], 1); \

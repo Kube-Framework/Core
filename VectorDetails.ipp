@@ -35,7 +35,7 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
         pos,
         count,
         [](const auto count, const auto out) {
-            std::uninitialized_default_construct_n(out, count);
+            std::uninitialized_value_construct_n(out, count);
         }
     );
 }
@@ -75,12 +75,12 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
     kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::insert(
         const Iterator pos, const InputIterator from, const InputIterator to, Map &&map) noexcept
 {
-    constexpr auto MapCopy = [](const InputIterator input, const Range count, const Iterator out, auto &map) {
+    static constexpr auto MapCopy = [](const InputIterator input, const Range count, const Iterator out, auto &map) {
         for (Range i { 0 }; i != count; ++i) {
             if constexpr (IsMoveIterator<InputIterator>::Value)
-                new (out[i]) Type(map(std::move(input[i])));
+                new (out + i) Type(map(std::move(input[i])));
             else
-                new (out[i]) Type(map(input[i]));
+                new (out + i) Type(map(input[i]));
         }
     };
 
@@ -180,7 +180,8 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
     requires std::constructible_from<Type>
 {
     resizeUninitialized(count);
-    std::uninitialized_value_construct_n(dataUnsafe(), count);
+    if (count) [[likely]]
+        std::uninitialized_value_construct_n(dataUnsafe(), count);
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
@@ -188,7 +189,8 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
     requires std::copy_constructible<Type>
 {
     resizeUninitialized(count);
-    std::uninitialized_fill_n(dataUnsafe(), count, value);
+    if (count) [[likely]]
+        std::uninitialized_fill_n(dataUnsafe(), count, value);
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
@@ -197,12 +199,14 @@ template<typename Initializer>
 inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::resize(const Range count, Initializer &&initializer) noexcept
 {
     resizeUninitialized(count);
-    auto ptr = beginUnsafe();
-    for (Range i = 0; i != count; ++i) {
-        if constexpr (std::is_invocable_r_v<Type, Initializer, Range>)
-            new (ptr + i) Type(initializer(i));
-        else
-            new (ptr + i) Type(initializer());
+    if (count) [[likely]] {
+        auto out = beginUnsafe();
+        for (Range i {}; i != count; ++i) {
+            if constexpr (std::is_invocable_r_v<Type, Initializer, Range>)
+                new (out + i) Type(initializer(i));
+            else
+                new (out + i) Type(initializer());
+        }
     }
 }
 
@@ -213,7 +217,8 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
     const auto count = static_cast<Range>(std::distance(from, to));
 
     resizeUninitialized(count);
-    std::uninitialized_copy(from, to, beginUnsafe());
+    if (count) [[likely]]
+        std::uninitialized_copy(from, to, beginUnsafe());
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
@@ -223,14 +228,14 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
     const auto count = static_cast<Range>(std::distance(from, to));
 
     resizeUninitialized(count);
-    auto begin = beginUnsafe();
-    while (from != to) {
-        if constexpr (IsMoveIterator<InputIterator>::Value)
-            new (begin) Type(map(std::move(*from)));
-        else
-            new (begin) Type(map(*from));
-        ++from;
-        ++begin;
+    if (count) [[likely]] {
+        auto out = beginUnsafe();
+        for (Range i {}; i != count; ++i) {
+            if constexpr (IsMoveIterator<InputIterator>::Value)
+                new (out + i) Type(map(std::move(from[i])));
+            else
+                new (out + i) Type(map(from[i]));
+        }
     }
 }
 

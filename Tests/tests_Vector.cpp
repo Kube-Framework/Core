@@ -164,16 +164,19 @@ TEST(Vector, Move) \
     const Vector<std::size_t __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(Answer3, AllocatorMode,  std::initializer_list<std::size_t>({ 1, 2, 3, 4, 0 })); \
     const Vector<std::size_t __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(Answer4, AllocatorMode,  std::initializer_list<std::size_t>({ 2, 3, 4, 0, 1 })); \
     vector = Original; \
+    ASSERT_EQ(vector, Original); \
     vector.move(3, 3, 0); \
+    ASSERT_EQ(vector, Original); \
+    vector.move(3, 4, 0); \
     ASSERT_EQ(vector, Answer1); \
     vector = Original; \
-    vector.move(3, 4, 0); \
+    vector.move(3, 5, 0); \
     ASSERT_EQ(vector, Answer2); \
     vector = Original; \
-    vector.move(0, 0, 4); \
+    vector.move(0, 1, 4); \
     ASSERT_EQ(vector, Answer3); \
     vector = Original; \
-    vector.move(0, 1, 4); \
+    vector.move(0, 2, 4); \
     ASSERT_EQ(vector, Answer4); \
 } \
  \
