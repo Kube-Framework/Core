@@ -417,6 +417,11 @@ public:
     [[nodiscard]] inline Core::IteratorRange<ConstIterator> toRange(void) const noexcept
         { return Core::IteratorRange<ConstIterator> { begin(), end() }; }
 
+
+    /** @brief Get the index of an iterator */
+    [[nodiscard]] inline Range indexOf(const ConstIterator pos) const noexcept
+        { return static_cast<Range>(std::distance(begin(), pos)); }
+
 protected:
     using Base::setSize;
     using Base::setData;
