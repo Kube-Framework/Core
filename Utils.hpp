@@ -171,10 +171,21 @@ namespace kF::Core
     struct IsMoveIterator<std::reverse_iterator<Iterator>> : public IsMoveIterator<Iterator>
     {};
 
-    static_assert(IsMoveIterator<std::move_iterator<void *>>::Value, "IsMoveIterator not working");
-    static_assert(IsMoveIterator<std::reverse_iterator<std::move_iterator<void *>>>::Value, "IsMoveIterator not working");
-    static_assert(!IsMoveIterator<std::reverse_iterator<void *>>::Value, "IsMoveIterator not working");
-    static_assert(!IsMoveIterator<void *>::Value, "IsMoveIterator not working");
+
+    namespace Internal
+    {
+        /** @brief Helper to know if a given type is dereferencable - Failure case */
+        template <typename>
+        std::false_type Dereferencable(unsigned long) noexcept;
+
+        /** @brief Helper to know if a given type is dereferencable - Success case */
+        template <typename Type>
+        auto Dereferencable(int) noexcept -> decltype(*std::declval<Type>(), std::true_type {});
+    }
+
+    /** @brief Helper to know if a given type is dereferencable */
+    template<typename Type>
+    constexpr bool IsDereferencable = decltype(Internal::Dereferencable<Type>(0))::value;
 
 
     /** @brief Align any offset to a specific alignment */

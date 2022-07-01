@@ -71,6 +71,9 @@ public:
     /** @brief Boolean check operator */
     [[nodiscard]] inline operator bool(void) const noexcept { return _ptr != nullptr; }
 
+    /** @brief Boolean check operator */
+    [[nodiscard]] inline operator Type*(void) const noexcept { return get(); }
+
 
     /** @brief Load atomic reference count */
     [[nodiscard]] inline std::uint32_t referenceCount(void) const noexcept { return _ptr->count.load(); }

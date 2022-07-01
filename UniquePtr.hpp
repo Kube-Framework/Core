@@ -59,6 +59,9 @@ public:
     /** @brief Boolean check operator */
     [[nodiscard]] inline operator bool(void) const noexcept { return _ptr != nullptr; }
 
+    /** @brief Boolean check operator */
+    [[nodiscard]] inline operator Type*(void) const noexcept { return get(); }
+
 
     /** @brief Mutable managed object getter */
     [[nodiscard]] inline Type *get(void) noexcept { return _ptr; }
