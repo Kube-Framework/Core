@@ -62,6 +62,33 @@ public:
         { return reinterpret_cast<As &>(cache); }
 
 
+    /** @brief Construct a volatile member function */
+    template<auto MemberFunction, typename ClassType>
+        requires Internal::FunctorMemberInvocable<MemberFunction, ClassType, Return, Args...>
+    [[nodiscard]] static inline Functor Make(ClassType * const instance) noexcept
+        { Functor func; func.prepare<MemberFunction>(instance); return func; }
+
+    /** @brief Construct a const member function */
+    template<auto MemberFunction, typename ClassType>
+        requires Internal::FunctorMemberInvocable<MemberFunction, const ClassType, Return, Args...>
+    [[nodiscard]] static inline Functor Make(const ClassType * const instance) noexcept
+        { Functor func; func.prepare<MemberFunction>(instance); return func; }
+
+    /** @brief Construct a free function */
+    template<auto Function>
+        requires Internal::FunctorInvocable<decltype(Function), Return, Args...>
+    [[nodiscard]] static inline Functor Make(void) noexcept
+        { Functor func; func.prepare<Function>(); return func; }
+
+    /** @brief Construct a pointer to functor using a custom deleter */
+    template<auto Deleter, typename ClassFunctor>
+        requires Internal::FunctorNoCacheRequirements<ClassFunctor, CacheSize>
+            && Internal::FunctorInvocable<ClassFunctor, Return, Args...>
+            && Internal::FunctorInvocable<decltype(Deleter), void, ClassFunctor *>
+    [[nodiscard]] static inline Functor Make(ClassFunctor * const functorPtr) noexcept
+        { Functor func; func.prepare<Deleter>(functorPtr); return func; }
+
+
     /** @brief Destructor */
     inline ~Functor(void) noexcept { release<false>(); }
 

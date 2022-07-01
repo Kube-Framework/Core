@@ -48,6 +48,25 @@ public:
         { return reinterpret_cast<As &>(cache); }
 
 
+    /** @brief Construct a volatile member function */
+    template<auto MemberFunction, typename ClassType>
+        requires Internal::TrivialFunctorMemberInvocable<MemberFunction, ClassType, Return, Args...>
+    [[nodiscard]] static inline TrivialFunctor Make(ClassType * const instance) noexcept
+        { TrivialFunctor func; func.prepare<MemberFunction>(instance); return func; }
+
+    /** @brief Construct a const member function */
+    template<auto MemberFunction, typename ClassType>
+        requires Internal::TrivialFunctorMemberInvocable<MemberFunction, const ClassType, Return, Args...>
+    [[nodiscard]] static inline TrivialFunctor Make(const ClassType * const instance) noexcept
+        { TrivialFunctor func; func.prepare<MemberFunction>(instance); return func; }
+
+    /** @brief Construct a free function */
+    template<auto Function>
+        requires Internal::TrivialFunctorInvocable<decltype(Function), Return, Args...>
+    [[nodiscard]] static inline TrivialFunctor Make(void) noexcept
+        { TrivialFunctor func; func.prepare<Function>(); return func; }
+
+
     /** @brief Destructor */
     inline ~TrivialFunctor(void) noexcept = default;
 
