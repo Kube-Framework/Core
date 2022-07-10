@@ -249,6 +249,19 @@ namespace kF::Core
     template<typename Type>
     [[nodiscard]] constexpr auto ToUnderlying(const Type value) noexcept
         { return static_cast<std::underlying_type_t<Type>>(value); }
+
+
+    /** @brief Guaranteed branchless compute (boolean condition) */
+    template<typename Type>
+        requires std::integral<Type> || std::floating_point<Type>
+    [[nodiscard]] constexpr auto BranchlessIf(const bool condition, const Type lhs, const Type rhs) noexcept
+        { return BranchlessIf(static_cast<Type>(condition), lhs, rhs); }
+
+    /** @brief Guaranteed branchless compute (type condition) */
+    template<typename Type>
+        requires std::integral<Type> || std::floating_point<Type>
+    [[nodiscard]] constexpr auto BranchlessIf(const Type condition, const Type lhs, const Type rhs) noexcept
+        { return condition * lhs - rhs * (condition - static_cast<Type>(1)); }
 }
 
 #include "Utils.ipp"
