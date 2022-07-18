@@ -37,9 +37,17 @@
 #define _TRIGGER_PARENTHESIS_(...) ,
 
 // Check if a variadic arguments of 32 or less parameters has a coma (one zero arguments)
-#define _HAS_COMMA(...) _ARG32(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
-#define _ARG32(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, ...) _32
-
+#define _HAS_COMMA(...) _ARG32(__VA_ARGS__, \
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 \
+)
+#define _ARG32( \
+     _0,  _1,  _2,  _3,  _4,  _5,  _6,  _7,  _8,  _9, _10, _11, _12, _13, _14, _15, \
+    _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, \
+    _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, \
+    _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, \
+    _64, ... \
+) _64
 
 // Helper to get the number of argument of variadic arguments that are inferior or equal to 32
 #define VA_ARGC(...) _VA_ARGC_BRANCH(IS_EMPTY(__VA_ARGS__), __VA_ARGS__)
@@ -47,8 +55,19 @@
 #define _VA_ARGC_BRANCH_0(...) _VA_ARGC(__VA_ARGS__, _VA_ARGC_RSEQ_N())
 #define _VA_ARGC_BRANCH_1(...) 0
 #define _VA_ARGC(...) _VA_ARGC_N(__VA_ARGS__)
-#define _VA_ARGC_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, N, ...) N
-#define _VA_ARGC_RSEQ_N() 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+#define _VA_ARGC_N( \
+     _1,  _2,  _3,  _4,  _5,  _6,  _7,  _8,  _9, _10, _11, _12, _13, _14, _15, _16, \
+    _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, \
+    _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, \
+    _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, _64, \
+    N, ... \
+) N
+#define _VA_ARGC_RSEQ_N() \
+    64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, \
+    48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, \
+    32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, \
+    16, 15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1, \
+    0
 
 
 // Concatenate a list of variadic elements (up to 32)
@@ -89,6 +108,38 @@
 #define _ADD_PREFIX_EACH_30(prefix, x, ...)         _CONCATENATE2(prefix, x) _ADD_PREFIX_EACH_29(prefix, __VA_ARGS__)
 #define _ADD_PREFIX_EACH_31(prefix, x, ...)         _CONCATENATE2(prefix, x) _ADD_PREFIX_EACH_30(prefix, __VA_ARGS__)
 #define _ADD_PREFIX_EACH_32(prefix, x, ...)         _CONCATENATE2(prefix, x) _ADD_PREFIX_EACH_31(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_33(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_32(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_34(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_33(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_35(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_34(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_36(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_35(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_37(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_36(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_38(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_37(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_39(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_38(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_40(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_39(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_41(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_40(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_42(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_41(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_43(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_42(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_44(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_43(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_45(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_44(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_46(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_45(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_47(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_46(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_48(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_47(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_49(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_48(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_50(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_49(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_51(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_50(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_52(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_51(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_53(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_52(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_54(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_53(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_55(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_54(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_56(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_55(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_57(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_56(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_58(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_57(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_59(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_58(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_60(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_59(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_61(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_60(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_62(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_61(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_63(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_62(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH_64(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH_63(prefix, __VA_ARGS__)
 
 // Concatenate a list of variadic elements, this second version may be used when called from ADD_PREFIX_EACH to prevent recursion (up to 32)
 #define ADD_PREFIX_EACH2(prefix, ...)               _ADD_PREFIX_EACH2(VA_ARGC(__VA_ARGS__), prefix, __VA_ARGS__)
@@ -128,3 +179,35 @@
 #define _ADD_PREFIX_EACH2_30(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_29(prefix, __VA_ARGS__)
 #define _ADD_PREFIX_EACH2_31(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_30(prefix, __VA_ARGS__)
 #define _ADD_PREFIX_EACH2_32(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_31(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_33(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_32(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_34(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_33(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_35(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_34(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_36(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_35(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_37(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_36(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_38(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_37(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_39(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_38(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_40(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_39(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_41(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_40(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_42(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_41(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_43(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_42(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_44(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_43(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_45(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_44(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_46(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_45(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_47(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_46(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_48(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_47(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_49(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_48(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_50(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_49(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_51(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_50(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_52(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_51(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_53(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_52(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_54(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_53(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_55(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_54(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_56(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_55(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_57(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_56(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_58(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_57(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_59(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_58(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_60(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_59(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_61(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_60(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_62(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_61(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_63(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_62(prefix, __VA_ARGS__)
+#define _ADD_PREFIX_EACH2_64(prefix, x, ...)        _CONCATENATE3(prefix, x) _ADD_PREFIX_EACH2_63(prefix, __VA_ARGS__)

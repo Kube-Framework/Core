@@ -152,6 +152,7 @@ public:
     }
 
 private:
+    // @todo make a single allocation removable dispatcher
     Vector<InternalFunctor, Allocator> _functors {};
     Vector<Handle, Allocator> _freeList {};
 };
