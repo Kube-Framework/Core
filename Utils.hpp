@@ -114,6 +114,9 @@ namespace kF::Core
     template<std::random_access_iterator Iterator>
     struct IteratorRange
     {
+        /** @brief Reverse iterator */
+        using ReverseIterator = std::reverse_iterator<Iterator>;
+
         /** @brief Underlying type */
         using Type = std::remove_cvref_t<decltype(*std::declval<Iterator>())>;
 
@@ -126,6 +129,10 @@ namespace kF::Core
         /** @brief Begin / End iterators */
         [[nodiscard]] inline Iterator begin(void) const noexcept { return from; }
         [[nodiscard]] inline Iterator end(void) const noexcept { return to; }
+
+        /** @brief Reverse Begin / End iterators */
+        [[nodiscard]] inline ReverseIterator rbegin(void) const noexcept { return std::make_reverse_iterator(to); }
+        [[nodiscard]] inline ReverseIterator rend(void) const noexcept { return std::make_reverse_iterator(from); }
 
         /** @brief Range size */
         template<std::integral Range = std::size_t>
