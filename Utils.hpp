@@ -263,7 +263,7 @@ namespace kF::Core
     template<typename Type>
         requires std::integral<Type> || std::floating_point<Type>
     [[nodiscard]] constexpr Type BranchlessIf(const bool condition, const Type lhs, const Type rhs) noexcept
-        { return BranchlessIf(static_cast<Type>(condition), lhs, rhs); }
+        { return static_cast<Type>(condition) * lhs - rhs * (condition - static_cast<Type>(1)); }
 
     /** @brief Guaranteed branchless compute (type condition) */
     template<typename Type>
