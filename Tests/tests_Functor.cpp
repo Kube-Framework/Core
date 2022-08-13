@@ -116,8 +116,7 @@ TEST(Functor, NonTrivialClassCustomDeleterFunctorBasics)
     func.prepare<[](Core::Functor<int(int)> *ptr) { delete ptr; }>(
         new Core::Functor<int(int)>([y = std::make_unique<int>(2)](const int x) {
             return x * *y;
-            }
-        )
+        })
     );
     ASSERT_TRUE(func);
     ASSERT_EQ(func(4), 8);
@@ -136,4 +135,12 @@ TEST(Functor, SneakyErrors)
     ASSERT_FALSE(trigger);
     func();
     ASSERT_TRUE(trigger);
+}
+
+TEST(Functor, VariableArguments)
+{
+    ASSERT_EQ((Core::Functor<int(int, int)>([] { return 3; })(1, 2)), 3);
+    ASSERT_EQ((Core::Functor<int(int, int)>([](int x) { return x; })(1, 2)), 1);
+    ASSERT_EQ((Core::Functor<int(int, int)>([](int, int y) { return y; })(1, 2)), 2);
+    ASSERT_EQ((Core::Functor<int(int, int)>([](int x, int y) { return x + y; })(1, 2)), 3);
 }

@@ -6,6 +6,9 @@
 #pragma once
 
 #include <cstddef>
+#include <functional>
+
+#include "FunctionDecomposer.hpp"
 
 namespace kF::Core
 {
@@ -41,4 +44,52 @@ namespace kF::Core
     /** @brief Concept of a dispatcher functor */
     template<typename ObjectType>
     concept FunctorRequirements = FunctorTypeDetector<ObjectType>::Type != FunctorType::Error;
+
+
+    namespace Internal
+    {
+        /** @brief Invoke a function with a variable list of arguments */
+        template <std::size_t ...Sequence, typename Function, typename ArgsTuple>
+            requires std::is_invocable_v<Function, std::tuple_element_t<Sequence, ArgsTuple>...>
+        constexpr decltype(auto) InvokeImpl(std::index_sequence<Sequence...>, Function &&function, ArgsTuple &&args) noexcept
+        {
+            return std::invoke(std::forward<Function>(function), std::forward<std::tuple_element_t<Sequence, ArgsTuple>>(std::get<Sequence>(args))...);
+        }
+
+        /** @brief Remove arguments one by one to find a matching combination */
+        template <std::size_t... Sequence, typename Function, typename ArgsTuple>
+            requires (!std::is_invocable_v<Function, std::tuple_element_t<Sequence, ArgsTuple>...>)
+        constexpr decltype(auto) InvokeImpl(std::index_sequence<Sequence...>, Function &&function, ArgsTuple &&args) noexcept
+        {
+            static_assert(sizeof...(Sequence) > 0, "Core::Invoke: Function is not invocable with arguments supplied");
+            if constexpr (sizeof...(Sequence) > 0) {
+                return Internal::InvokeImpl(
+                    std::make_index_sequence<sizeof...(Sequence) - 1>(),
+                    std::forward<Function>(function),
+                    std::move(args)
+                );
+            }
+        }
+    }
+
+    /** @brief Invoke a function with a variable list of arguments
+     *  @note The list of runtime arguments may be larger than function's argument list, they are ignored */
+    template <typename Function, typename ...Args>
+    constexpr decltype(auto) Invoke(Function &&function, Args &&...args) noexcept
+    {
+        return Internal::InvokeImpl(
+            std::make_index_sequence<sizeof...(Args)>(),
+            std::forward<Function>(function),
+            std::forward_as_tuple(std::forward<Args>(args)...)
+        );
+    }
+
+    /** @brief Ensure that a given functor / function is callable */
+    template<typename Functor, typename Return, typename ...Args>
+    concept InvocableRequirements = std::is_invocable_r_v<Return, decltype(Invoke<Functor, Args...>), Functor, Args...>;
+
+    /** @brief Ensure that a given member function is callable */
+    template<auto Member, typename ClassType, typename Return, typename ...Args>
+    concept MemberInvocableRequirements =
+            std::is_invocable_r_v<Return, decltype(Invoke<decltype(Member), ClassType, Args...>), decltype(Member), ClassType, Args...>;
 }

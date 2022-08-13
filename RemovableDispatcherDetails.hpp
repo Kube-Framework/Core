@@ -65,7 +65,7 @@ public:
 
     /** @brief Add a member function to dispatch list */
     template<auto MemberFunction, typename ClassType>
-    inline Handle add(ClassType * const instance) noexcept
+    inline Handle add(ClassType &&instance) noexcept
     {
         InternalFunctor *functor;
         Handle index;
@@ -77,25 +77,7 @@ public:
             index = _functors.size();
             functor = &_functors.push();
         }
-        functor->template prepare<MemberFunction>(instance);
-        return index + 1;
-    }
-
-    /** @brief Add a const member function to dispatch list */
-    template<auto MemberFunction, typename ClassType>
-    inline Handle add(const ClassType * const instance) noexcept
-    {
-        InternalFunctor *functor;
-        Handle index;
-        if (!_freeList.empty()) {
-            index = _freeList.back();
-            _freeList.pop();
-            functor = &_functors[index];
-        } else {
-            index = _functors.size();
-            functor = &_functors.push();
-        }
-        functor->template prepare<MemberFunction>(instance);
+        functor->template prepare<MemberFunction>(std::forward<ClassType>(instance));
         return index + 1;
     }
 

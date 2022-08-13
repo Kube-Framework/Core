@@ -77,3 +77,11 @@ TEST(TrivialFunctor, TrivialClassFunctorBasics)
     ASSERT_EQ(func2(4), 8);
     ASSERT_EQ(func2(8), 16);
 }
+
+TEST(TrivialFunctor, VariableArguments)
+{
+    ASSERT_EQ((Core::TrivialFunctor<int(int, int)>([] { return 3; })(1, 2)), 3);
+    ASSERT_EQ((Core::TrivialFunctor<int(int, int)>([](int x) { return x; })(1, 2)), 1);
+    ASSERT_EQ((Core::TrivialFunctor<int(int, int)>([](int, int y) { return y; })(1, 2)), 2);
+    ASSERT_EQ((Core::TrivialFunctor<int(int, int)>([](int x, int y) { return x + y; })(1, 2)), 3);
+}

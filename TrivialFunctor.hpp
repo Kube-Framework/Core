@@ -7,7 +7,7 @@
 
 #include <array>
 
-#include "Utils.hpp"
+#include "FunctorUtils.hpp"
 
 namespace kF::Core
 {
@@ -19,14 +19,6 @@ namespace kF::Core
         /** @brief Ensure that a given functor met the trivial requirements of TrivialFunctor and fit into its cache */
         template<typename Functor, std::size_t CacheSize>
         concept TrivialFunctorCacheRequirements = std::is_trivially_copyable_v<Functor> && sizeof(Functor) <= CacheSize;
-
-        /** @brief Ensure that a given functor / function is callable */
-        template<typename Functor, typename Return, typename ...Args>
-        concept TrivialFunctorInvocable = std::is_invocable_r_v<Return, Functor, Args...>;
-
-        /** @brief Ensure that a given member function is callable */
-        template<auto Member, typename ClassType, typename Return, typename ...Args>
-        concept TrivialFunctorMemberInvocable = std::is_invocable_r_v<Return, decltype(Member), ClassType &, Args...>;
     };
 }
 
@@ -50,19 +42,19 @@ public:
 
     /** @brief Construct a volatile member function */
     template<auto MemberFunction, typename ClassType>
-        requires Internal::TrivialFunctorMemberInvocable<MemberFunction, ClassType, Return, Args...>
+        requires MemberInvocableRequirements<MemberFunction, ClassType, Return, Args...>
     [[nodiscard]] static inline TrivialFunctor Make(ClassType * const instance) noexcept
         { TrivialFunctor func; func.prepare<MemberFunction>(instance); return func; }
 
     /** @brief Construct a const member function */
     template<auto MemberFunction, typename ClassType>
-        requires Internal::TrivialFunctorMemberInvocable<MemberFunction, const ClassType, Return, Args...>
+        requires MemberInvocableRequirements<MemberFunction, const ClassType, Return, Args...>
     [[nodiscard]] static inline TrivialFunctor Make(const ClassType * const instance) noexcept
         { TrivialFunctor func; func.prepare<MemberFunction>(instance); return func; }
 
     /** @brief Construct a free function */
     template<auto Function>
-        requires Internal::TrivialFunctorInvocable<decltype(Function), Return, Args...>
+        requires InvocableRequirements<decltype(Function), Return, Args...>
     [[nodiscard]] static inline TrivialFunctor Make(void) noexcept
         { TrivialFunctor func; func.prepare<Function>(); return func; }
 
@@ -82,7 +74,7 @@ public:
     /** @brief Prepare constructor, limited to runtime functors due to template constructor restrictions */
     template<typename ClassFunctor>
         requires (!std::is_same_v<TrivialFunctor, std::remove_cvref_t<ClassFunctor>>
-            && Internal::TrivialFunctorInvocable<ClassFunctor, Return, Args...>)
+            && InvocableRequirements<ClassFunctor, Return, Args...>)
     inline TrivialFunctor(ClassFunctor &&functor) noexcept { prepare(std::forward<ClassFunctor>(functor)); }
 
 
@@ -105,44 +97,38 @@ public:
     template<typename ClassFunctor>
         requires (!std::is_same_v<TrivialFunctor, std::remove_cvref_t<ClassFunctor>>
             && Internal::TrivialFunctorCacheRequirements<ClassFunctor, CacheSize>
-            && Internal::TrivialFunctorInvocable<ClassFunctor, Return, Args...>)
+            && InvocableRequirements<ClassFunctor, Return, Args...>)
     inline void prepare(ClassFunctor &&functor) noexcept
     {
         _invoke = [](Cache &cache, Args ...args) -> Return {
-            return CacheAs<ClassFunctor>(cache)(std::forward<Args>(args)...);
+            return Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
         };
         new (&_cache) ClassFunctor(std::forward<ClassFunctor>(functor));
     }
 
-    /** @brief Prepare a volatile member function */
+    /** @brief Prepare a member function */
     template<auto MemberFunction, typename ClassType>
-        requires Internal::TrivialFunctorMemberInvocable<MemberFunction, ClassType, Return, Args...>
-    inline void prepare(ClassType * const instance) noexcept
+        requires MemberInvocableRequirements<MemberFunction, ClassType, Return, Args...>
+    inline void prepare(ClassType &&instance) noexcept
     {
-        _invoke = [](Cache &cache, Args ...args) {
-            return (CacheAs<ClassType *>(cache)->*MemberFunction)(std::forward<Args>(args)...);
-        };
-        new (&_cache) ClassType *(instance);
-    }
+        using MemberClass = std::remove_reference_t<std::remove_pointer_t<ClassType>>;
 
-    /** @brief Prepare a const member function */
-    template<auto MemberFunction, typename ClassType>
-        requires Internal::TrivialFunctorMemberInvocable<MemberFunction, const ClassType, Return, Args...>
-    inline void prepare(const ClassType * const instance) noexcept
-    {
         _invoke = [](Cache &cache, Args ...args) {
-            return (CacheAs<const ClassType *>(cache)->*MemberFunction)(std::forward<Args>(args)...);
+            return Invoke(MemberFunction, CacheAs<MemberClass *>(cache), std::forward<Args>(args)...);
         };
-        new (&_cache) const ClassType *(instance);
+        if constexpr (std::is_pointer_v<ClassType>)
+            new (&_cache) MemberClass *(instance);
+        else
+            new (&_cache) MemberClass *(&instance);
     }
 
     /** @brief Prepare a free function */
     template<auto Function>
-        requires Internal::TrivialFunctorInvocable<decltype(Function), Return, Args...>
+        requires InvocableRequirements<decltype(Function), Return, Args...>
     inline void prepare(void) noexcept
     {
         _invoke = [](Cache &, Args ...args) -> Return {
-            return (*Function)(std::forward<Args>(args)...);
+            return Invoke(Function, std::forward<Args>(args)...);
         };
     }
 

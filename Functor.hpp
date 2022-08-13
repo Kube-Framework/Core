@@ -7,7 +7,7 @@
 
 #include <cstring>
 
-#include "Utils.hpp"
+#include "FunctorUtils.hpp"
 
 namespace kF::Core
 {
@@ -23,14 +23,6 @@ namespace kF::Core
         /** @brief Ensure that a given functor DOES NOT met the trivial requirements of Functor */
         template<typename Functor, std::size_t CacheSize>
         concept FunctorNoCacheRequirements = (std::is_trivially_copyable_v<Functor> ? sizeof(Functor) > CacheSize : true);
-
-        /** @brief Ensure that a given functor / function is callable */
-        template<typename Functor, typename Return, typename ...Args>
-        concept FunctorInvocable = std::is_invocable_r_v<Return, Functor, Args...>;
-
-        /** @brief Ensure that a given member function is callable */
-        template<auto Member, typename ClassType, typename Return, typename ...Args>
-        concept FunctorMemberInvocable = std::is_invocable_r_v<Return, decltype(Member), ClassType &, Args...>;
     }
 }
 
@@ -64,27 +56,27 @@ public:
 
     /** @brief Construct a volatile member function */
     template<auto MemberFunction, typename ClassType>
-        requires Internal::FunctorMemberInvocable<MemberFunction, ClassType, Return, Args...>
+        requires MemberInvocableRequirements<MemberFunction, ClassType, Return, Args...>
     [[nodiscard]] static inline Functor Make(ClassType * const instance) noexcept
         { Functor func; func.prepare<MemberFunction>(instance); return func; }
 
     /** @brief Construct a const member function */
     template<auto MemberFunction, typename ClassType>
-        requires Internal::FunctorMemberInvocable<MemberFunction, const ClassType, Return, Args...>
+        requires MemberInvocableRequirements<MemberFunction, const ClassType, Return, Args...>
     [[nodiscard]] static inline Functor Make(const ClassType * const instance) noexcept
         { Functor func; func.prepare<MemberFunction>(instance); return func; }
 
     /** @brief Construct a free function */
     template<auto Function>
-        requires Internal::FunctorInvocable<decltype(Function), Return, Args...>
+        requires InvocableRequirements<decltype(Function), Return, Args...>
     [[nodiscard]] static inline Functor Make(void) noexcept
         { Functor func; func.prepare<Function>(); return func; }
 
     /** @brief Construct a pointer to functor using a custom deleter */
     template<auto Deleter, typename ClassFunctor>
         requires Internal::FunctorNoCacheRequirements<ClassFunctor, CacheSize>
-            && Internal::FunctorInvocable<ClassFunctor, Return, Args...>
-            && Internal::FunctorInvocable<decltype(Deleter), void, ClassFunctor *>
+            && InvocableRequirements<ClassFunctor, Return, Args...>
+            && InvocableRequirements<decltype(Deleter), void, ClassFunctor *>
     [[nodiscard]] static inline Functor Make(ClassFunctor * const functorPtr) noexcept
         { Functor func; func.prepare<Deleter>(functorPtr); return func; }
 
@@ -106,7 +98,7 @@ public:
     /** @brief Prepare constructor, limited to runtime functors due to template constructor restrictions */
     template<typename ClassFunctor>
         requires (!std::is_same_v<Functor, std::remove_cvref_t<ClassFunctor>>
-            && Internal::FunctorInvocable<ClassFunctor, Return, Args...>)
+            && InvocableRequirements<ClassFunctor, Return, Args...>)
     inline Functor(ClassFunctor &&functor) noexcept
         { prepare(std::forward<ClassFunctor>(functor)); }
 
@@ -142,17 +134,14 @@ public:
     template<typename ClassFunctor>
         requires (!std::is_same_v<Functor, std::remove_cvref_t<ClassFunctor>>
             && Internal::FunctorCacheRequirements<ClassFunctor, CacheSize>
-            && Internal::FunctorInvocable<ClassFunctor, Return, Args...>)
+            && InvocableRequirements<ClassFunctor, Return, Args...>)
     inline void prepare(ClassFunctor &&functor) noexcept
     {
         using FlatClassFunctor = std::remove_cvref_t<ClassFunctor>;
 
         release<false>();
         _invoke = [](Cache &cache, Args ...args) -> Return {
-            if constexpr (std::is_same_v<Return, void>)
-                CacheAs<ClassFunctor>(cache)(std::forward<Args>(args)...);
-            else
-                return CacheAs<ClassFunctor>(cache)(std::forward<Args>(args)...);
+            return Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
         };
         _destruct = nullptr;
         new (&_cache) FlatClassFunctor(std::forward<ClassFunctor>(functor));
@@ -162,7 +151,7 @@ public:
     template<typename ClassFunctor>
         requires (!std::is_same_v<Functor, std::remove_cvref_t<ClassFunctor>>
             && Internal::FunctorNoCacheRequirements<ClassFunctor, CacheSize>
-            && Internal::FunctorInvocable<ClassFunctor, Return, Args...>)
+            && InvocableRequirements<ClassFunctor, Return, Args...>)
     inline void prepare(ClassFunctor &&functor) noexcept
     {
         using FlatClassFunctor = std::remove_cvref_t<ClassFunctor>;
@@ -174,10 +163,7 @@ public:
         runtime.ptr = Allocator::Allocate(sizeof(FlatClassFunctor), alignof(FlatClassFunctor));
         new (runtime.ptr) FlatClassFunctor(std::forward<FlatClassFunctor>(functor));
         _invoke = [](Cache &cache, Args ...args) -> Return {
-            if constexpr (std::is_same_v<Return, void>)
-                (*reinterpret_cast<ClassFunctorPtr &>(CacheAs<RuntimeAllocation>(cache).ptr))(std::forward<Args>(args)...);
-            else
-                return (*reinterpret_cast<ClassFunctorPtr &>(CacheAs<RuntimeAllocation>(cache).ptr))(std::forward<Args>(args)...);
+            return Invoke(*reinterpret_cast<ClassFunctorPtr &>(CacheAs<RuntimeAllocation>(cache).ptr), std::forward<Args>(args)...);
         };
         _destruct = [](Cache &cache) {
             auto &runtime = CacheAs<RuntimeAllocation>(cache);
@@ -186,49 +172,32 @@ public:
         };
     }
 
-    /** @brief Prepare a volatile member function */
+    /** @brief Prepare a member function */
     template<auto MemberFunction, typename ClassType>
-        requires Internal::FunctorMemberInvocable<MemberFunction, ClassType, Return, Args...>
-    inline void prepare(ClassType * const instance) noexcept
+        requires MemberInvocableRequirements<MemberFunction, ClassType, Return, Args...>
+    inline void prepare(ClassType &&instance) noexcept
     {
-        release<false>();
-        _invoke = [](Cache &cache, Args ...args) {
-            if constexpr (std::is_same_v<Return, void>)
-                (CacheAs<ClassType *>(cache)->*MemberFunction)(std::forward<Args>(args)...);
-            else
-                return (CacheAs<ClassType *>(cache)->*MemberFunction)(std::forward<Args>(args)...);
-        };
-        _destruct = nullptr;
-        new (&_cache) ClassType *(instance);
-    }
+        using MemberClass = std::remove_reference_t<std::remove_pointer_t<ClassType>>;
 
-    /** @brief Prepare a const member function */
-    template<auto MemberFunction, typename ClassType>
-        requires Internal::FunctorMemberInvocable<MemberFunction, const ClassType, Return, Args...>
-    inline void prepare(const ClassType * const instance) noexcept
-    {
         release<false>();
         _invoke = [](Cache &cache, Args ...args) {
-            if constexpr (std::is_same_v<Return, void>)
-                (CacheAs<const ClassType *>(cache)->*MemberFunction)(std::forward<Args>(args)...);
-            else
-                return (CacheAs<const ClassType *>(cache)->*MemberFunction)(std::forward<Args>(args)...);
+            return Invoke(MemberFunction, CacheAs<MemberClass *>(cache), std::forward<Args>(args)...);
         };
         _destruct = nullptr;
-        new (&_cache) const ClassType *(instance);
+        if constexpr (std::is_pointer_v<ClassType>)
+            new (&_cache) MemberClass *(instance);
+        else
+            new (&_cache) MemberClass *(&instance);
     }
 
     /** @brief Prepare a free function */
     template<auto Function>
-        requires Internal::FunctorInvocable<decltype(Function), Return, Args...>
+        requires InvocableRequirements<decltype(Function), Return, Args...>
     inline void prepare(void) noexcept
     {
         release<false>();
         _invoke = [](Cache &, Args ...args) -> Return {
-            if constexpr (std::is_same_v<Return, void>)
-                return (*Function)(std::forward<Args>(args)...);
-            else
-                return (*Function)(std::forward<Args>(args)...);
+            return Invoke(Function, std::forward<Args>(args)...);
         };
         _destruct = nullptr;
     }
@@ -236,8 +205,8 @@ public:
     /** @brief Prepare a pointer to functor using a custom deleter */
     template<auto Deleter, typename ClassFunctor>
         requires Internal::FunctorNoCacheRequirements<ClassFunctor, CacheSize>
-            && Internal::FunctorInvocable<ClassFunctor, Return, Args...>
-            && Internal::FunctorInvocable<decltype(Deleter), void, ClassFunctor *>
+            && InvocableRequirements<ClassFunctor, Return, Args...>
+            && InvocableRequirements<decltype(Deleter), void, ClassFunctor *>
     inline void prepare(ClassFunctor * const functorPtr) noexcept
     {
         using ClassFunctorPtr = ClassFunctor *;
@@ -247,10 +216,7 @@ public:
         release<false>();
         runtime.ptr = functorPtr;
         _invoke = [](Cache &cache, Args ...args) -> Return {
-            if constexpr (std::is_same_v<Return, void>)
-                (*reinterpret_cast<ClassFunctorPtr &>(CacheAs<RuntimeAllocation>(cache).ptr))(std::forward<Args>(args)...);
-            else
-                return (*reinterpret_cast<ClassFunctorPtr &>(CacheAs<RuntimeAllocation>(cache).ptr))(std::forward<Args>(args)...);
+            return Invoke(*reinterpret_cast<ClassFunctorPtr &>(CacheAs<RuntimeAllocation>(cache).ptr), std::forward<Args>(args)...);
         };
         _destruct = [](Cache &cache) {
             auto &runtime = CacheAs<RuntimeAllocation>(cache);

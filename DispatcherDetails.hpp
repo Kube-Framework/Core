@@ -47,11 +47,7 @@ public:
 
     /** @brief Add a member function to dispatch list */
     template<auto MemberFunction, typename ClassType>
-    inline void add(ClassType * const instance) noexcept { _functors.push().template prepare<MemberFunction>(instance); }
-
-    /** @brief Add a const member function to dispatch list */
-    template<auto MemberFunction, typename ClassType>
-    inline void add(const ClassType * const instance) noexcept { _functors.push().template prepare<MemberFunction>(instance); }
+    inline void add(ClassType &&instance) noexcept { _functors.push().template prepare<MemberFunction>(std::forward<ClassType>(instance)); }
 
     /** @brief Add a free function to dispatch list */
     template<auto FreeFunction>

@@ -9,10 +9,10 @@
 
 using namespace kF;
 
-static_assert(IsMoveIterator<std::move_iterator<int *>>::Value, "IsMoveIterator not working");
-static_assert(IsMoveIterator<std::reverse_iterator<std::move_iterator<int *>>>::Value, "IsMoveIterator not working");
-static_assert(!IsMoveIterator<std::reverse_iterator<int *>>::Value, "IsMoveIterator not working");
-static_assert(!IsMoveIterator<int *>::Value, "IsMoveIterator not working");
+static_assert(Core::IsMoveIterator<std::move_iterator<int *>>::Value, "IsMoveIterator not working");
+static_assert(Core::IsMoveIterator<std::reverse_iterator<std::move_iterator<int *>>>::Value, "IsMoveIterator not working");
+static_assert(!Core::IsMoveIterator<std::reverse_iterator<int *>>::Value, "IsMoveIterator not working");
+static_assert(!Core::IsMoveIterator<int *>::Value, "IsMoveIterator not working");
 
 
 enum class Flag : std::uint32_t
