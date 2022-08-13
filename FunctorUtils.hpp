@@ -58,17 +58,14 @@ namespace kF::Core
 
         /** @brief Remove arguments one by one to find a matching combination */
         template <std::size_t... Sequence, typename Function, typename ArgsTuple>
-            requires (!std::is_invocable_v<Function, std::tuple_element_t<Sequence, ArgsTuple>...>)
+            requires (!std::is_invocable_v<Function, std::tuple_element_t<Sequence, ArgsTuple>...> && sizeof...(Sequence) > 0)
         constexpr decltype(auto) InvokeImpl(std::index_sequence<Sequence...>, Function &&function, ArgsTuple &&args) noexcept
         {
-            static_assert(sizeof...(Sequence) > 0, "Core::Invoke: Function is not invocable with arguments supplied");
-            if constexpr (sizeof...(Sequence) > 0) {
-                return Internal::InvokeImpl(
-                    std::make_index_sequence<sizeof...(Sequence) - 1>(),
-                    std::forward<Function>(function),
-                    std::move(args)
-                );
-            }
+            return Internal::InvokeImpl(
+                std::make_index_sequence<sizeof...(Sequence) - 1>(),
+                std::forward<Function>(function),
+                std::move(args)
+            );
         }
     }
 

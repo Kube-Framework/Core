@@ -38,6 +38,9 @@ public:
     using OpaqueInvoke = Return(*)(Cache &cache, Args...args);
     using OpaqueDestructor = void(*)(Cache &cache);
 
+    /** @brief Functor return type */
+    using ReturnType = Return;
+
     /** @brief Structure describing a runtime allocation inside the functor */
     struct alignas_eighth_cacheline RuntimeAllocation
     {
@@ -54,31 +57,17 @@ public:
         { return reinterpret_cast<As &>(cache); }
 
 
-    /** @brief Construct a volatile member function */
+    /** @brief Construct a member function */
     template<auto MemberFunction, typename ClassType>
         requires MemberInvocableRequirements<MemberFunction, ClassType, Return, Args...>
-    [[nodiscard]] static inline Functor Make(ClassType * const instance) noexcept
-        { Functor func; func.prepare<MemberFunction>(instance); return func; }
-
-    /** @brief Construct a const member function */
-    template<auto MemberFunction, typename ClassType>
-        requires MemberInvocableRequirements<MemberFunction, const ClassType, Return, Args...>
-    [[nodiscard]] static inline Functor Make(const ClassType * const instance) noexcept
-        { Functor func; func.prepare<MemberFunction>(instance); return func; }
+    [[nodiscard]] static inline Functor Make(ClassType &&instance) noexcept
+        { Functor func; func.prepare<MemberFunction>(std::forward<ClassType>(instance)); return func; }
 
     /** @brief Construct a free function */
     template<auto Function>
         requires InvocableRequirements<decltype(Function), Return, Args...>
     [[nodiscard]] static inline Functor Make(void) noexcept
         { Functor func; func.prepare<Function>(); return func; }
-
-    /** @brief Construct a pointer to functor using a custom deleter */
-    template<auto Deleter, typename ClassFunctor>
-        requires Internal::FunctorNoCacheRequirements<ClassFunctor, CacheSize>
-            && InvocableRequirements<ClassFunctor, Return, Args...>
-            && InvocableRequirements<decltype(Deleter), void, ClassFunctor *>
-    [[nodiscard]] static inline Functor Make(ClassFunctor * const functorPtr) noexcept
-        { Functor func; func.prepare<Deleter>(functorPtr); return func; }
 
 
     /** @brief Destructor */
@@ -141,7 +130,10 @@ public:
 
         release<false>();
         _invoke = [](Cache &cache, Args ...args) -> Return {
-            return Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
+            if constexpr (std::is_same_v<Return, void>)
+                Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
+            else
+                return Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
         };
         _destruct = nullptr;
         new (&_cache) FlatClassFunctor(std::forward<ClassFunctor>(functor));
@@ -180,7 +172,7 @@ public:
         using MemberClass = std::remove_reference_t<std::remove_pointer_t<ClassType>>;
 
         release<false>();
-        _invoke = [](Cache &cache, Args ...args) {
+        _invoke = [](Cache &cache, Args ...args) -> Return {
             return Invoke(MemberFunction, CacheAs<MemberClass *>(cache), std::forward<Args>(args)...);
         };
         _destruct = nullptr;
@@ -200,28 +192,6 @@ public:
             return Invoke(Function, std::forward<Args>(args)...);
         };
         _destruct = nullptr;
-    }
-
-    /** @brief Prepare a pointer to functor using a custom deleter */
-    template<auto Deleter, typename ClassFunctor>
-        requires Internal::FunctorNoCacheRequirements<ClassFunctor, CacheSize>
-            && InvocableRequirements<ClassFunctor, Return, Args...>
-            && InvocableRequirements<decltype(Deleter), void, ClassFunctor *>
-    inline void prepare(ClassFunctor * const functorPtr) noexcept
-    {
-        using ClassFunctorPtr = ClassFunctor *;
-
-        auto &runtime = CacheAs<RuntimeAllocation>(_cache);
-
-        release<false>();
-        runtime.ptr = functorPtr;
-        _invoke = [](Cache &cache, Args ...args) -> Return {
-            return Invoke(*reinterpret_cast<ClassFunctorPtr &>(CacheAs<RuntimeAllocation>(cache).ptr), std::forward<Args>(args)...);
-        };
-        _destruct = [](Cache &cache) {
-            auto &runtime = CacheAs<RuntimeAllocation>(cache);
-            Deleter(reinterpret_cast<ClassFunctorPtr>(runtime.ptr));
-        };
     }
 
     /** @brief Invoke internal functor */

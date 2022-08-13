@@ -40,17 +40,11 @@ public:
         { return reinterpret_cast<As &>(cache); }
 
 
-    /** @brief Construct a volatile member function */
+    /** @brief Construct a member function */
     template<auto MemberFunction, typename ClassType>
         requires MemberInvocableRequirements<MemberFunction, ClassType, Return, Args...>
-    [[nodiscard]] static inline TrivialFunctor Make(ClassType * const instance) noexcept
-        { TrivialFunctor func; func.prepare<MemberFunction>(instance); return func; }
-
-    /** @brief Construct a const member function */
-    template<auto MemberFunction, typename ClassType>
-        requires MemberInvocableRequirements<MemberFunction, const ClassType, Return, Args...>
-    [[nodiscard]] static inline TrivialFunctor Make(const ClassType * const instance) noexcept
-        { TrivialFunctor func; func.prepare<MemberFunction>(instance); return func; }
+    [[nodiscard]] static inline TrivialFunctor Make(ClassType &&instance) noexcept
+        { TrivialFunctor func; func.prepare<MemberFunction>(std::forward<ClassType>(instance)); return func; }
 
     /** @brief Construct a free function */
     template<auto Function>
@@ -101,7 +95,10 @@ public:
     inline void prepare(ClassFunctor &&functor) noexcept
     {
         _invoke = [](Cache &cache, Args ...args) -> Return {
-            return Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
+            if constexpr (std::is_same_v<Return, void>)
+                Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
+            else
+                return Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
         };
         new (&_cache) ClassFunctor(std::forward<ClassFunctor>(functor));
     }
@@ -113,7 +110,7 @@ public:
     {
         using MemberClass = std::remove_reference_t<std::remove_pointer_t<ClassType>>;
 
-        _invoke = [](Cache &cache, Args ...args) {
+        _invoke = [](Cache &cache, Args ...args) -> Return {
             return Invoke(MemberFunction, CacheAs<MemberClass *>(cache), std::forward<Args>(args)...);
         };
         if constexpr (std::is_pointer_v<ClassType>)
