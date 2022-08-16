@@ -11,6 +11,7 @@
 namespace kF::Core
 {
     /** @brief Specialization of dispatcher with 'TrivialFunctor' */
-    template<typename Signature, StaticAllocatorRequirements Allocator = DefaultStaticAllocator, std::size_t CacheSize = CacheLineEighthSize>
-    using TrivialDispatcher = DispatcherDetails<Signature, TrivialFunctor<Signature, CacheSize>, Allocator, CacheSize>;
+    template<typename Signature, StaticAllocatorRequirements Allocator = DefaultStaticAllocator,
+            std::size_t DesiredSize = CacheLineQuarterSize>
+    using TrivialDispatcher = DispatcherDetails<Signature, TrivialFunctor<Signature, DesiredSize>, Allocator>;
 }

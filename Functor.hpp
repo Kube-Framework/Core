@@ -11,7 +11,8 @@
 
 namespace kF::Core
 {
-    template<typename Signature, StaticAllocatorRequirements Allocator = DefaultStaticAllocator, std::size_t CacheSize = CacheLineQuarterSize>
+    template<typename Signature, StaticAllocatorRequirements Allocator = DefaultStaticAllocator,
+            std::size_t DesiredSize = CacheLineHalfSize>
     class Functor;
 
     namespace Internal
@@ -26,11 +27,19 @@ namespace kF::Core
     }
 }
 
-/** @brief General opaque functor that can optimize trivial types that fit 'CacheSize' */
-template<typename Return, typename ...Args, kF::Core::StaticAllocatorRequirements Allocator, std::size_t CacheSize>
-class kF::Core::Functor<Return(Args...), Allocator, CacheSize>
+/** @brief General opaque functor that can optimize trivial types that fit 'DesiredSize' */
+template<typename Return, typename ...Args, kF::Core::StaticAllocatorRequirements Allocator, std::size_t DesiredSize>
+class kF::Core::Functor<Return(Args...), Allocator, DesiredSize>
 {
 public:
+    static_assert(
+        DesiredSize >= Core::CacheLineEighthSize * 3 && !(Core::CacheLineEighthSize % 8),
+        "Functor's DesiredSize must be at least 24 bytes sized and 8 byte aligned"
+    );
+
+    /** @brief Size of the optimized cache */
+    static constexpr auto CacheSize = DesiredSize - Core::CacheLineQuarterSize;
+
     /** @brief Byte cache */
     using Cache = std::byte[CacheSize];
 
@@ -129,7 +138,7 @@ public:
         using FlatClassFunctor = std::remove_cvref_t<ClassFunctor>;
 
         release<false>();
-        _invoke = [](Cache &cache, Args ...args) -> Return {
+        _invoke = [](Cache &cache, Args ...args) noexcept -> Return {
             if constexpr (std::is_same_v<Return, void>)
                 Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
             else
@@ -154,7 +163,7 @@ public:
         release<false>();
         runtime.ptr = Allocator::Allocate(sizeof(FlatClassFunctor), alignof(FlatClassFunctor));
         new (runtime.ptr) FlatClassFunctor(std::forward<FlatClassFunctor>(functor));
-        _invoke = [](Cache &cache, Args ...args) -> Return {
+        _invoke = [](Cache &cache, Args ...args) noexcept -> Return {
             return Invoke(*reinterpret_cast<ClassFunctorPtr &>(CacheAs<RuntimeAllocation>(cache).ptr), std::forward<Args>(args)...);
         };
         _destruct = [](Cache &cache) {
@@ -172,7 +181,7 @@ public:
         using MemberClass = std::remove_reference_t<std::remove_pointer_t<ClassType>>;
 
         release<false>();
-        _invoke = [](Cache &cache, Args ...args) -> Return {
+        _invoke = [](Cache &cache, Args ...args) noexcept -> Return {
             return Invoke(MemberFunction, CacheAs<MemberClass *>(cache), std::forward<Args>(args)...);
         };
         _destruct = nullptr;
@@ -188,7 +197,7 @@ public:
     inline void prepare(void) noexcept
     {
         release<false>();
-        _invoke = [](Cache &, Args ...args) -> Return {
+        _invoke = [](Cache &, Args ...args) noexcept -> Return {
             return Invoke(Function, std::forward<Args>(args)...);
         };
         _destruct = nullptr;

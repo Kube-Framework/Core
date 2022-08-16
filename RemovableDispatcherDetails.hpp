@@ -10,17 +10,13 @@
 
 namespace kF::Core
 {
-    template<typename Signature,
-            FunctorRequirements InternalFunctor,
-            StaticAllocatorRequirements Allocator, std::size_t CacheSize>
+    template<typename Signature, FunctorRequirements InternalFunctor, StaticAllocatorRequirements Allocator>
     class RemovableDispatcherDetails;
 }
 
 /** @brief Fast event dispatcher */
-template<typename Return, typename... Args,
-        kF::Core::FunctorRequirements InternalFunctor,
-        kF::Core::StaticAllocatorRequirements Allocator, std::size_t CacheSize>
-class alignas_quarter_cacheline kF::Core::RemovableDispatcherDetails<Return(Args...), InternalFunctor, Allocator, CacheSize>
+template<typename Return, typename... Args, kF::Core::FunctorRequirements InternalFunctor, kF::Core::StaticAllocatorRequirements Allocator>
+class alignas_quarter_cacheline kF::Core::RemovableDispatcherDetails<Return(Args...), InternalFunctor, Allocator>
 {
 public:
     /** @brief Functor handle */

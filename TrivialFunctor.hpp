@@ -11,7 +11,7 @@
 
 namespace kF::Core
 {
-    template<typename Signature, std::size_t CacheSize = CacheLineEighthSize>
+    template<typename Signature, std::size_t DesiredSize = CacheLineQuarterSize>
     class TrivialFunctor;
 
     namespace Internal
@@ -23,10 +23,18 @@ namespace kF::Core
 }
 
 /** @brief Fast opaque functor but only takes trivial types that fit 'CacheSize' */
-template<typename Return, typename ...Args, std::size_t CacheSize>
-class kF::Core::TrivialFunctor<Return(Args...), CacheSize>
+template<typename Return, typename ...Args, std::size_t DesiredSize>
+class kF::Core::TrivialFunctor<Return(Args...), DesiredSize>
 {
 public:
+    static_assert(
+        DesiredSize >= Core::CacheLineQuarterSize && !(Core::CacheLineEighthSize % 8),
+        "TrivialFunctor's DesiredSize must be at least 16 bytes sized and 8 byte aligned"
+    );
+
+    /** @brief Size of the optimized cache */
+    static constexpr auto CacheSize = DesiredSize - Core::CacheLineEighthSize;
+
     /** @brief Byte cache */
     using Cache = std::array<std::byte, CacheSize>;
 
@@ -94,7 +102,7 @@ public:
             && InvocableRequirements<ClassFunctor, Return, Args...>)
     inline void prepare(ClassFunctor &&functor) noexcept
     {
-        _invoke = [](Cache &cache, Args ...args) -> Return {
+        _invoke = [](Cache &cache, Args ...args) noexcept -> Return {
             if constexpr (std::is_same_v<Return, void>)
                 Invoke(CacheAs<ClassFunctor>(cache), std::forward<Args>(args)...);
             else
@@ -110,7 +118,7 @@ public:
     {
         using MemberClass = std::remove_reference_t<std::remove_pointer_t<ClassType>>;
 
-        _invoke = [](Cache &cache, Args ...args) -> Return {
+        _invoke = [](Cache &cache, Args ...args) noexcept -> Return {
             return Invoke(MemberFunction, CacheAs<MemberClass *>(cache), std::forward<Args>(args)...);
         };
         if constexpr (std::is_pointer_v<ClassType>)
@@ -124,7 +132,7 @@ public:
         requires InvocableRequirements<decltype(Function), Return, Args...>
     inline void prepare(void) noexcept
     {
-        _invoke = [](Cache &, Args ...args) -> Return {
+        _invoke = [](Cache &, Args ...args) noexcept -> Return {
             return Invoke(Function, std::forward<Args>(args)...);
         };
     }
