@@ -79,6 +79,12 @@ namespace kF::Core
     constexpr std::size_t CacheLineQuarterSize = CacheLineSize / 4;
     constexpr std::size_t CacheLineEighthSize = CacheLineSize / 8;
 
+
+    /** @brief Get distance converted into UnitType */
+    template<typename UnitType, typename Iterator>
+    [[nodiscard]] inline UnitType Distance(const Iterator from, const Iterator to) noexcept
+        { return static_cast<UnitType>(std::distance(from, to)); }
+
     /** @brief Similar to std::aligned_alloc, but ensure arguments, you must use AlignedFree to free the memory */
     template<typename Cast = void>
     [[nodiscard]] inline Cast *AlignedAlloc(const std::size_t bytes, const std::size_t alignment) noexcept
