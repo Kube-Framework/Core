@@ -270,6 +270,18 @@ namespace kF::Core
         requires std::integral<Type> || std::floating_point<Type>
     [[nodiscard]] constexpr Type BranchlessIf(const Type condition, const Type lhs, const Type rhs) noexcept
         { return condition * lhs - rhs * (condition - static_cast<Type>(1)); }
+
+
+
+    /** @brief Linear interpolate function */
+    template<typename Type, typename RatioType>
+    [[nodiscard]] constexpr Type Lerp(const Type min, const Type max, const RatioType ratio) noexcept
+        { return min + (max - min) * ratio; }
+
+    /** @brief Linear interpolate function */
+    template<typename Type>
+    [[nodiscard]] constexpr Type LerpInverse(const Type min, const Type max, const Type value) noexcept
+        { return min != max ? (value - min) / (max - min) : min; } // @todo Try to remove branch
 }
 
 #include "Utils.ipp"

@@ -143,18 +143,6 @@ public:
 
 
 private:
-    // Cacheline 0
-    alignas_cacheline const std::size_t _pageSize;
-    // Cacheline 1
-    alignas_cacheline std::atomic<std::size_t> _maxStackSize { 0u };
-    // Cacheline 2
-    alignas_cacheline AllocatorUtils::AtomicStack _stack {}; // N stacks can be linked at a time
-    // Cacheline 3
-    alignas_cacheline AllocatorUtils::AtomicStack _busyStack {};
-    // Cacheline 4 + (1 per bucket)
-    std::array<AllocatorUtils::AlignedAtomicBucket<MinSize>, BucketCount> _buckets {};
-
-
     /** @brief Allocate data from a specific bucket */
     [[nodiscard]] void *allocateFromBucket(const std::size_t bucketIndex) noexcept;
 
@@ -175,6 +163,18 @@ private:
 
     /** @brief Fragment a single block of the stack */
     void fragmentStackBlock(AllocatorUtils::SafeStackMetaData * const stack, const std::size_t size) noexcept;
+
+
+    // Cacheline 0
+    alignas_cacheline const std::size_t _pageSize;
+    // Cacheline 1
+    alignas_cacheline std::atomic<std::size_t> _maxStackSize { 0u };
+    // Cacheline 2
+    alignas_cacheline AllocatorUtils::AtomicStack _stack {}; // N stacks can be linked at a time
+    // Cacheline 3
+    alignas_cacheline AllocatorUtils::AtomicStack _busyStack {};
+    // Cacheline 4 + (1 per bucket)
+    std::array<AllocatorUtils::AlignedAtomicBucket<MinSize>, BucketCount> _buckets {};
 };
 
 #include "SafeAllocator.ipp"

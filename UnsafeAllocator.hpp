@@ -99,14 +99,6 @@ public:
 
 
 private:
-    const std::size_t _pageSize;
-    std::size_t _head { 0u };
-    std::size_t _tail { 0u };
-    AllocatorUtils::UnsafeStackMetaData *_stack { nullptr }; // Only 1 stack is used at a time
-    AllocatorUtils::UnsafeStackMetaData *_busyStack { nullptr };
-    std::array<AllocatorUtils::AllocationHeader *, BucketCount> _buckets {};
-
-
     /** @brief Allocate data from a specific bucket */
     [[nodiscard]] void *allocateFromBucket(const std::size_t bucketIndex) noexcept;
 
@@ -127,6 +119,14 @@ private:
 
     /** @brief Fragment a single block of the stack */
     void fragmentStackBlock(const std::size_t size) noexcept;
+
+
+    const std::size_t _pageSize;
+    std::size_t _head { 0u };
+    std::size_t _tail { 0u };
+    AllocatorUtils::UnsafeStackMetaData *_stack { nullptr }; // Only 1 stack is used at a time
+    AllocatorUtils::UnsafeStackMetaData *_busyStack { nullptr };
+    std::array<AllocatorUtils::AllocationHeader *, BucketCount> _buckets {};
 };
 
 #include "UnsafeAllocator.ipp"
