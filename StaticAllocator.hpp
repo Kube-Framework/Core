@@ -5,18 +5,34 @@
 
 #pragma once
 
-#include "UniquePtr.hpp"
 #include "FixedString.hpp"
 
 namespace kF::Core
 {
-    template<typename Allocator, FixedString Name>
+    template<kF::Core::AllocatorRequirements Allocator, kF::Core::FixedString Name>
     class StaticAllocator;
+
+    namespace Internal
+    {
+        /** @brief Static instance */
+        template<kF::Core::AllocatorRequirements Allocator>
+        struct StaticAllocatorInstance
+        {
+            Allocator *allocator {};
+            bool destroyPending {};
+
+
+            /** @brief Destructor */
+            ~StaticAllocatorInstance(void) noexcept;
+
+            /** @brief Manual instance destruction */
+            void destroyInstance(void) noexcept;
+        };
+    }
 }
 
-
 /** @brief Wrapper used to create static allocators */
-template<typename Allocator, kF::Core::FixedString Name>
+template<kF::Core::AllocatorRequirements Allocator, kF::Core::FixedString Name>
 class kF::Core::StaticAllocator
 {
 public:
@@ -27,12 +43,10 @@ public:
     static void Deallocate(void * const data, const std::size_t bytes, const std::size_t alignment) noexcept;
 
 private:
-    static inline UniquePtr<Allocator> _Allocator {};
+    /** @brief Ensure destruction of the allocator when destruction is pending */
+    static void EnsureDestruction(void) noexcept;
 
-
-    /** @brief Ensure that the allocator instance is ready to use */
-    static inline void CreateInstance(void) noexcept
-        { _Allocator = UniquePtr<Allocator>::Make(); }
+    static inline Internal::StaticAllocatorInstance<Allocator> _Instance {};
 };
 
 #include "StaticAllocator.ipp"

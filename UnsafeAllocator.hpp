@@ -98,6 +98,10 @@ public:
     void deallocate(void * const data, const std::size_t size, const std::size_t alignment) noexcept override;
 
 
+    /** @brief Check if the allocator still has allocations
+     *  @note This function is slow */
+    [[nodiscard]] bool empty(void) noexcept;
+
 private:
     /** @brief Allocate data from a specific bucket */
     [[nodiscard]] void *allocateFromBucket(const std::size_t bucketIndex) noexcept;
@@ -122,6 +126,7 @@ private:
 
 
     const std::size_t _pageSize;
+    std::size_t _allocationCount {};
     std::size_t _head { 0u };
     std::size_t _tail { 0u };
     AllocatorUtils::UnsafeStackMetaData *_stack { nullptr }; // Only 1 stack is used at a time

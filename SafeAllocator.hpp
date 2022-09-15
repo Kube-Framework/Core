@@ -142,6 +142,10 @@ public:
     void deallocate(void * const data, const std::size_t size, const std::size_t alignment) noexcept override;
 
 
+    /** @brief Check if the allocator still has allocations
+     *  @note This function is slow */
+    [[nodiscard]] bool empty(void) noexcept;
+
 private:
     /** @brief Allocate data from a specific bucket */
     [[nodiscard]] void *allocateFromBucket(const std::size_t bucketIndex) noexcept;

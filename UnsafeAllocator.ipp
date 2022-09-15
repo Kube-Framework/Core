@@ -183,3 +183,13 @@ inline void kF::Core::UnsafeAllocator<MinSizePower, MaxSizePower, MaxStackSizePo
         availableSize -= blockSize;
     }
 }
+
+template<std::size_t MinSizePower, std::size_t MaxSizePower, std::size_t MaxStackSizePower>
+inline bool kF::Core::UnsafeAllocator<MinSizePower, MaxSizePower, MaxStackSizePower>::empty(void) noexcept
+{
+    for (const auto &bucket : _buckets) {
+        if (bucket)
+            return false;
+    }
+    return true;
+}

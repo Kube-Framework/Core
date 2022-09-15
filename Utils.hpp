@@ -95,6 +95,15 @@ namespace kF::Core
         { ::operator delete(data, bytes, static_cast<std::align_val_t>(alignment)); }
 
 
+    /** @brief Concept of an allocator */
+    template<typename Type>
+    concept AllocatorRequirements = requires(Type &allocator, void *data, std::size_t bytes, std::size_t alignment)
+    {
+        { allocator.allocate(bytes, alignment) } -> std::same_as<void *>;
+        { allocator.deallocate(data, bytes, alignment) } -> std::same_as<void>;
+        { allocator.empty() } -> std::same_as<bool>;
+    };
+
     /** @brief Concept of a static allocator */
     template<typename Type>
     concept StaticAllocatorRequirements = requires(void *data, std::size_t bytes, std::size_t alignment)
