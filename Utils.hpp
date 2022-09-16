@@ -168,6 +168,12 @@ namespace kF::Core
         /** @brief Get last element */
         [[nodiscard]] inline Type &back(void) noexcept { return at(size() - 1); }
         [[nodiscard]] inline const Type &back(void) const noexcept { return at(size() - 1); }
+
+        /** @brief Comparison operators */
+        [[nodiscard]] inline bool operator==(const IteratorRange &other) const noexcept
+            { return (from == other.from) & (to == other.to); }
+        [[nodiscard]] inline bool operator!=(const IteratorRange &other) const noexcept
+            { return (from != other.from) | (to != other.to); }
     };
 
     /** @brief Helper to know if a given type is a std::move_iterator */
