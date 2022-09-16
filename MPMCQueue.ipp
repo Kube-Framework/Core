@@ -23,7 +23,7 @@ inline kF::Core::MPMCQueue<Type, Allocator>::MPMCQueue(const std::size_t capacit
         "Core::MPMCQueue: Allocation of capacity ", capacity, " failed");
 
     // Init cells
-    for (auto i = 0ul; i < capacity; ++i)
+    for (auto i = 0ul; i != capacity; ++i)
         new (&_tailCache.buffer.data[i].sequence) decltype(Cell::sequence)(i);
     _headCache = _tailCache;
 }

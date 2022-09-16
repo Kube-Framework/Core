@@ -21,7 +21,7 @@ namespace kF::Core
         requires std::is_same_v<Type, char> || std::is_same_v<Type, wchar_t>
     [[nodiscard]] constexpr HashedName ContinueHash(HashedName hash, const Type * const str, const std::size_t len) noexcept
     {
-        for (std::size_t i = 0ul; i < len; ++i)
+        for (std::size_t i = 0ul; i != len; ++i)
             hash = 31u * hash + static_cast<HashedName>(str[i]);
         return hash;
     }

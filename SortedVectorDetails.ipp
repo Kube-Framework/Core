@@ -90,7 +90,7 @@ inline Range kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range,
         std::swap(DetailsBase::at(finalPos), elem);
     } else if (index + 1 < count && !Compare{}(elem, DetailsBase::at(index + 1))) {
         finalPos = index + 1;
-        for (auto i = index + 2; i < count; ++i) {
+        for (auto i = index + 2; i != count; ++i) {
             if (!Compare{}(elem, DetailsBase::at(i))) {
                 finalPos = i;
             } else

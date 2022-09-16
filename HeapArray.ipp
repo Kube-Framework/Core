@@ -10,7 +10,7 @@ inline void kF::Core::HeapArray<Type, Allocator, Range>::allocateUnsafe(const Ra
 {
     _data = reinterpret_cast<Type *>(Allocator::Allocate(sizeof(Type) * size, alignof(Type)));
     _size = size;
-    for (auto i = static_cast<Range>(0); i < size; ++i)
+    for (auto i = static_cast<Range>(0); i != size; ++i)
         new (&_data[i]) Type(args...);
 }
 

@@ -6,6 +6,7 @@
 #pragma once
 
 #include "FixedString.hpp"
+#include "Utils.hpp"
 
 namespace kF::Core
 {
