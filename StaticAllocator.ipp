@@ -20,9 +20,11 @@ AllocateLabel:
 template<kF::Core::AllocatorRequirements Allocator, kF::Core::FixedString Name>
 inline void kF::Core::StaticAllocator<Allocator, Name>::Deallocate(void * const data, const std::size_t bytes, const std::size_t alignment) noexcept
 {
-    _Instance.allocator->deallocate(data, bytes, alignment);
-    if (_Instance.destroyPending) [[unlikely]]
-        EnsureDestruction();
+    if (data) [[likely]] {
+        _Instance.allocator->deallocate(data, bytes, alignment);
+        if (_Instance.destroyPending) [[unlikely]]
+            EnsureDestruction();
+    }
 }
 
 template<kF::Core::AllocatorRequirements Allocator, kF::Core::FixedString Name>

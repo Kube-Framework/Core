@@ -117,9 +117,6 @@ public:
     [[nodiscard]] bool operator!=(const Type * const other) const noexcept { return get() != other; }
 
 private:
-    Data *_ptr { nullptr };
-
-
     /** @brief Instance constructor */
     inline SharedPtr(Data * const ptr) : _ptr(ptr) {}
 
@@ -135,4 +132,6 @@ private:
             _ptr = nullptr;
         }
     }
+
+    Data *_ptr { nullptr };
 };
