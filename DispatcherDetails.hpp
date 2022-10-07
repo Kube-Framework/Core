@@ -19,6 +19,9 @@ template<typename Return, typename... Args, kF::Core::FunctorRequirements Intern
 class alignas_quarter_cacheline kF::Core::DispatcherDetails<Return(Args...), InternalFunctor, Allocator>
 {
 public:
+    /** @brief Functor type */
+    using Functor = InternalFunctor;
+
     /** @brief Destructor */
     inline ~DispatcherDetails(void) noexcept = default;
 
