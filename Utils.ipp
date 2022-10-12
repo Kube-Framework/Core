@@ -44,3 +44,11 @@ constexpr ResultUnit kF::Core::NextPowerOf2Bit(Unit value) noexcept
     }
     return count;
 }
+
+template<typename Type>
+    requires std::integral<Type> || std::floating_point<Type>
+constexpr Type kF::Core::BranchlessIf(const bool condition, const Type lhs, const Type rhs) noexcept
+{
+    const auto typeCondition = static_cast<Type>(condition);
+    return typeCondition * lhs - rhs * (typeCondition - static_cast<Type>(1));
+}

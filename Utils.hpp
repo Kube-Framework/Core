@@ -279,19 +279,11 @@ namespace kF::Core
         { return static_cast<std::underlying_type_t<Type>>(value); }
 
 
-    /** @brief Guaranteed branchless compute (boolean condition)
+    /** @brief Guaranteed branchless compute
      *  @todo Benchmark */
     template<typename Type>
         requires std::integral<Type> || std::floating_point<Type>
-    [[nodiscard]] constexpr Type BranchlessIf(const bool condition, const Type lhs, const Type rhs) noexcept
-        { return static_cast<Type>(condition) * lhs - rhs * (condition - static_cast<Type>(1)); }
-
-    /** @brief Guaranteed branchless compute (type condition) */
-    template<typename Type>
-        requires std::integral<Type> || std::floating_point<Type>
-    [[nodiscard]] constexpr Type BranchlessIf(const Type condition, const Type lhs, const Type rhs) noexcept
-        { return condition * lhs - rhs * (condition - static_cast<Type>(1)); }
-
+    [[nodiscard]] constexpr Type BranchlessIf(const bool condition, const Type lhs, const Type rhs) noexcept;
 
 
     /** @brief Linear interpolate function */
