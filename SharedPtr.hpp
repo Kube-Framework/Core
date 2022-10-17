@@ -79,7 +79,6 @@ public:
     [[nodiscard]] inline std::uint32_t referenceCount(void) const noexcept { return _ptr->count.load(); }
 
 
-
     /** @brief Mutable managed object getter */
     [[nodiscard]] inline Type *get(void) noexcept { return &_ptr->value; }
 

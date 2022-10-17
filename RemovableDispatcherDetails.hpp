@@ -7,6 +7,8 @@
 
 #include "FunctorUtils.hpp"
 #include "Vector.hpp"
+#include "SharedPtr.hpp"
+#include "DispatcherSlot.hpp"
 
 namespace kF::Core
 {
@@ -20,7 +22,28 @@ class alignas_quarter_cacheline kF::Core::RemovableDispatcherDetails<Return(Args
 {
 public:
     /** @brief Functor handle */
-    using Handle = std::uint32_t;
+    using Handle = DispatcherSlot::Handle;
+
+    /** @brief Removable dispatcher instance */
+    struct alignas_half_cacheline Instance
+    {
+        // @todo make a single allocation removable dispatcher
+        Vector<InternalFunctor, Allocator> functors {};
+        Vector<Handle, Allocator> freeList {};
+
+
+        /** @brief Remove a slot from its handle */
+        inline void remove(const Handle handle) noexcept
+        {
+            kFAssert(handle, "RemovableDispatcherDetails::remove: Can't remove null handle");
+            const auto index = handle - 1u;
+            functors[index].release();
+            freeList.push(index);
+        }
+    };
+
+    /** @brief Shared dispatcher instance */
+    using SharedInstance = SharedPtr<Instance, Allocator>;
 
 
     /** @brief Destructor */
@@ -38,81 +61,71 @@ public:
 
 
     /** @brief Internal functor count */
-    [[nodiscard]] inline auto count(void) const noexcept { return _functors.size() - _freeList.size(); }
+    [[nodiscard]] inline auto count(void) const noexcept { return _sharedInstance->functors.size() - _sharedInstance->freeList.size(); }
 
 
     /** @brief Add a functor to dispatch list */
     template<typename Functor>
-    inline Handle add(Functor &&functor) noexcept
+    [[nodiscard]] inline DispatcherSlot add(Functor &&functor) noexcept
     {
+        auto &instance = *_sharedInstance;
         InternalFunctor *internal;
         Handle index;
-        if (!_freeList.empty()) {
-            index = _freeList.back();
-            _freeList.pop();
-            internal = &_functors[index];
+        if (!instance.freeList.empty()) {
+            index = instance.freeList.back();
+            instance.freeList.pop();
+            internal = &instance.functors[index];
         } else {
-            index = _functors.size();
-            internal = &_functors.push();
+            index = instance.functors.size();
+            internal = &instance.functors.push();
         }
         internal->prepare(std::forward<Functor>(functor));
-        return index + 1;
+        return makeDispatcherSlot(index + 1);
     }
 
     /** @brief Add a member function to dispatch list */
     template<auto MemberFunction, typename ClassType>
-    inline Handle add(ClassType &&instance) noexcept
+    [[nodiscard]] inline DispatcherSlot add(ClassType &&classType) noexcept
     {
+        auto &instance = *_sharedInstance;
         InternalFunctor *functor;
         Handle index;
-        if (!_freeList.empty()) {
-            index = _freeList.back();
-            _freeList.pop();
-            functor = &_functors[index];
+        if (!instance.freeList.empty()) {
+            index = instance.freeList.back();
+            instance.freeList.pop();
+            functor = &instance.functors[index];
         } else {
-            index = _functors.size();
-            functor = &_functors.push();
+            index = instance.functors.size();
+            functor = &instance.functors.push();
         }
-        functor->template prepare<MemberFunction>(std::forward<ClassType>(instance));
-        return index + 1;
+        functor->template prepare<MemberFunction>(std::forward<ClassType>(classType));
+        return makeDispatcherSlot(index + 1);
     }
 
     /** @brief Add a free function to dispatch list */
     template<auto FreeFunction>
-    inline Handle add(void) noexcept
+    [[nodiscard]] inline DispatcherSlot add(void) noexcept
     {
+        auto &instance = *_sharedInstance;
         InternalFunctor *functor;
         Handle index;
-        if (!_freeList.empty()) {
-            index = _freeList.back() - 1;
-            _freeList.pop();
-            functor = &_functors[index];
+        if (!instance.freeList.empty()) {
+            index = instance.freeList.back() - 1;
+            instance.freeList.pop();
+            functor = &instance.functors[index];
         } else {
-            index = _functors.size();
-            functor = &_functors.push();
+            index = instance.functors.size();
+            functor = &instance.functors.push();
         }
         functor->template prepare<FreeFunction>();
-        return index + 1;
+        return makeDispatcherSlot(index + 1);
     }
-
-
-    /** @brief Remove a slot from its handle */
-    inline void remove(const Handle handle) noexcept
-    {
-        kFAssert(handle, "RemovableDispatcherDetails::remove: Can't remove null handle");
-        const auto index = handle - 1u;
-        _functors[index].release();
-        _freeList.push(index);
-    }
-
-    /** @brief Clear dispatch list */
-    inline void clear(void) noexcept { _functors.clear(); _freeList.clear(); }
 
 
     /** @brief Dispatch every internal functors */
     inline void dispatch(Args ...args)
     {
-        for (auto &functor : _functors) {
+        for (auto &functor : _sharedInstance->functors) {
             if (functor)
                 functor(std::forward<Args>(args)...);
         }
@@ -123,14 +136,33 @@ public:
         requires (!std::is_same_v<Return, void> && std::invocable<Callback, Return>)
     inline void dispatch(Callback &&callback, Args ...args)
     {
-        for (auto &functor : _functors) {
+        for (auto &functor : _sharedInstance->functors) {
             if (functor)
                 callback(functor(std::forward<Args>(args)...));
         }
     }
 
 private:
-    // @todo make a single allocation removable dispatcher
-    Vector<InternalFunctor, Allocator> _functors {};
-    Vector<Handle, Allocator> _freeList {};
+    /** @brief Construct a dispatcher from an handle */
+    [[nodiscard]] inline DispatcherSlot makeDispatcherSlot(const Handle handle) noexcept
+    {
+        constexpr auto DisconnectFunc = [](void *data, const Handle handle) {
+            auto &sharedInstance = *reinterpret_cast<SharedInstance *>(&data);
+            // Remove slot
+            sharedInstance->remove(handle);
+            // Decrement reference count
+            sharedInstance.~SharedInstance();
+        };
+
+        // Increment reference count
+        static_assert(sizeof(SharedInstance) == sizeof(void*), "RemovableDispatcherDetails: Implementation requires SharedPtr 8 byte sized");
+        void *data {};
+        new (&data) SharedInstance(_sharedInstance);
+
+        // Construct dispatcher slot
+        return DispatcherSlot::Make(DisconnectFunc, data, handle);
+    }
+
+
+    SharedInstance _sharedInstance { SharedInstance::Make() };
 };

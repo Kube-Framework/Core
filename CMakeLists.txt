@@ -17,6 +17,8 @@ kube_add_library(Core
         DebugAllocator.hpp
         Dispatcher.hpp
         DispatcherDetails.hpp
+        DispatcherSlot.hpp
+        DispatcherSlot.ipp
         Expected.hpp
         FixedString.hpp
         FixedString.ipp
