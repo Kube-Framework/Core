@@ -82,7 +82,7 @@ namespace kF::Core
 
     /** @brief Get distance converted into UnitType */
     template<typename UnitType, typename Iterator>
-    [[nodiscard]] inline UnitType Distance(const Iterator from, const Iterator to) noexcept
+    [[nodiscard]] constexpr UnitType Distance(const Iterator from, const Iterator to) noexcept
         { return static_cast<UnitType>(std::distance(from, to)); }
 
     /** @brief Similar to std::aligned_alloc, but ensure arguments, you must use AlignedFree to free the memory */
