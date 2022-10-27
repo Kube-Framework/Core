@@ -169,6 +169,10 @@ public:
     inline VectorDetails &operator=(const VectorDetails &other) noexcept
         { resize(other.begin(), other.end()); return *this; }
 
+    /** @brief Initializer list assignment */
+    inline VectorDetails &operator=(std::initializer_list<Type> &&init) noexcept
+        { resize(init.begin(), init.end()); return *this; }
+
 
     /** @brief Move assignment */
     inline VectorDetails &operator=(VectorDetails &&other) noexcept { steal(other); return *this; }

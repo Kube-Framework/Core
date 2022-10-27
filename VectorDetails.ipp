@@ -75,20 +75,18 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
     kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::insert(
         const Iterator pos, const InputIterator from, const InputIterator to, Map &&map) noexcept
 {
-    static constexpr auto MapCopy = [](const InputIterator input, const Range count, const Iterator out, auto &map) {
-        for (Range i { 0 }; i != count; ++i) {
-            if constexpr (IsMoveIterator<InputIterator>::Value)
-                new (out + i) Type(map(std::move(input[i])));
-            else
-                new (out + i) Type(map(input[i]));
-        }
-    };
-
     return insertCustom(
         pos,
         static_cast<Range>(std::distance(from, to)),
         [from, map = std::forward<Map>(map)](const auto count, const auto out) {
-            MapCopy(from, count, out, map);
+            [](const InputIterator input, const Range count, const Iterator out, auto &map) {
+                for (Range i { 0 }; i != count; ++i) {
+                    if constexpr (IsMoveIterator<InputIterator>::Value)
+                        new (out + i) Type(map(std::move(input[i])));
+                    else
+                        new (out + i) Type(map(input[i]));
+                }
+            }(from, count, out, map);
         }
     );
 }

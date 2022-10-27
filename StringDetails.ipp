@@ -31,7 +31,7 @@ template<typename Base, typename Type, std::integral Range, bool IsRuntimeAlloca
 inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const std::basic_string_view<Type> &other) noexcept
 {
     StringDetails res;
-    res.reserve(size() + other.size());
+    res.reserve(size() + static_cast<Range>(other.size()));
     res.insert(res.end(), begin(), end());
     res.insert(res.end(), other.begin(), other.end());
     return res;

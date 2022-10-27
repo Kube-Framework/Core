@@ -26,23 +26,25 @@ TEST(RemovableTrivialDispatcher, Basics)
 
     auto handle1 = dispatcher.add<&Foo::memberFunction>(&foo);
     auto handle2 = dispatcher.add<&Foo::FreeFunction>();
-    dispatcher.add([](int x, int y) {
+    auto handle3 = dispatcher.add([](int x, int y) {
         return x * y;
     });
     ASSERT_EQ(dispatcher.count(), 3);
     auto i = 0u;
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 3);
-    dispatcher.remove(handle1);
-    dispatcher.remove(handle2);
+    handle1 = {};
+    handle2 = {};
     i = 0;
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 1);
-    dispatcher.add<&Foo::FreeFunction>();
+    handle1 = dispatcher.add<&Foo::FreeFunction>();
     i = 0;
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 2);
-    dispatcher.clear();
+    handle1 = {};
+    handle2 = {};
+    handle3 = {};
     i = 0;
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 0);
@@ -54,9 +56,9 @@ TEST(RemovableTrivialDispatcher, Semantics)
     Core::RemovableTrivialDispatcher<int(int, int)> dispatcher;
     Foo foo;
 
-    dispatcher.add<&Foo::memberFunction>(&foo);
-    auto handle = dispatcher.add<&Foo::FreeFunction>();
-    dispatcher.add([](int x, int y) {
+    auto handle1 = dispatcher.add<&Foo::memberFunction>(&foo);
+    auto handle2 = dispatcher.add<&Foo::FreeFunction>();
+    auto handle3 = dispatcher.add([](int x, int y) {
         return x * y;
     });
 
@@ -65,7 +67,7 @@ TEST(RemovableTrivialDispatcher, Semantics)
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 3);
     auto dispatcher2 = std::move(dispatcher);
-    dispatcher2.remove(handle);
+    handle2 = {};
     i = 0;
     dispatcher2.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 2);
@@ -79,23 +81,25 @@ TEST(RemovableDispatcher, Basics)
 
     auto handle1 = dispatcher.add<&Foo::memberFunction>(&foo);
     auto handle2 = dispatcher.add<&Foo::FreeFunction>();
-    dispatcher.add([](int x, int y) {
+    auto handle3 = dispatcher.add([](int x, int y) {
         return x * y;
     });
     ASSERT_EQ(dispatcher.count(), 3);
     auto i = 0u;
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 3);
-    dispatcher.remove(handle1);
-    dispatcher.remove(handle2);
+    handle1 = {};
+    handle2 = {};
     i = 0;
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 1);
-    dispatcher.add<&Foo::FreeFunction>();
+    handle1 = dispatcher.add<&Foo::FreeFunction>();
     i = 0;
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 2);
-    dispatcher.clear();
+    handle1 = {};
+    handle2 = {};
+    handle3 = {};
     i = 0;
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 0);
@@ -107,9 +111,9 @@ TEST(RemovableDispatcher, Semantics)
     Core::RemovableDispatcher<int(int, int)> dispatcher;
     Foo foo;
 
-    dispatcher.add<&Foo::memberFunction>(&foo);
-    auto handle = dispatcher.add<&Foo::FreeFunction>();
-    dispatcher.add([](int x, int y) {
+    auto handle1 = dispatcher.add<&Foo::memberFunction>(&foo);
+    auto handle2 = dispatcher.add<&Foo::FreeFunction>();
+    auto handle3 = dispatcher.add([](int x, int y) {
         return x * y;
     });
 
@@ -118,7 +122,7 @@ TEST(RemovableDispatcher, Semantics)
     dispatcher.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 3);
     auto dispatcher2 = std::move(dispatcher);
-    dispatcher2.remove(handle);
+    handle2 = {};
     i = 0;
     dispatcher2.dispatch([&i](int z) { ASSERT_EQ(z, 8); ++i; }, 4, 2);
     ASSERT_EQ(i, 2);
