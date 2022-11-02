@@ -112,8 +112,10 @@ public:
     [[nodiscard]] auto operator<=>(const SharedPtr &other) const noexcept = default;
 
     /** @brief Raw pointer comparison */
-    [[nodiscard]] bool operator==(const Type * const other) const noexcept { return get() == other; }
-    [[nodiscard]] bool operator!=(const Type * const other) const noexcept { return get() != other; }
+    [[nodiscard]] inline bool operator==(const Type * const other) const noexcept { return _ptr == other; }
+    [[nodiscard]] inline bool operator!=(const Type * const other) const noexcept { return _ptr != other; }
+    [[nodiscard]] inline bool operator==(Type * const other) const noexcept { return _ptr == other; }
+    [[nodiscard]] inline bool operator!=(Type * const other) const noexcept { return _ptr != other; }
 
 private:
     /** @brief Instance constructor */
