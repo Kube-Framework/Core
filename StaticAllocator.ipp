@@ -37,7 +37,7 @@ no_inline void kF::Core::StaticAllocator<Allocator, Name>::EnsureDestruction(voi
 template<kF::Core::AllocatorRequirements Allocator>
 inline kF::Core::Internal::StaticAllocatorInstance<Allocator>::~StaticAllocatorInstance(void) noexcept
 {
-    if (allocator->empty()) [[unlikely]] {
+    if (allocator && allocator->empty()) [[unlikely]] {
         destroyInstance();
     } else
         destroyPending = true;

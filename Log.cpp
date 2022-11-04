@@ -14,6 +14,6 @@ Core::Log Core::ErrorLog(std::cerr);
 
 std::ostream &operator<<(std::ostream &lhs, const std::string_view &rhs) noexcept
 {
-    lhs << rhs.data();
+    lhs.write(rhs.data(), rhs.length());
     return lhs;
 }
