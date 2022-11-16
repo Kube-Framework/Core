@@ -3,24 +3,26 @@
  * @ Description: SPSC Queue
  */
 
-template<typename Type>
-inline kF::Core::SPSCQueue<Type>::~SPSCQueue(void) noexcept
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
+inline kF::Core::SPSCQueue<Type, Allocator>::~SPSCQueue(void) noexcept
 {
     clear();
-    AlignedFree(_headCache.buffer.data, sizeof(Type) * _headCache.buffer.capacity, alignof(Type));
+    Allocator::Deallocate(_headCache.buffer.data, sizeof(Type) * _headCache.buffer.capacity, alignof(Type));
 }
 
-template<typename Type>
-inline kF::Core::SPSCQueue<Type>::SPSCQueue(const std::size_t capacity, const bool usedAsBuffer) noexcept
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
+inline kF::Core::SPSCQueue<Type, Allocator>::SPSCQueue(const std::size_t capacity, const bool usedAsBuffer) noexcept
 {
     _tailCache.buffer.capacity = capacity + usedAsBuffer;
-    _tailCache.buffer.data = AlignedAlloc<Type>(sizeof(Type) * _tailCache.buffer.capacity, alignof(Type));
+    _tailCache.buffer.data = reinterpret_cast<Type *>(
+        Allocator::Allocate(sizeof(Type) * _tailCache.buffer.capacity, alignof(Type))
+    );
     _headCache.buffer = _tailCache.buffer;
 }
 
-template<typename Type>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 template<typename ...Args>
-inline bool kF::Core::SPSCQueue<Type>::push(Args &&...args) noexcept
+inline bool kF::Core::SPSCQueue<Type, Allocator>::push(Args &&...args) noexcept
     requires std::constructible_from<Type, Args...>
 {
     const auto tail = _tail.load(std::memory_order_relaxed);
@@ -38,8 +40,8 @@ inline bool kF::Core::SPSCQueue<Type>::push(Args &&...args) noexcept
     return true;
 }
 
-template<typename Type>
-inline bool kF::Core::SPSCQueue<Type>::pop(Type &value) noexcept
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
+inline bool kF::Core::SPSCQueue<Type, Allocator>::pop(Type &value) noexcept
 {
     const auto head = _head.load(std::memory_order_relaxed);
 
@@ -61,9 +63,9 @@ inline bool kF::Core::SPSCQueue<Type>::pop(Type &value) noexcept
     return true;
 }
 
-template<typename Type>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 template<bool AllowLess, std::input_iterator InputIterator>
-inline std::size_t kF::Core::SPSCQueue<Type>::pushRangeImpl(const InputIterator from, const InputIterator to) noexcept
+inline std::size_t kF::Core::SPSCQueue<Type, Allocator>::pushRangeImpl(const InputIterator from, const InputIterator to) noexcept
 {
     std::size_t toPush = to - from;
     const auto tail = _tail.load(std::memory_order_relaxed);
@@ -101,9 +103,9 @@ inline std::size_t kF::Core::SPSCQueue<Type>::pushRangeImpl(const InputIterator 
     return toPush;
 }
 
-template<typename Type>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 template<bool AllowLess, typename OutputIterator> requires std::output_iterator<OutputIterator, Type>
-inline std::size_t kF::Core::SPSCQueue<Type>::popRangeImpl(const OutputIterator from, const OutputIterator to) noexcept
+inline std::size_t kF::Core::SPSCQueue<Type, Allocator>::popRangeImpl(const OutputIterator from, const OutputIterator to) noexcept
 {
     std::size_t toPop = to - from;
     const auto head = _head.load(std::memory_order_relaxed);
@@ -141,14 +143,14 @@ inline std::size_t kF::Core::SPSCQueue<Type>::popRangeImpl(const OutputIterator 
     return toPop;
 }
 
-template<typename Type>
-inline void kF::Core::SPSCQueue<Type>::clear(void) noexcept
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
+inline void kF::Core::SPSCQueue<Type, Allocator>::clear(void) noexcept
 {
     for (Type type; pop(type););
 }
 
-template<typename Type>
-inline std::size_t kF::Core::SPSCQueue<Type>::size(void) const noexcept
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
+inline std::size_t kF::Core::SPSCQueue<Type, Allocator>::size(void) const noexcept
 {
     const auto tail = _tail.load(std::memory_order_seq_cst);
     const auto capacity = _tailCache.buffer.capacity;

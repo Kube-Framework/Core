@@ -14,7 +14,7 @@
 
 namespace kF::Core
 {
-    template<typename Type>
+    template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
     class SPSCQueue;
 }
 
@@ -26,7 +26,7 @@ namespace kF::Core
  *
  * @tparam Type to be inserted
  */
-template<typename Type>
+template<typename Type, kF::Core::StaticAllocatorRequirements Allocator = kF::Core::DefaultStaticAllocator>
 class alignas_double_cacheline kF::Core::SPSCQueue
 {
 public:
