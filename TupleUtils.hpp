@@ -23,7 +23,7 @@ namespace kF::Core
         };
 
         /** @brief Helper found index and has to ensure 'Search' appears only once */
-        template<typename Search, typename... Nexts>
+        template<typename Search, typename ...Nexts>
         struct SearchTupleElementIndexHelper<Search, std::tuple<Search, Nexts...>>
         {
             static constexpr std::size_t Value = 0;
@@ -35,7 +35,7 @@ namespace kF::Core
         };
 
         /** @brief Helper did not found 'Search' type and continue searching */
-        template<typename Search, typename First, typename... Nexts>
+        template<typename Search, typename First, typename ...Nexts>
         struct SearchTupleElementIndexHelper<Search, std::tuple<First, Nexts...>>
         {
             using RestTuple = std::tuple<Nexts...>;
@@ -62,4 +62,58 @@ namespace kF::Core
     constexpr bool TupleContainsElement = []<typename ...Types>(std::type_identity<std::tuple<Types...>>) {
         return (std::is_same_v<Search, Types> || ...);
     }(std::type_identity<Tuple> {});
+
+    namespace Internal
+    {
+        /** @brief Helper to remove an element from a tuple */
+        template<std::size_t Index, typename Tuple>
+        struct RemoveTupleElementHelper {};
+
+        /** @brief Helper to remove an element from a tuple */
+        template<typename Current, typename ...Nexts>
+        struct RemoveTupleElementHelper<0, std::tuple<Current, Nexts...>>
+        {
+            using Type = std::tuple<Nexts...>;
+        };
+
+        /** @brief Helper to remove an element from a tuple */
+        template<std::size_t Index, typename Current, typename ...Nexts>
+        struct RemoveTupleElementHelper<Index, std::tuple<Current, Nexts...>>
+        {
+            using Type = decltype(
+                std::tuple_cat(
+                    std::declval<std::tuple<Current>>(),
+                    std::declval<typename RemoveTupleElementHelper<Index - 1, std::tuple<Nexts...>>::Type>()
+                )
+            );
+        };
+    }
+
+    /** @brief Remove the ith element from a tuple type */
+    template<std::size_t Index, typename Tuple>
+    using RemoveTupleElement = Internal::RemoveTupleElementHelper<Index, Tuple>::Type;
+
+    /** @brief Concatenate tuple types */
+    template<typename Lhs, typename Rhs>
+    using ConcatenateTuple = decltype(std::tuple_cat<Lhs, Rhs>(std::declval<Lhs>(), std::declval<Rhs>()));
+
+
+    namespace Internal
+    {
+        /** @brief Helper to check if a function can be used with 'std::apply' */
+        template<typename, typename>
+        struct IsApplicableHelper : std::false_type {};
+
+        /** @brief Helper to check if a function can be used with 'std::apply' */
+        template<typename Func, template<typename...> class Tuple, typename... Args>
+        struct IsApplicableHelper<Func, Tuple<Args...>> : std::is_invocable<Func, Args...> {};
+
+        /** @brief Helper to check if a function can be used with 'std::apply' */
+        template<typename Func, template<typename...> class Tuple, typename... Args>
+        struct IsApplicableHelper<Func, const Tuple<Args...>> : std::is_invocable<Func, Args...> {};
+    }
+
+    /** @brief Same as std::is_invocable_v but for std::apply */
+    template<typename Func, typename Args>
+    constexpr bool IsApplicable = Internal::IsApplicableHelper<Func, Args>::value;
 }
