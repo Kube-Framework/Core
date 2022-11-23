@@ -40,6 +40,9 @@ public:
     template<HasNewLine NewLine = HasNewLine::Yes, typename ...Args>
     void log(Args &&...args) noexcept;
 
+    /** @brief Write a line break and flush */
+    inline void log(void) noexcept { *_target << std::endl; }
+
 
     /** @brief Flush target */
     inline void flush(void) const noexcept { _target->flush(); }
@@ -56,12 +59,12 @@ namespace kF::Core
 }
 
 /** @brief Write a message to the info log */
-# define kFInfo(...)     kF::Core::InfoLog.log<kF::Core::Log::HasNewLine::Yes>(__VA_ARGS__)
-# define kFInfoRaw(...)  kF::Core::InfoLog.log<kF::Core::Log::HasNewLine::No>(__VA_ARGS__)
+# define kFInfo(...)     kF::Core::InfoLog.log __VA_OPT__(<kF::Core::Log::HasNewLine::Yes>) ( __VA_OPT__(__VA_ARGS__) )
+# define kFInfoRaw(...)  kF::Core::InfoLog.log __VA_OPT__(<kF::Core::Log::HasNewLine::No>) ( __VA_OPT__(__VA_ARGS__) )
 
 /** @brief Write a message to the error log */
-#define kFError(...)     kF::Core::ErrorLog.log<kF::Core::Log::HasNewLine::Yes>(__VA_ARGS__)
-#define kFErrorRaw(...)  kF::Core::ErrorLog.log<kF::Core::Log::HasNewLine::No>(__VA_ARGS__)
+#define kFError(...)     kF::Core::ErrorLog.log __VA_OPT__(<kF::Core::Log::HasNewLine::Yes>) ( __VA_OPT__(__VA_ARGS__) )
+#define kFErrorRaw(...)  kF::Core::ErrorLog.log __VA_OPT__(<kF::Core::Log::HasNewLine::No>) ( __VA_OPT__(__VA_ARGS__) )
 
 /** @brief String view overload */
 std::ostream &operator<<(std::ostream &lhs, const std::string_view &rhs) noexcept;
