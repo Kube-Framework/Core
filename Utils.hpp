@@ -138,6 +138,10 @@ namespace kF::Core
         Iterator from {};
         Iterator to {};
 
+        /** @brief Conversion operator */
+        [[nodiscard]] inline operator IteratorRange<std::add_const_t<Type> *>(void) const noexcept
+            { return { from, to }; }
+
         /** @brief Empty check */
         [[nodiscard]] inline bool empty(void) const noexcept { return from == to; }
 
