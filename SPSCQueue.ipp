@@ -21,9 +21,8 @@ inline kF::Core::SPSCQueue<Type, Allocator>::SPSCQueue(const std::size_t capacit
 }
 
 template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
-template<typename ...Args>
+template<bool MoveOnSuccess, typename ...Args>
 inline bool kF::Core::SPSCQueue<Type, Allocator>::push(Args &&...args) noexcept
-    requires std::constructible_from<Type, Args...>
 {
     const auto tail = _tail.load(std::memory_order_relaxed);
     auto next = tail + 1;
@@ -35,7 +34,10 @@ inline bool kF::Core::SPSCQueue<Type, Allocator>::push(Args &&...args) noexcept
         if (next == head) [[unlikely]]
             return false;
     }
-    new (_tailCache.buffer.data + tail) Type { std::forward<Args>(args)... };
+    if constexpr (MoveOnSuccess)
+        new (_tailCache.buffer.data + tail) Type(std::move(args)...);
+    else
+        new (_tailCache.buffer.data + tail) Type(std::forward<Args>(args)...);
     _tail.store(next, std::memory_order_release);
     return true;
 }

@@ -19,9 +19,8 @@ inline kF::Core::MPSCQueue<Type, Allocator>::MPSCQueue(const std::size_t capacit
 }
 
 template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
-template<typename ...Args>
+template<bool MoveOnSuccess, typename ...Args>
 inline bool kF::Core::MPSCQueue<Type, Allocator>::push(Args &&...args) noexcept
-    requires std::constructible_from<Type, Args...>
 {
     auto tail = _tailCache.value.load(std::memory_order_acquire);
     auto head = _head.load(std::memory_order_acquire);
@@ -39,7 +38,10 @@ inline bool kF::Core::MPSCQueue<Type, Allocator>::push(Args &&...args) noexcept
             break;
     }
     // Transaction is secured until tail is modified
-    new (_tailCache.buffer.data + tail) Type { std::forward<Args>(args)... };
+    if constexpr (MoveOnSuccess)
+        new (_tailCache.buffer.data + tail) Type(std::move(args)...);
+    else
+        new (_tailCache.buffer.data + tail) Type(std::forward<Args>(args)...);
     // Loop while the transaction is not done (may wait prior thread with longer insertion)
     auto expected = tail;
     while (!_tail.compare_exchange_weak(expected, next, std::memory_order_acq_rel)) [[unlikely]]

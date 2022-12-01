@@ -37,7 +37,6 @@ inline std::size_t kF::Core::MPMCQueue<Type, Allocator>::size(void) const noexce
 template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 template<bool MoveOnSuccess, typename ...Args>
 inline bool kF::Core::MPMCQueue<Type, Allocator>::push(Args &&...args) noexcept
-    requires std::constructible_from<Type, Args...>
 {
     auto pos = _tail.load(std::memory_order_relaxed);
     auto * const data = _tailCache.buffer.data;

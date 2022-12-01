@@ -54,10 +54,10 @@ public:
 
 
     /** @brief Push a single element into the queue
+     *  @tparam Set MoveOnSuccess to true to move 'args' instead of forward on push success
      *  @return true if the element has been inserted */
-    template<typename ...Args>
-    [[nodiscard]] bool push(Args &&...args) noexcept
-        requires std::constructible_from<Type, Args...>;
+    template<bool MoveOnSuccess = false, typename ...Args>
+    [[nodiscard]] bool push(Args &&...args) noexcept;
 
 
     /** @brief Pop a single element from the queue

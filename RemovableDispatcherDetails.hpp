@@ -18,7 +18,7 @@ namespace kF::Core
 
 /** @brief Fast event dispatcher */
 template<typename Return, typename... Args, kF::Core::FunctorRequirements InternalFunctor, kF::Core::StaticAllocatorRequirements Allocator>
-class alignas_quarter_cacheline kF::Core::RemovableDispatcherDetails<Return(Args...), InternalFunctor, Allocator>
+class alignas_eighth_cacheline kF::Core::RemovableDispatcherDetails<Return(Args...), InternalFunctor, Allocator>
 {
 public:
     /** @brief Functor handle */

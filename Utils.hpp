@@ -283,11 +283,17 @@ namespace kF::Core
         { return static_cast<std::underlying_type_t<Type>>(value); }
 
 
-    /** @brief Guaranteed branchless compute
+    /** @brief Branchless computed if
      *  @todo Benchmark */
     template<typename Type>
         requires std::integral<Type> || std::floating_point<Type>
     [[nodiscard]] constexpr Type BranchlessIf(const bool condition, const Type lhs, const Type rhs) noexcept;
+
+    /** @brief Branchless compute if */
+    template<typename Type>
+        requires std::is_enum_v<Type>
+    [[nodiscard]] constexpr Type BranchlessIf(const bool condition, const Type lhs, const Type rhs) noexcept
+        { return static_cast<Type>(BranchlessIf(condition, Core::ToUnderlying(lhs), Core::ToUnderlying(rhs))); }
 
 
     /** @brief Linear interpolate function */
