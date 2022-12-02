@@ -13,16 +13,16 @@ inline Type &kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range,
 }
 
 template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insertDefault(const Range count) noexcept
+inline kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::Iterator kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insertDefault(const Range count) noexcept
 {
-    DetailsBase::insertDefault(findSortedPlacement(Type{}), count);
+    return DetailsBase::insertDefault(findSortedPlacement(Type{}), count);
 }
 
 template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
-inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insertFill(
+inline kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::Iterator kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insertFill(
         const Range count, const Type &value) noexcept
 {
-    DetailsBase::insertFill(findSortedPlacement(value), count, value);
+    return DetailsBase::insertFill(findSortedPlacement(value), count, value);
 }
 
 template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
@@ -40,6 +40,15 @@ inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, 
         InputIterator from, InputIterator to, Map &&map) noexcept
 {
     DetailsBase::insert(DetailsBase::end(), from, to, std::forward<Map>(map));
+    sort();
+}
+
+template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
+template<typename InsertFunc>
+inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insertCustom(
+        const Range count, InsertFunc &&insertFunc) noexcept
+{
+    DetailsBase::insertCustom(count, std::forward<InsertFunc>(insertFunc));
     sort();
 }
 

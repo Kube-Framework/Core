@@ -142,10 +142,10 @@ public:
 
 
     /** @brief Insert a range of default initialized values */
-    void insertDefault(const Range count) noexcept;
+    Iterator insertDefault(const Range count) noexcept;
 
     /** @brief Insert a range of copies */
-    void insertFill(const Range count, const Type &value) noexcept;
+    Iterator insertFill(const Range count, const Type &value) noexcept;
 
     /** @brief Insert an initializer list */
     inline void insert(std::initializer_list<Type> &&init) noexcept
@@ -166,6 +166,10 @@ public:
     /** @brief Insert a range of element by using a map function over iterators */
     template<std::input_iterator InputIterator, typename Map>
     void insert(InputIterator from, InputIterator to, Map &&map) noexcept;
+
+    /** @brief Insert a range of element by using a custom insert functor */
+    template<typename InsertFunc>
+    void insertCustom(const Range count, InsertFunc &&insertFunc) noexcept;
 
 
     /** @brief Insert an value by copy at a specific location (no sort involved), returning its iterator */
@@ -220,9 +224,11 @@ public:
 private:
     /** @brief Reimplemented functions */
     using DetailsBase::push;
-    using DetailsBase::insert;
-    using DetailsBase::resize;
     using DetailsBase::insertDefault;
+    using DetailsBase::insertFill;
+    using DetailsBase::insert;
+    using DetailsBase::insertCustom;
+    using DetailsBase::resize;
     using DetailsBase::sort;
 };
 
