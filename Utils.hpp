@@ -125,6 +125,7 @@ namespace kF::Core
     };
     static_assert(StaticAllocatorRequirements<DefaultStaticAllocator>, "Default static allocator doesn't meet requirements");
 
+
     /** @brief Simple pair of random access begin / end iterators */
     template<std::random_access_iterator Iterator>
     struct IteratorRange
@@ -179,6 +180,13 @@ namespace kF::Core
         [[nodiscard]] inline bool operator!=(const IteratorRange &other) const noexcept
             { return (from != other.from) | (to != other.to); }
     };
+
+    /** @brief Convert any container to an iterator range */
+    template<typename Container>
+        requires requires(Container &container) { std::begin(container); std::end(container); }
+    constexpr auto ToIteratorRange(Container &container) noexcept
+        { return Core::IteratorRange<decltype(std::begin(container))> { std::begin(container), std::end(container) }; }
+
 
     /** @brief Helper to know if a given type is a std::move_iterator */
     template<typename Type>

@@ -163,6 +163,7 @@ TEST(Vector, Move) \
     const Vector<std::size_t __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(Answer2, AllocatorMode,  std::initializer_list<std::size_t>({ 3, 4, 0, 1, 2 })); \
     const Vector<std::size_t __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(Answer3, AllocatorMode,  std::initializer_list<std::size_t>({ 1, 2, 3, 4, 0 })); \
     const Vector<std::size_t __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(Answer4, AllocatorMode,  std::initializer_list<std::size_t>({ 2, 3, 4, 0, 1 })); \
+    const Vector<std::size_t __VA_OPT__(,) __VA_ARGS__> DECLARE_VECTOR(Answer5, AllocatorMode, std::initializer_list<std::size_t>({ 1, 0, 2, 3, 4 })); \
     vector = Original; \
     ASSERT_EQ(vector, Original); \
     vector.move(3, 3, 0); \
@@ -178,6 +179,9 @@ TEST(Vector, Move) \
     vector = Original; \
     vector.move(0, 2, 4); \
     ASSERT_EQ(vector, Answer4); \
+    vector = Original; \
+    vector.move(0, 1, 1); \
+    ASSERT_EQ(vector, Answer5); \
 } \
  \
 TEST(Vector, InsertIterators) \
