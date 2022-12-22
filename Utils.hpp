@@ -307,7 +307,7 @@ namespace kF::Core
     /** @brief Linear interpolate function */
     template<typename Type, typename RatioType>
     [[nodiscard]] constexpr Type Lerp(const Type min, const Type max, const RatioType ratio) noexcept
-        { return min + (max - min) * ratio; }
+        { return static_cast<Type>(static_cast<RatioType>(min) + static_cast<RatioType>(max - min) * ratio); }
 
     /** @brief Linear interpolate function */
     template<typename Type>

@@ -50,5 +50,5 @@ template<typename Type>
 constexpr Type kF::Core::BranchlessIf(const bool condition, const Type lhs, const Type rhs) noexcept
 {
     const auto typeCondition = static_cast<Type>(condition);
-    return typeCondition * lhs - rhs * (typeCondition - static_cast<Type>(1));
+    return static_cast<Type>(typeCondition * lhs - rhs * (typeCondition - static_cast<Type>(1)));
 }
