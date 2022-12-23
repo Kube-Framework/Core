@@ -333,7 +333,7 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::move(const Range from_, const Range to_, const Range output_) noexcept
 {
-    kFAssert(output_ < from_ || output_ <= to_,
+    kFAssert(output_ < from_ || output_ >= to_,
         "Core::VectorDetails::move: Invalid move range [", from_, ", ", to_, "[ -> ", output_);
 
     auto from = from_;
