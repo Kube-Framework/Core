@@ -308,11 +308,6 @@ namespace kF::Core
     template<typename Type, typename RatioType>
     [[nodiscard]] constexpr Type Lerp(const Type min, const Type max, const RatioType ratio) noexcept
         { return static_cast<Type>(static_cast<RatioType>(min) + static_cast<RatioType>(max - min) * ratio); }
-
-    /** @brief Linear interpolate function */
-    template<typename Type>
-    [[nodiscard]] constexpr Type LerpInverse(const Type min, const Type max, const Type value) noexcept
-        { return min != max ? (value - min) / (max - min) : min; } // @todo Try to remove branch
 }
 
 #include "Utils.ipp"
