@@ -3,9 +3,11 @@
  * @ Description: String details
  */
 
+#include "StringDetails.hpp"
+
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
     requires std::is_trivial_v<Type>
-inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const StringDetails &other) noexcept
+inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const StringDetails &other) const noexcept
 {
     StringDetails res;
     res.reserve(size() + other.size());
@@ -16,7 +18,16 @@ inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> 
 
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
     requires std::is_trivial_v<Type>
-inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const char * const cstring) noexcept
+inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const Type character) const noexcept
+{
+    StringDetails res;
+    res.push(character);
+    return res;
+}
+
+template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
+    requires std::is_trivial_v<Type>
+inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const char * const cstring) const noexcept
 {
     StringDetails res;
     const auto length = SafeStrlen(cstring);
@@ -28,7 +39,7 @@ inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> 
 
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
     requires std::is_trivial_v<Type>
-inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const std::basic_string_view<Type> &other) noexcept
+inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const std::basic_string_view<Type> &other) const noexcept
 {
     StringDetails res;
     res.reserve(size() + static_cast<Range>(other.size()));
@@ -39,10 +50,10 @@ inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> 
 
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
     requires std::is_trivial_v<Type>
-inline std::size_t kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::SafeStrlen(const char * const cstring) noexcept
+inline Range kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::SafeStrlen(const char * const cstring) noexcept
 {
     if (!cstring)
-        return 0;
+        return Range {};
     else
-        return std::strlen(cstring);
+        return static_cast<Range>(std::strlen(cstring));
 }

@@ -58,7 +58,7 @@ public:
 
 
     /** @brief Dispatch every internal functors */
-    inline void dispatch(Args ...args)
+    inline void dispatch(Args ...args) const noexcept
     {
         for (auto &functor : _functors)
             functor(std::forward<Args>(args)...);
@@ -67,7 +67,7 @@ public:
     /** @brief Dispatch every internal functors with a given callback to receive the return value of each functor */
     template<typename Callback>
         requires (!std::is_same_v<Return, void> && std::invocable<Callback, Return>)
-    inline void dispatch(Callback &&callback, Args ...args)
+    inline void dispatch(Callback &&callback, Args ...args) const noexcept
     {
         for (auto &functor : _functors)
             callback(functor(std::forward<Args>(args)...));

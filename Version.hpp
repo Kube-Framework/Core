@@ -15,6 +15,10 @@ namespace kF::Core
         std::uint8_t major {};
         std::uint8_t minor {};
         std::uint8_t patch {};
+
+        /** @brief Comparison operators */
+        [[nodiscard]] constexpr bool operator==(const Version &other) const noexcept = default;
+        [[nodiscard]] constexpr bool operator!=(const Version &other) const noexcept = default;
     };
 
     constexpr Version KubeVersion {

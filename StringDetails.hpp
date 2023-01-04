@@ -131,14 +131,16 @@ public:
 
     /** @brief Append operator */
     inline StringDetails &operator+=(const StringDetails &other) noexcept { insert(end(), other.begin(), other.end()); return *this; }
+    inline StringDetails &operator+=(const Type character) noexcept { push(character); return *this; }
     inline StringDetails &operator+=(const char * const cstring) noexcept { insert(end(), cstring, cstring + SafeStrlen(cstring)); return *this; }
     inline StringDetails &operator+=(const View &other) noexcept { insert(end(), other.begin(), other.end()); return *this; }
 
 
     /** @brief Addition operator */
-    [[nodiscard]] inline StringDetails operator+(const StringDetails &other) noexcept;
-    [[nodiscard]] inline StringDetails operator+(const char * const cstring) noexcept;
-    [[nodiscard]] inline StringDetails operator+(const View &other) noexcept;
+    [[nodiscard]] inline StringDetails operator+(const StringDetails &other) const noexcept;
+    [[nodiscard]] inline StringDetails operator+(const Type character) const noexcept;
+    [[nodiscard]] inline StringDetails operator+(const char * const cstring) const noexcept;
+    [[nodiscard]] inline StringDetails operator+(const View &other) const noexcept;
 
 
     /** @brief Implicit converted to std::string_view */
@@ -159,9 +161,20 @@ public:
         return dataUnsafe();
     }
 
+
+    /** @brief Check if substring is contained in string */
+    [[nodiscard]] inline bool contains(const View &view) const noexcept { return toView().contains(view); }
+
+    /** @brief Check if substring is at begin of string */
+    [[nodiscard]] inline bool startsWith(const View &view) const noexcept { return toView().substr(0, view.size()) == view; }
+
+    /** @brief Check if substring is at end of string */
+    [[nodiscard]] inline bool endsWith(const View &view) const noexcept { return toView().substr(size() - view.size()) == view; }
+
+
 private:
     /** @brief Strlen but with null cstring check */
-    [[nodiscard]] static std::size_t SafeStrlen(const char * const cstring) noexcept;
+    [[nodiscard]] static Range SafeStrlen(const char * const cstring) noexcept;
 };
 
 #include "StringDetails.ipp"
