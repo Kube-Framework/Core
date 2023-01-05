@@ -179,6 +179,16 @@ namespace kF::Core
             { return (from == other.from) & (to == other.to); }
         [[nodiscard]] inline bool operator!=(const IteratorRange &other) const noexcept
             { return (from != other.from) | (to != other.to); }
+
+        /** @brief Get a subrange with an offset */
+        template<typename Range>
+        [[nodiscard]] inline IteratorRange subrange(const Range offset) const noexcept
+            { return IteratorRange { from + offset, to }; }
+
+        /** @brief Get a subrange with an offset and a count */
+        template<typename Range>
+        [[nodiscard]] inline IteratorRange subrange(const Range offset, const Range count) const noexcept
+            { return IteratorRange { from + offset, from + offset + count }; }
     };
 
     /** @brief Convert any container to an iterator range */
