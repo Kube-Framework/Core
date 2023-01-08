@@ -22,7 +22,7 @@ namespace kF::Core
 /** @brief Implementation details of any sorted vector.
  *  The compare function must not throw ! */
 template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
-class kF::Core::Internal::SortedVectorDetails : public VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>
+class kF::Core::Internal::SortedVectorDetails : private VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>
 {
 public:
     /** @brief Static tag which indicates that the vector is sorted */
@@ -93,26 +93,26 @@ public:
 
     /** @brief Resize constructor */
     template<std::input_iterator InputIterator>
-    inline SortedVectorDetails(InputIterator from, InputIterator to) noexcept
+    inline SortedVectorDetails(const InputIterator from, const InputIterator to) noexcept
             requires (!IsRuntimeAllocated)
         { resize(from, to); }
 
     /** @brief Resize constructor - Allocated version */
     template<std::input_iterator InputIterator>
-    inline SortedVectorDetails(IAllocator &allocator, InputIterator from, InputIterator to) noexcept
+    inline SortedVectorDetails(IAllocator &allocator, const InputIterator from, const InputIterator to) noexcept
             requires (IsRuntimeAllocated)
         : DetailsBase(allocator) { resize(from, to); }
 
 
     /** @brief Resize map constructor */
     template<std::input_iterator InputIterator, typename Map>
-    inline SortedVectorDetails(InputIterator from, InputIterator to, Map &&map) noexcept
+    inline SortedVectorDetails(const InputIterator from, const InputIterator to, Map &&map) noexcept
             requires (!IsRuntimeAllocated)
         { resize(from, to, std::forward<Map>(map)); }
 
     /** @brief Resize map constructor - Allocated version */
     template<std::input_iterator InputIterator, typename Map>
-    inline SortedVectorDetails(IAllocator &allocator, InputIterator from, InputIterator to, Map &&map) noexcept
+    inline SortedVectorDetails(IAllocator &allocator, const InputIterator from, const InputIterator to, Map &&map) noexcept
             requires (IsRuntimeAllocated)
         : DetailsBase(allocator) { resize(from, to, std::forward<Map>(map)); }
 
@@ -161,11 +161,11 @@ public:
 
     /** @brief Insert a range of element by iterating over iterators */
     template<std::input_iterator InputIterator>
-    void insert(InputIterator from, InputIterator to) noexcept;
+    void insert(const InputIterator from, const InputIterator to) noexcept;
 
     /** @brief Insert a range of element by using a map function over iterators */
     template<std::input_iterator InputIterator, typename Map>
-    void insert(InputIterator from, InputIterator to, Map &&map) noexcept;
+    void insert(const InputIterator from, const InputIterator to, Map &&map) noexcept;
 
     /** @brief Insert a range of element by using a custom insert functor */
     template<typename InsertFunc>
@@ -193,11 +193,11 @@ public:
 
     /** @brief Resize the vector with input iterators */
     template<std::input_iterator InputIterator>
-    void resize(InputIterator from, InputIterator to) noexcept;
+    void resize(const InputIterator from, const InputIterator to) noexcept;
 
     /** @brief Resize the vector using a map function with input iterators */
     template<std::input_iterator InputIterator, typename Map>
-    void resize(InputIterator from, InputIterator to, Map &&map) noexcept;
+    void resize(const InputIterator from, const InputIterator to, Map &&map) noexcept;
 
     /** @brief Resize the vector by initializing each element with a functor
      *  @note The initializer functor can take an optional argument of type 'Range' as index */
@@ -221,15 +221,48 @@ public:
     [[nodiscard]] inline ConstIterator findSortedPlacement(const Type &value) const noexcept
         { return DetailsBase::find([&value](const Type &other) { return Compare{}(value, other); }); }
 
-private:
-    /** @brief Reimplemented functions */
-    using DetailsBase::push;
-    using DetailsBase::insertDefault;
-    using DetailsBase::insertFill;
-    using DetailsBase::insert;
-    using DetailsBase::insertCustom;
-    using DetailsBase::resize;
-    using DetailsBase::sort;
+
+    /** @brief All required base functions - FixMSVCPlz */
+    using DetailsBase::data;
+    using DetailsBase::dataUnsafe;
+    using DetailsBase::size;
+    using DetailsBase::sizeUnsafe;
+    using DetailsBase::capacity;
+    using DetailsBase::capacityUnsafe;
+    using DetailsBase::begin;
+    using DetailsBase::beginUnsafe;
+    using DetailsBase::end;
+    using DetailsBase::endUnsafe;
+    using DetailsBase::empty;
+    using DetailsBase::steal;
+    using DetailsBase::swap;
+    using DetailsBase::isSafe;
+    using DetailsBase::operator bool;
+    using DetailsBase::cbegin;
+    using DetailsBase::cend;
+    using DetailsBase::rbegin;
+    using DetailsBase::rend;
+    using DetailsBase::crbegin;
+    using DetailsBase::crend;
+    using DetailsBase::at;
+    using DetailsBase::operator[];
+    using DetailsBase::front;
+    using DetailsBase::back;
+    using DetailsBase::erase;
+    using DetailsBase::resizeUninitialized;
+    using DetailsBase::clear;
+    using DetailsBase::clearUnsafe;
+    using DetailsBase::release;
+    using DetailsBase::releaseUnsafe;
+    using DetailsBase::reserve;
+    using DetailsBase::move;
+    using DetailsBase::operator==;
+    using DetailsBase::operator!=;
+    using DetailsBase::find;
+    using DetailsBase::rfind;
+    using DetailsBase::grow;
+    using DetailsBase::toRange;
+    using DetailsBase::indexOf;
 };
 
 #include "SortedVectorDetails.ipp"

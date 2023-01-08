@@ -28,7 +28,7 @@ inline kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSma
 template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<std::input_iterator InputIterator>
 inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insert(
-        InputIterator from, InputIterator to) noexcept
+        const InputIterator from, const InputIterator to) noexcept
 {
     DetailsBase::insert(DetailsBase::end(), from, to);
     sort();
@@ -37,7 +37,7 @@ inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, 
 template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<std::input_iterator InputIterator, typename Map>
 inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::insert(
-        InputIterator from, InputIterator to, Map &&map) noexcept
+        const InputIterator from, const InputIterator to, Map &&map) noexcept
 {
     DetailsBase::insert(DetailsBase::end(), from, to, std::forward<Map>(map));
     sort();
@@ -55,7 +55,7 @@ inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, 
 template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<std::input_iterator InputIterator>
 inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::resize(
-        InputIterator from, InputIterator to) noexcept
+        const InputIterator from, const InputIterator to) noexcept
 {
     DetailsBase::resize(from, to);
     sort();
@@ -64,7 +64,7 @@ inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, 
 template<typename Base, typename Type, typename Compare, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
 template<std::input_iterator InputIterator, typename Map>
 inline void kF::Core::Internal::SortedVectorDetails<Base, Type, Compare, Range, IsSmallOptimized, IsRuntimeAllocated>::resize(
-        InputIterator from, InputIterator to, Map &&map) noexcept
+        const InputIterator from, const InputIterator to, Map &&map) noexcept
 {
     DetailsBase::resize(from, to, std::forward<Map>(map));
     sort();

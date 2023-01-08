@@ -49,19 +49,30 @@ namespace kF::Core
     namespace Internal
     {
         /** @brief Invoke a function with a variable list of arguments */
-        template <std::size_t ...Sequence, typename Function, typename ArgsTuple>
+        template<typename FunctionArgs, typename Function, typename ArgsTuple, std::size_t ...Sequence>
             requires std::is_invocable_v<Function, std::tuple_element_t<Sequence, ArgsTuple>...>
         constexpr decltype(auto) InvokeImpl(std::index_sequence<Sequence...>, Function &&function, ArgsTuple &&args) noexcept
         {
             return std::invoke(std::forward<Function>(function), std::forward<std::tuple_element_t<Sequence, ArgsTuple>>(std::get<Sequence>(args))...);
         }
 
+        /** @brief Invoke a function with a variable list of arguments - error case */
+        template<typename FunctionArgs, typename Function, typename ArgsTuple, std::size_t ...Sequence>
+            requires (!std::is_invocable_v<Function, std::tuple_element_t<Sequence, ArgsTuple>...> && sizeof...(Sequence) == 0)
+        constexpr decltype(auto) InvokeImpl(std::index_sequence<Sequence...>, Function &&function, ArgsTuple &&args) noexcept
+        {
+            static_assert(
+                std::is_same<FunctionArgs, ArgsTuple>::value,
+                "Core::Invoke: Arguments passed can't match functor signature"
+            );
+        }
+
         /** @brief Remove arguments one by one to find a matching combination */
-        template <std::size_t... Sequence, typename Function, typename ArgsTuple>
+        template<typename FunctionArgs, typename Function, typename ArgsTuple, std::size_t ...Sequence>
             requires (!std::is_invocable_v<Function, std::tuple_element_t<Sequence, ArgsTuple>...> && sizeof...(Sequence) > 0)
         constexpr decltype(auto) InvokeImpl(std::index_sequence<Sequence...>, Function &&function, ArgsTuple &&args) noexcept
         {
-            return Internal::InvokeImpl(
+            return Internal::InvokeImpl<FunctionArgs>(
                 std::make_index_sequence<sizeof...(Sequence) - 1>(),
                 std::forward<Function>(function),
                 std::move(args)
@@ -71,10 +82,10 @@ namespace kF::Core
 
     /** @brief Invoke a function with a variable list of arguments
      *  @note The list of runtime arguments may be larger than function's argument list, they are ignored */
-    template <typename Function, typename ...Args>
+    template<typename Function, typename ...Args>
     constexpr decltype(auto) Invoke(Function &&function, Args &&...args) noexcept
     {
-        return Internal::InvokeImpl(
+        return Internal::InvokeImpl<typename FunctionDecomposerHelper<Function>::ArgsTuple>(
             std::make_index_sequence<sizeof...(Args)>(),
             std::forward<Function>(function),
             std::forward_as_tuple(std::forward<Args>(args)...)

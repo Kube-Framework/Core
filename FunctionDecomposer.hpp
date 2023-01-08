@@ -99,7 +99,7 @@ namespace kF::Core
 
     /** @brief Helper that catch functors and get their Decomposer */
     template<typename Type>
-    constexpr FunctionDecomposer<Type, decltype(void(&Type::operator()))> ToFunctionDecomposer(Type);
+    constexpr FunctionDecomposer<Type, decltype(void(&Type::operator()))> ToFunctionDecomposer(const Type &);
 
     constexpr void ToFunctionDecomposer(...);
 
