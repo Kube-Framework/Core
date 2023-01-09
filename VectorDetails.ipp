@@ -79,14 +79,19 @@ inline typename kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOpti
         pos,
         static_cast<Range>(std::distance(from, to)),
         [from, map = std::forward<Map>(map)](const auto count, const auto out) {
-            [](const InputIterator input, const Range count, const Iterator out, auto &map) {
-                for (Range i { 0 }; i != count; ++i) {
-                    if constexpr (IsMoveIterator<InputIterator>::Value)
-                        new (out + i) Type(map(std::move(input[i])));
+            for (Range i {}; i != count; ++i) {
+                if constexpr (IsMoveIterator<InputIterator>::Value) {
+                    if constexpr (std::is_invocable_v<Map, decltype(std::move(from[i])), Range>)
+                        new (out + i) Type(map(std::move(from[i]), i));
                     else
-                        new (out + i) Type(map(input[i]));
+                        new (out + i) Type(map(std::move(from[i])));
+                } else {
+                    if constexpr (std::is_invocable_v<Map, decltype(from[i]), Range>)
+                        new (out + i) Type(map(from[i], i));
+                    else
+                        new (out + i) Type(map(from[i]));
                 }
-            }(from, count, out, map);
+            }
         }
     );
 }
@@ -229,10 +234,17 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
     if (count) [[likely]] {
         auto out = beginUnsafe();
         for (Range i {}; i != count; ++i) {
-            if constexpr (IsMoveIterator<InputIterator>::Value)
-                new (out + i) Type(map(std::move(from[i])));
-            else
-                new (out + i) Type(map(from[i]));
+            if constexpr (IsMoveIterator<InputIterator>::Value) {
+                if constexpr (std::is_invocable_v<Map, decltype(std::move(from[i])), Range>)
+                    new (out + i) Type(map(std::move(from[i]), i));
+                else
+                    new (out + i) Type(map(std::move(from[i])));
+            } else {
+                if constexpr (std::is_invocable_v<Map, decltype(from[i]), Range>)
+                    new (out + i) Type(map(from[i], i));
+                else
+                    new (out + i) Type(map(from[i]));
+            }
         }
     }
 }
