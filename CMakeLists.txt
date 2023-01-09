@@ -36,6 +36,8 @@ kube_add_library(Core
         Log.hpp
         Log.ipp
         MacroUtils.hpp
+        Maths.hpp
+        Maths.ipp
         MPMCQueue.hpp
         MPMCQueue.ipp
         MPSCQueue.hpp
@@ -44,10 +46,10 @@ kube_add_library(Core
         Platform.hpp
         Random.cpp
         Random.hpp
+        Random.hpp
         RemovableDispatcher.hpp
         RemovableDispatcherDetails.hpp
         RemovableTrivialDispatcher.hpp
-        Random.hpp
         SafeAllocator.cpp
         SafeAllocator.hpp
         SafeAllocator.ipp
@@ -66,14 +68,14 @@ kube_add_library(Core
         SortedVectorDetails.ipp
         SparseSet.hpp
         SparseSet.ipp
-        StaticAllocator.hpp
-        StaticAllocator.ipp
-        StaticSafeAllocator.hpp
-        StaticUnsafeAllocator.hpp
         SPMCQueue.hpp
         SPMCQueue.ipp
         SPSCQueue.hpp
         SPSCQueue.ipp
+        StaticAllocator.hpp
+        StaticAllocator.ipp
+        StaticSafeAllocator.hpp
+        StaticUnsafeAllocator.hpp
         String.hpp
         StringDetails.hpp
         StringDetails.ipp
