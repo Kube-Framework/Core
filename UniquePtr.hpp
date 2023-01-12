@@ -96,9 +96,8 @@ public:
 
 
     /** @brief Comparison operators */
-    [[nodiscard]] inline auto operator<=>(const UniquePtr &other) const noexcept = default;
-
-    /** @brief Raw pointer comparison */
+    [[nodiscard]] inline bool operator==(const UniquePtr &other) const noexcept { return _ptr == other._ptr; }
+    [[nodiscard]] inline bool operator!=(const UniquePtr &other) const noexcept { return _ptr != other._ptr; }
     [[nodiscard]] inline bool operator==(const Type * const other) const noexcept { return _ptr == other; }
     [[nodiscard]] inline bool operator!=(const Type * const other) const noexcept { return _ptr != other; }
     [[nodiscard]] inline bool operator==(Type * const other) const noexcept { return _ptr == other; }

@@ -107,11 +107,9 @@ public:
     template<bool ResetMembers = true>
     inline void release(void) noexcept { if (_ptr) releaseUnsafe<ResetMembers>(); }
 
-
     /** @brief Comparison operators */
-    [[nodiscard]] auto operator<=>(const SharedPtr &other) const noexcept = default;
-
-    /** @brief Raw pointer comparison */
+    [[nodiscard]] inline bool operator==(const SharedPtr &other) const noexcept { return _ptr == other._ptr; }
+    [[nodiscard]] inline bool operator!=(const SharedPtr &other) const noexcept { return _ptr != other._ptr; }
     [[nodiscard]] inline bool operator==(const Type * const other) const noexcept { return _ptr == other; }
     [[nodiscard]] inline bool operator!=(const Type * const other) const noexcept { return _ptr != other; }
     [[nodiscard]] inline bool operator==(Type * const other) const noexcept { return _ptr == other; }
