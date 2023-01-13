@@ -20,7 +20,7 @@ namespace kF::Core
     }
 
     template<typename Type, typename ErrorType>
-        requires (!std::is_same_v<Type, ErrorType>)
+        requires (!std::is_same_v<Type, ErrorType> && !std::is_reference_v<Type> && !std::is_reference_v<ErrorType>)
     class Expected;
 };
 
@@ -28,7 +28,7 @@ namespace kF::Core
  *  Member function 'success' gives the state of value / error
  *  'value' / 'error' gives the instance of the value / error type */
 template<typename Type, typename ErrorType = void>
-    requires (!std::is_same_v<Type, ErrorType>)
+    requires (!std::is_same_v<Type, ErrorType> && !std::is_reference_v<Type> && !std::is_reference_v<ErrorType>)
 class kF::Core::Expected
 {
 public:
