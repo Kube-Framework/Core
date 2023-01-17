@@ -146,6 +146,9 @@ namespace kF::Core
         /** @brief Empty check */
         [[nodiscard]] inline bool empty(void) const noexcept { return from == to; }
 
+        /** @brief Get data */
+        [[nodiscard]] inline Iterator data(void) const noexcept { return from; }
+
         /** @brief Begin / End iterators */
         [[nodiscard]] inline Iterator begin(void) const noexcept { return from; }
         [[nodiscard]] inline Iterator end(void) const noexcept { return to; }
