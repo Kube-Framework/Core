@@ -341,11 +341,11 @@ public:
     /** @brief Find an element by comparison with reverse order */
     template<typename Comparable>
         requires requires(const Type &lhs, const Comparable &rhs) { lhs == rhs; }
-    [[nodiscard]] inline Iterator rfind(const Comparable &comparable) noexcept
+    [[nodiscard]] inline ReverseIterator rfind(const Comparable &comparable) noexcept
         { return std::find(rbegin(), rend(), comparable); }
     template<typename Comparable>
         requires requires(const Type &lhs, const Comparable &rhs) { lhs == rhs; }
-    [[nodiscard]] inline ConstIterator rfind(const Comparable &comparable) const noexcept
+    [[nodiscard]] inline ConstReverseIterator rfind(const Comparable &comparable) const noexcept
         { return std::find(rbegin(), rend(), comparable); }
 
     /** @brief Find an element by comparison with reverse order, using begin iterator */
