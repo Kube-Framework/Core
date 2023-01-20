@@ -21,6 +21,9 @@ template<typename Return, typename... Args, kF::Core::FunctorRequirements Intern
 class alignas_eighth_cacheline kF::Core::RemovableDispatcherDetails<Return(Args...), InternalFunctor, Allocator>
 {
 public:
+    /** @brief Functor type */
+    using Functor = InternalFunctor;
+
     /** @brief Functor handle */
     using Handle = DispatcherSlot::Handle;
 
