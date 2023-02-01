@@ -221,6 +221,10 @@ public:
     [[nodiscard]] inline ConstIterator findSortedPlacement(const Type &value) const noexcept
         { return DetailsBase::find([&value](const Type &other) { return Compare{}(value, other); }); }
 
+    /** @brief Comparison operators */
+    [[nodiscard]] inline bool operator==(const SortedVectorDetails &other) const noexcept = default;
+    [[nodiscard]] inline bool operator!=(const SortedVectorDetails &other) const noexcept = default;
+
 
     /** @brief All required base functions - FixMSVCPlz */
     using DetailsBase::data;
