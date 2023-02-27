@@ -31,47 +31,23 @@ public:
     inline UniqueTaggedPtr(void) noexcept = default;
 
     /** @brief Move constructor */
-    inline UniqueTaggedPtr(UniqueTaggedPtr &&other) noexcept : _ptr(other._ptr) { other._ptr = nullptr; }
+    inline UniqueTaggedPtr(UniqueTaggedPtr &&other) noexcept { swap(other); }
 
     /** @brief Move assignment */
     inline UniqueTaggedPtr &operator=(UniqueTaggedPtr &&other) noexcept { swap(other); return *this; }
 
 
-    /** @brief Boolean check operator */
-    [[nodiscard]] inline operator bool(void) const noexcept { return _ptr != nullptr; }
-
-
-    /** @brief Mutable managed object getter */
-    [[nodiscard]] inline Type *get(void) noexcept { return _ptr; }
-
-    /** @brief Constant managed object getter */
-    [[nodiscard]] inline const Type *get(void) const noexcept { return _ptr; }
-
-
-    /** @brief Mutable managed object pointer access */
-    [[nodiscard]] inline Type *operator->(void) noexcept { return _ptr; }
-
-    /** @brief Constant managed object pointer access */
-    [[nodiscard]] inline const Type *operator->(void) const noexcept { return _ptr; }
-
-
-    /** @brief Mutable managed object reference access */
-    [[nodiscard]] inline Type &operator*(void) noexcept { return *_ptr; }
-
-    /** @brief Constant managed object reference access */
-    [[nodiscard]] inline const Type &operator*(void) const noexcept { return *_ptr; }
-
-
     /** @brief Swaps the managed objects */
-    inline void swap(UniqueTaggedPtr &other) noexcept { std::swap(_ptr, other._ptr); }
+    inline void swap(UniqueTaggedPtr &other) noexcept { swap(other); }
 
     /** @brief Destroy the managed object */
-    inline void release(void) noexcept { if (_ptr) releaseUnsafe(); }
+    inline void release(void) noexcept
+    { if (const auto data = this->get(); data) { data->~Type(); Allocator::Deallocate(data, sizeof(Type), alignof(Type)); } }
 
 private:
-    /** @brief Instance constructor */
-    inline UniqueTaggedPtr(Type * const ptr) : _ptr(ptr) {}
+    using TaggedPtr<Type, Alignment>::set;
+    using TaggedPtr<Type, Alignment>::reset;
 
-    /** @brief Unsafe implementation of the release function */
-    inline void releaseUnsafe(void) noexcept { _ptr->~Type(); Allocator::Deallocate(_ptr, sizeof(Type), alignof(Type)); }
+    /** @brief Instance constructor */
+    inline UniqueTaggedPtr(Type * const ptr) noexcept : TaggedPtr<Type, Alignment>(ptr) {}
 };
