@@ -40,7 +40,7 @@
 #define _IS_EMPTY_CASE_0001 ,
 #define _TRIGGER_PARENTHESIS_(...) ,
 
-// Check if a variadic arguments of 32 or less parameters has a coma (one zero arguments)
+// Check if a variadic arguments of 64 or less parameters has a coma (one zero arguments)
 #define _HAS_COMMA(...) _ARG32(__VA_ARGS__, \
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 \
@@ -53,7 +53,7 @@
     _64, ... \
 ) _64
 
-// Helper to get the number of argument of variadic arguments that are inferior or equal to 32
+// Helper to get the number of argument of variadic arguments that are inferior or equal to 64
 #define VA_ARGC(...) _VA_ARGC_BRANCH(IS_EMPTY(__VA_ARGS__), __VA_ARGS__)
 #define _VA_ARGC_BRANCH(N, ...) _CONCATENATE(_VA_ARGC_BRANCH_, N)(__VA_ARGS__)
 #define _VA_ARGC_BRANCH_0(...) _VA_ARGC(__VA_ARGS__, _VA_ARGC_RSEQ_N())
