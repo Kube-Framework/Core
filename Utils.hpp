@@ -11,6 +11,7 @@
 #include <iterator>
 #include <utility>
 #include <cstdlib>
+#include <algorithm>
 
 #include "Platform.hpp"
 
@@ -192,6 +193,55 @@ namespace kF::Core
         template<typename Range>
         [[nodiscard]] inline IteratorRange subrange(const Range offset, const Range count) const noexcept
             { return IteratorRange { from + offset, from + offset + count }; }
+
+
+        /** @brief Find an element by comparison */
+        template<typename Comparable>
+            requires requires(const Type &lhs, const Comparable &rhs) { lhs == rhs; }
+        [[nodiscard]] inline Iterator find(const Comparable &comparable) const noexcept
+            { return std::find(begin(), end(), comparable); }
+
+        /** @brief Find an element by comparison, using begin iterator */
+        template<typename Comparable>
+            requires requires(const Type &lhs, const Comparable &rhs) { lhs == rhs; }
+        [[nodiscard]] inline Iterator find(const Iterator from, const Comparable &comparable) const noexcept
+            { return std::find(from, end(), comparable); }
+
+        /** @brief Find an element by comparison with reverse order */
+        template<typename Comparable>
+            requires requires(const Type &lhs, const Comparable &rhs) { lhs == rhs; }
+        [[nodiscard]] inline ReverseIterator rfind(const Comparable &comparable) const noexcept
+            { return std::find(rbegin(), rend(), comparable); }
+
+        /** @brief Find an element by comparison with reverse order, using begin iterator */
+        template<typename Comparable>
+            requires requires(const Type &lhs, const Comparable &rhs) { lhs == rhs; }
+        [[nodiscard]] inline ReverseIterator rfind(const ReverseIterator from, const Comparable &comparable) const noexcept
+            { return std::find(from, rend(), comparable); }
+
+        /** @brief Find an element with functor */
+        template<typename Functor>
+            requires std::invocable<Functor, const Type &>
+        [[nodiscard]] inline Iterator find(Functor &&functor) const noexcept
+            { return std::find_if(begin(), end(), std::forward<Functor>(functor)); }
+
+        /** @brief Find an element with functor, using begin iterator */
+        template<typename Functor>
+            requires std::invocable<Functor, const Type &>
+        [[nodiscard]] inline Iterator find(const Iterator from, Functor &&functor) const noexcept
+            { return std::find_if(from, end(), std::forward<Functor>(functor)); }
+
+        /** @brief Find an element with functor with reverse order */
+        template<typename Functor>
+            requires std::invocable<Functor, const Type &>
+        [[nodiscard]] inline Iterator rfind(Functor &&functor) const noexcept
+            { return std::find_if(rbegin(), rend(), std::forward<Functor>(functor)); }
+
+        /** @brief Find an element with functor with reverse order, using reversed begin iterator */
+        template<typename Functor>
+            requires std::invocable<Functor, const Type &>
+        [[nodiscard]] inline ReverseIterator rfind(const ReverseIterator from, Functor &&functor) const noexcept
+            { return std::find_if(from, rend(), std::forward<Functor>(functor)); }
     };
 
     /** @brief Convert any container to an iterator range */
