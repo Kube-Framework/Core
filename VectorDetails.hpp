@@ -413,6 +413,15 @@ public:
 
 
 
+    /** @brief Implicitly convert instance into an output IteratorRange */
+    [[nodiscard]] inline operator Core::IteratorRange<Iterator>(void) noexcept
+        { return Core::IteratorRange<Iterator> { begin(), end() }; }
+
+    /** @brief Implicitly convert instance into an input IteratorRange */
+    [[nodiscard]] inline operator Core::IteratorRange<ConstIterator>(void) const noexcept
+        { return Core::IteratorRange<ConstIterator> { begin(), end() }; }
+
+
     /** @brief Convert instance into an output IteratorRange */
     [[nodiscard]] inline Core::IteratorRange<Iterator> toRange(void) noexcept
         { return Core::IteratorRange<Iterator> { begin(), end() }; }
