@@ -290,6 +290,10 @@ namespace kF::Core
     template<typename Type>
     constexpr bool IsDereferencable = decltype(Internal::Dereferencable<Type>(0))::value;
 
+    template<typename Type>
+        requires IsDereferencable<Type>
+    using DereferenceType = std::remove_cvref_t<decltype(*std::declval<Type>())>;
+
 
     /** @brief Align any offset to a specific alignment */
     template<std::integral Range>
