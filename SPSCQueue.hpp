@@ -66,14 +66,12 @@ public:
 
 
     /** @brief Push exactly 'count' elements into the queue
-     *  @tparam ForceCopy If true, will prevent to move construct elements
      *  @return Success on true */
     template<std::input_iterator InputIterator>
     [[nodiscard]] inline bool tryPushRange(const InputIterator from, const InputIterator to) noexcept
         { return pushRangeImpl<false>(from, to); }
 
     /** @brief Push up to 'count' elements into the queue
-     *  @tparam ForceCopy If true, will prevent to move construct elements
      *  @return The number of extracted elements */
     template<std::input_iterator InputIterator>
     [[nodiscard]] inline std::size_t pushRange(const InputIterator from, const InputIterator to) noexcept

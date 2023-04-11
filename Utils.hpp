@@ -234,7 +234,7 @@ namespace kF::Core
         /** @brief Find an element with functor with reverse order */
         template<typename Functor>
             requires std::invocable<Functor, const Type &>
-        [[nodiscard]] inline Iterator rfind(Functor &&functor) const noexcept
+        [[nodiscard]] inline ReverseIterator rfind(Functor &&functor) const noexcept
             { return std::find_if(rbegin(), rend(), std::forward<Functor>(functor)); }
 
         /** @brief Find an element with functor with reverse order, using reversed begin iterator */
