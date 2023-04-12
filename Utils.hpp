@@ -295,9 +295,13 @@ namespace kF::Core
     using DereferenceType = std::remove_cvref_t<decltype(*std::declval<Type>())>;
 
 
-    /** @brief Align any offset to a specific alignment */
+    /** @brief Align any offset to a power of 2 alignment */
     template<std::integral Range>
-    [[nodiscard]] constexpr Range AlignOffset(const Range offset, const Range alignment) noexcept;
+    [[nodiscard]] constexpr Range AlignPowerOf2(const Range offset, const Range alignment) noexcept;
+
+    /** @brief Align any offset to a non-power of 2 alignment */
+    template<std::integral Range>
+    [[nodiscard]] constexpr Range AlignNonPowerOf2(const Range offset, const Range alignment) noexcept;
 
     /** @brief Check if value is a power of 2 */
     template<std::integral Unit>

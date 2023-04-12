@@ -6,12 +6,17 @@
 #include "Utils.hpp"
 
 template<std::integral Range>
-constexpr Range kF::Core::AlignOffset(const Range offset, const Range alignment) noexcept
+constexpr Range kF::Core::AlignPowerOf2(const Range offset, const Range alignment) noexcept
 {
-    Range skip = offset & (alignment - 1);
-    if (skip)
-        skip = alignment - skip;
-    return offset + skip;
+    const auto skip = offset & (alignment - 1);
+    return offset + Core::BranchlessIf(skip, alignment - skip, Range(0));
+}
+
+template<std::integral Range>
+constexpr Range kF::Core::AlignNonPowerOf2(const Range offset, const Range alignment) noexcept
+{
+    const auto mod = offset % alignment;
+    return offset + Core::BranchlessIf(mod, alignment - mod, Range(0));
 }
 
 template<std::integral Unit>
