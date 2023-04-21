@@ -130,10 +130,10 @@ public:
 
 
     /** @brief Append operator */
-    inline StringDetails &operator+=(const StringDetails &other) noexcept { insert(end(), other.begin(), other.end()); return *this; }
-    inline StringDetails &operator+=(const Type character) noexcept { push(character); return *this; }
-    inline StringDetails &operator+=(const char * const cstring) noexcept { insert(end(), cstring, cstring + SafeStrlen(cstring)); return *this; }
-    inline StringDetails &operator+=(const View &other) noexcept { insert(end(), other.begin(), other.end()); return *this; }
+    inline StringDetails &operator+=(const StringDetails &other) noexcept { this->insert(end(), other.begin(), other.end()); return *this; }
+    inline StringDetails &operator+=(const Type character) noexcept { this->push(character); return *this; }
+    inline StringDetails &operator+=(const char * const cstring) noexcept { this->insert(end(), cstring, cstring + SafeStrlen(cstring)); return *this; }
+    inline StringDetails &operator+=(const View &other) noexcept { this->insert(end(), other.begin(), other.end()); return *this; }
 
 
     /** @brief Addition operator */
