@@ -10,15 +10,6 @@
 
 namespace kF::Core
 {
-    namespace Internal
-    {
-        /** @brief Dummy type used to compile unions at constexpr with a single used type */
-        struct DummyType
-        {
-            constexpr DummyType(void) noexcept {}
-        };
-    }
-
     template<typename Type, typename ErrorType>
         requires (!std::is_same_v<Type, ErrorType> && !std::is_reference_v<Type> && !std::is_reference_v<ErrorType>)
     class Expected;
@@ -37,7 +28,7 @@ public:
 
 
     /** @brief Fallback into dummy type in case of a void error type */
-    using Error = std::conditional_t<HasErrorType, ErrorType, Internal::DummyType>;
+    using Error = std::conditional_t<HasErrorType, ErrorType, DummyType>;
 
 
     /** @brief Destructor */
@@ -159,7 +150,7 @@ public:
 
 private:
     union {
-        Internal::DummyType _dummy {};
+        DummyType _dummy {};
         Type _value;
         Error _error;
     };

@@ -275,6 +275,12 @@ namespace kF::Core
     {};
 
 
+    /** @brief Dummy type used to compile unions at constexpr with a single used type */
+    struct DummyType
+    {
+        constexpr DummyType(void) noexcept {}
+    };
+
     namespace Internal
     {
         /** @brief Helper to know if a given type is dereferencable - Failure case */
