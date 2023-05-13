@@ -207,7 +207,7 @@ public:
     inline Return operator()(Args ...args) const noexcept { return _invoke(const_cast<Cache &>(_cache), std::forward<Args>(args)...); }
 
 private:
-    OpaqueInvoke _invoke { nullptr };
-    OpaqueDestructor _destruct { nullptr };
+    OpaqueInvoke _invoke {};
+    OpaqueDestructor _destruct {};
     Cache _cache {};
 };
