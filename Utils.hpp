@@ -12,6 +12,7 @@
 #include <utility>
 #include <cstdlib>
 #include <algorithm>
+#include <cstdint>
 
 #include "Platform.hpp"
 
