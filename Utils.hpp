@@ -248,8 +248,13 @@ namespace kF::Core
     /** @brief Convert any container to an iterator range */
     template<typename Container>
         requires requires(Container &container) { std::begin(container); std::end(container); }
-    constexpr auto ToIteratorRange(Container &container) noexcept
+    constexpr auto MakeRange(Container &container) noexcept
         { return Core::IteratorRange<decltype(std::begin(container))> { std::begin(container), std::end(container) }; }
+
+    /** @brief Make an iterator range out of two iterators */
+    template<typename Iterator>
+    constexpr auto MakeRange(const Iterator from, const Iterator to) noexcept
+        { return Core::IteratorRange<std::remove_cvref_t<Iterator>> { from, to }; }
 
 
     /** @brief Helper to know if a given type is a std::move_iterator */
