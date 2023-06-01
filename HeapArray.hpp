@@ -43,10 +43,15 @@ public:
     inline HeapArray(const Range size, Args &&...args) noexcept
         { allocateUnsafe(size, args...); }
 
+    /** @brief Copy constructor */
+    inline HeapArray(const HeapArray &other) noexcept : HeapArray(other._size) { std::copy(other.begin(), other.end(), begin()); }
+
     /** @brief Move constructor */
     inline HeapArray(HeapArray &&other) noexcept
         : _data(other._data), _size(other._size) { other._data = nullptr; other._size = 0ul; }
 
+    /** @brief Copy assignment */
+    inline HeapArray &operator=(const HeapArray &other) noexcept { allocate(other._size); std::copy(other.begin(), other.end(), begin()); }
 
     /** @brief Move assignment */
     inline HeapArray &operator=(HeapArray &&other) noexcept { swap(other); return *this; }
@@ -116,7 +121,7 @@ public:
     [[nodiscard]] inline ConstIterator cend(void) const noexcept { return _data + _size; }
 
 private:
-    Type *_data { nullptr };
+    Type *_data {};
     Range _size { 0 };
 
     /** @brief Unsafe version of the allocate function */

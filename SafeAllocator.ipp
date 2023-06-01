@@ -142,7 +142,7 @@ template<std::size_t MinSizePower, std::size_t MaxSizePower, std::size_t MaxStac
 inline void *kF::Core::SafeAllocator<MinSizePower, MaxSizePower, MaxStackSizePower>::allocateFromStack(
     const std::size_t bucketSize) noexcept
 {
-    void *data { nullptr };
+    void *data {};
 
     // Steal a stack
     auto stack = AllocatorUtils::TryStealAtomicStack(_stack);
@@ -195,7 +195,7 @@ inline kF::Core::AllocatorUtils::SafeStackMetaData *kF::Core::SafeAllocator<MinS
         maxStackSize
     );
     const auto data = AllocatorUtils::FallbackAllocate(stackSize, _pageSize);
-    AllocatorUtils::SafeStackMetaData *stack { nullptr };
+    AllocatorUtils::SafeStackMetaData *stack {};
     if (data) [[likely]] {
         stack = new (data) AllocatorUtils::SafeStackMetaData {
             .size = stackSize,

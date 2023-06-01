@@ -17,14 +17,14 @@ namespace kF::Core
     namespace Internal
     {
         template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
-            requires std::is_trivial_v<Type>
+            requires std::is_trivially_copyable_v<Type>
         class StringDetails;
     }
 }
 
 /** @brief String details bring facilities to manipulate a vector as a string */
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
-    requires std::is_trivial_v<Type>
+    requires std::is_trivially_copyable_v<Type>
 class kF::Core::Internal::StringDetails : public Base
 {
 public:

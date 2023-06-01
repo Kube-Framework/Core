@@ -36,6 +36,10 @@ public:
     /** @brief Construct the unique pointer */
     inline UniquePtr(void) noexcept = default;
 
+    /** @brief UniquePtr is not copiable */
+    UniquePtr(const UniquePtr &other) noexcept = delete;
+    UniquePtr &operator=(const UniquePtr &other) noexcept = delete;
+
     /** @brief Move constructor */
     inline UniquePtr(UniquePtr &&other) noexcept : _ptr(other._ptr) { other._ptr = nullptr; }
 
@@ -111,5 +115,5 @@ private:
     inline void releaseUnsafe(void) noexcept { _ptr->~Type(); Allocator::Deallocate(_ptr, sizeof(Type), alignof(Type)); _ptr = nullptr; }
 
 
-    Type *_ptr { nullptr };
+    Type *_ptr {};
 };

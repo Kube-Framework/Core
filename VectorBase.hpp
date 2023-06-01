@@ -89,7 +89,7 @@ protected:
 
 
 private:
-    Type *_data { nullptr };
+    Type *_data {};
     Range _size {};
     Range _capacity {};
 };

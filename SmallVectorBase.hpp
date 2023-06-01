@@ -101,7 +101,7 @@ protected:
         { return reinterpret_cast<const Type *>(&_optimizedData); }
 
 private:
-    Type *_data { nullptr };
+    Type *_data {};
     Range _size {};
     Range _capacity {};
     alignas(alignof(Type)) std::byte _optimizedData[sizeof(Type) * OptimizedCapacity];

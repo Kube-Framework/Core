@@ -118,7 +118,7 @@ public:
         { return _ptr->customType; }
 
 protected:
-    Header *_ptr { nullptr };
+    Header *_ptr {};
 
     /** @brief Protected data setter */
     inline void setData(Type * const data) noexcept { _ptr = reinterpret_cast<Header *>(data) - 1; }

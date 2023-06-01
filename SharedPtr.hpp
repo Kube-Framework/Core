@@ -132,5 +132,5 @@ private:
         }
     }
 
-    Data *_ptr { nullptr };
+    Data *_ptr {};
 };

@@ -86,7 +86,7 @@ template<std::size_t MinSizePower, std::size_t MaxSizePower, std::size_t MaxStac
 inline void *kF::Core::UnsafeAllocator<MinSizePower, MaxSizePower, MaxStackSizePower>::allocateFromStack(
     const std::size_t bucketSize) noexcept
 {
-    void *data { nullptr };
+    void *data {};
 
     while (true) {
         // Check for an existing stack

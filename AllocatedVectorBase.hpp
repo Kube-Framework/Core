@@ -55,5 +55,5 @@ protected:
         { _allocator->deallocate(data, sizeof(Type) * capacity, alignof(Type)); }
 
 private:
-    IAllocator *_allocator { nullptr };
+    IAllocator *_allocator {};
 };

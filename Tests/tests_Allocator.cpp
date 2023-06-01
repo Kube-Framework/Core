@@ -17,7 +17,7 @@ using namespace kF;
 
 struct Allocation
 {
-    void *data { nullptr };
+    void *data {};
     std::size_t size {};
     std::size_t alignment {};
 };

@@ -127,6 +127,56 @@ namespace kF::Core
     };
     static_assert(StaticAllocatorRequirements<DefaultStaticAllocator>, "Default static allocator doesn't meet requirements");
 
+    /** @brief Reference wrapper */
+    template<typename Type>
+    class Ref
+    {
+    public:
+        /** @brief Destructor */
+        constexpr ~Ref(void) noexcept = default;
+
+        /** @brief Default constructor */
+        constexpr Ref(void) noexcept = default;
+
+        /** @brief Copy constructor */
+        constexpr Ref(const Ref &other) noexcept = default;
+
+        /** @brief Data pointer constructor */
+        constexpr Ref(Type * const data) noexcept : _data(data) {}
+
+        /** @brief Data reference constructor */
+        constexpr Ref(Type &data) noexcept : _data(&data) {}
+
+        /** @brief Copy constructor */
+        constexpr Ref &operator=(const Ref &other) noexcept = default;
+
+        /** @brief Data pointer constructor */
+        constexpr Ref &operator=(Type * const data) noexcept { _data = data; return *this; }
+
+        /** @brief Data reference constructor */
+        constexpr Ref &operator=(Type &data) noexcept { _data = &data; return *this; }
+
+        /** @brief Boolean operator */
+        [[nodiscard]] explicit constexpr operator bool(void) const noexcept { return _data; }
+
+        /** @brief Get data */
+        [[nodiscard]] constexpr Type &get(void) const noexcept { return *_data; }
+        [[nodiscard]] constexpr operator Type *(void) const noexcept { return _data; }
+        [[nodiscard]] constexpr operator Type &(void) const noexcept { return *_data; }
+        [[nodiscard]] constexpr Type *operator->(void) const noexcept { return _data; }
+        [[nodiscard]] constexpr Type &operator*(void) const noexcept { return *_data; }
+
+        /** @brief Comparison operators */
+        [[nodiscard]] constexpr bool operator==(const Ref &other) const noexcept { return _data == other._data; }
+        [[nodiscard]] constexpr bool operator!=(const Ref &other) const noexcept { return _data != other._data; }
+        [[nodiscard]] constexpr bool operator==(const std::remove_const_t<Type> * const data) const noexcept { return _data == data; }
+        [[nodiscard]] constexpr bool operator!=(const std::remove_const_t<Type> * const data) const noexcept { return _data != data; }
+        [[nodiscard]] constexpr bool operator==(std::nullptr_t) const noexcept { return _data == nullptr; }
+        [[nodiscard]] constexpr bool operator!=(std::nullptr_t) const noexcept { return _data != nullptr; }
+
+    private:
+        Type *_data {};
+    };
 
     /** @brief Simple pair of random access begin / end iterators */
     template<std::random_access_iterator Iterator>

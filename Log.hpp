@@ -49,7 +49,7 @@ public:
 
 
 private:
-    std::ostream *_target { nullptr };
+    std::ostream *_target {};
 };
 
 namespace kF::Core

@@ -37,13 +37,13 @@ public:
     struct Buffer
     {
         std::size_t mask { 0 };
-        Cell *data { nullptr };
+        Cell *data {};
     };
 
     /** @brief Cache of producers or consumers */
     struct Cache
     {
-        Buffer buffer;
+        Buffer buffer {};
     };
 
 
@@ -76,9 +76,9 @@ public:
 
 private:
     alignas_cacheline std::atomic<std::size_t> _tail { 0 }; // Tail accessed by producers
-    alignas_cacheline Cache _tailCache; // Cache accessed by producers
+    alignas_cacheline Cache _tailCache {}; // Cache accessed by producers
     alignas_cacheline std::atomic<std::size_t> _head { 0 }; // Head accessed by consumers
-    alignas_cacheline Cache _headCache; // Cache accessed by consumers
+    alignas_cacheline Cache _headCache {}; // Cache accessed by consumers
 
 
     /** @brief Copy and move constructors disabled */

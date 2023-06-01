@@ -33,7 +33,7 @@ public:
     /** @brief Buffer structure containing all cells */
     struct Buffer
     {
-        Type *data { nullptr };
+        Type *data {};
         std::size_t capacity { 0 };
     };
 

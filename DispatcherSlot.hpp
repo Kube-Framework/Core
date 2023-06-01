@@ -34,6 +34,10 @@ public:
     /** @brief Dispatcher slot*/
     inline DispatcherSlot(void) noexcept = default;
 
+    /** @brief DispatcherSlot is not copiable */
+    DispatcherSlot(const DispatcherSlot &other) noexcept = delete;
+    DispatcherSlot &operator=(const DispatcherSlot &other) noexcept = delete;
+
     /** @brief Move constructor */
     DispatcherSlot(DispatcherSlot &&other) noexcept;
 

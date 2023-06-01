@@ -56,7 +56,7 @@ protected:
     void deallocate(Type * const data, const Range capacity) noexcept;
 
 private:
-    IAllocator *_allocator { nullptr };
+    IAllocator *_allocator {};
 
     using Base::_ptr;
 };

@@ -21,7 +21,7 @@ namespace kF::Core
         struct alignas_quarter_cacheline UnsafeStackMetaData
         {
             std::size_t size { 0u };
-            UnsafeStackMetaData *next { nullptr };
+            UnsafeStackMetaData *next {};
 
             /** @brief Get the stack data pointer at given byte index */
             [[nodiscard]] inline void *dataAt(const std::size_t at) noexcept
@@ -129,8 +129,8 @@ private:
     std::size_t _allocationCount {};
     std::size_t _head { 0u };
     std::size_t _tail { 0u };
-    AllocatorUtils::UnsafeStackMetaData *_stack { nullptr }; // Only 1 stack is used at a time
-    AllocatorUtils::UnsafeStackMetaData *_busyStack { nullptr };
+    AllocatorUtils::UnsafeStackMetaData *_stack {}; // Only 1 stack is used at a time
+    AllocatorUtils::UnsafeStackMetaData *_busyStack {};
     std::array<AllocatorUtils::AllocationHeader *, BucketCount> _buckets {};
 };
 

@@ -6,7 +6,7 @@
 #include "StringDetails.hpp"
 
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
-    requires std::is_trivial_v<Type>
+    requires std::is_trivially_copyable_v<Type>
 inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const StringDetails &other) const noexcept
 {
     StringDetails res;
@@ -17,7 +17,7 @@ inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> 
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
-    requires std::is_trivial_v<Type>
+    requires std::is_trivially_copyable_v<Type>
 inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const Type character) const noexcept
 {
     StringDetails res;
@@ -28,7 +28,7 @@ inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> 
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
-    requires std::is_trivial_v<Type>
+    requires std::is_trivially_copyable_v<Type>
 inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const char * const cstring) const noexcept
 {
     StringDetails res;
@@ -40,7 +40,7 @@ inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> 
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
-    requires std::is_trivial_v<Type>
+    requires std::is_trivially_copyable_v<Type>
 inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::operator+(const std::basic_string_view<Type> &other) const noexcept
 {
     StringDetails res;
@@ -51,7 +51,7 @@ inline kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> 
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
-    requires std::is_trivial_v<Type>
+    requires std::is_trivially_copyable_v<Type>
 inline Range kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::SafeStrlen(const char * const cstring) noexcept
 {
     if (!cstring)

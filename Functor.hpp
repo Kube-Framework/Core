@@ -53,7 +53,7 @@ public:
     /** @brief Structure describing a runtime allocation inside the functor */
     struct alignas_eighth_cacheline RuntimeAllocation
     {
-        void *ptr { nullptr };
+        void *ptr {};
     };
     static_assert_fit_eighth_cacheline(RuntimeAllocation);
 

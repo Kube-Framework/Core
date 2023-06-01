@@ -24,7 +24,7 @@ namespace kF::Core
         {
             std::size_t size { 0u };
             std::size_t head { 0u };
-            SafeStackMetaData *next { nullptr };
+            SafeStackMetaData *next {};
 
             /** @brief Get the stack data pointer at given byte index */
             [[nodiscard]] inline void *dataHead(void) noexcept

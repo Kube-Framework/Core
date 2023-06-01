@@ -16,7 +16,7 @@ namespace kF::Core::Internal
     struct IntrusiveSmallVectorRuntimeAllocator
     {
     protected:
-        IAllocator *_allocator { nullptr };
+        IAllocator *_allocator {};
     };
 }
 

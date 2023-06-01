@@ -14,7 +14,7 @@ namespace kF::Core
         /** @brief Header of an allocation */
         struct AllocationHeader
         {
-            AllocationHeader *next { nullptr };
+            AllocationHeader *next {};
         };
 
 
