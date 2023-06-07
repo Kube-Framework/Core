@@ -59,7 +59,7 @@ namespace kF::Core
         /** @brief Invoke a function with a variable list of arguments - error case */
         template<typename FunctionArgs, typename Function, typename ArgsTuple, std::size_t ...Sequence>
             requires (!std::is_invocable_v<Function, std::tuple_element_t<Sequence, ArgsTuple>...> && sizeof...(Sequence) == 0)
-        constexpr decltype(auto) InvokeImpl(std::index_sequence<Sequence...>, Function &&function, ArgsTuple &&args) noexcept
+        constexpr decltype(auto) InvokeImpl(std::index_sequence<Sequence...>, Function &&, ArgsTuple &&) noexcept
         {
             static_assert(
                 std::is_same<FunctionArgs, ArgsTuple>::value,

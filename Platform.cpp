@@ -19,9 +19,9 @@ std::size_t Core::Platform::GetPageSize(void) noexcept
         #if KUBE_PLATFORM_WINDOWS
             SYSTEM_INFO sysInfo;
             GetSystemInfo(&sysInfo);
-            return sysInfo.dwPageSize;
+            return static_cast<std::size_t>(sysInfo.dwPageSize);
         #else
-            return sysconf(_SC_PAGESIZE);
+            return static_cast<std::size_t>(sysconf(_SC_PAGESIZE));
         #endif
     }();
 

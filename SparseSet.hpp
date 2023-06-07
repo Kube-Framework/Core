@@ -40,10 +40,10 @@ public:
 
 
     /** @brief Get page index of element */
-    [[nodiscard]] static inline Range GetPageIndex(const Range index) noexcept { return index / PageSize; }
+    [[nodiscard]] static inline Range GetPageIndex(const Range index) noexcept { return index / Range(PageSize); }
 
     /** @brief Get element index inside page */
-    [[nodiscard]] static inline Range GetElementIndex(const Range index) noexcept { return index % PageSize; }
+    [[nodiscard]] static inline Range GetElementIndex(const Range index) noexcept { return index % Range(PageSize); }
 
 
     /** @brief Default destructor */

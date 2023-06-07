@@ -85,7 +85,7 @@ template<typename Type, kF::Core::StaticAllocatorRequirements Allocator>
 template<bool AllowLess, std::input_iterator InputIterator>
 inline std::size_t kF::Core::SPMCQueue<Type, Allocator>::pushRangeImpl(const InputIterator from, const InputIterator to) noexcept
 {
-    std::size_t toPush = to - from;
+    auto toPush = static_cast<std::size_t>(to - from);
     const auto tail = _tail.load(std::memory_order_relaxed);
     const auto capacity = _tailCache.buffer.capacity;
     auto head = _tailCache.value;

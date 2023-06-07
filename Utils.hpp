@@ -64,7 +64,7 @@
 
 
 /** @brief Always inline hint (works only on GCC) */
-#if KUBE_COMPILER_GCC
+#if KUBE_COMPILER_GCC | KUBE_COMPILER_CLANG
 # define force_inline inline __attribute__((always_inline))
 # define no_inline __attribute__((noinline))
 #else
@@ -294,6 +294,11 @@ namespace kF::Core
         [[nodiscard]] inline ReverseIterator rfind(const ReverseIterator from, Functor &&functor) const noexcept
             { return std::find_if(from, rend(), std::forward<Functor>(functor)); }
     };
+
+    /** @brief Deduction guide for iterator range */
+    template<typename Iterator>
+    IteratorRange(const Iterator from, const Iterator to) -> IteratorRange<Iterator>;
+
 
     /** @brief Convert any container to an iterator range */
     template<typename Container>

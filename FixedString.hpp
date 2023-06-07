@@ -13,7 +13,7 @@ namespace kF::Core
 {
     // Class template FixedStringBase
     template<typename CharType, std::size_t N>
-    class FixedStringBase;
+    struct FixedStringBase;
 
 
     /** @brief Creation helper */
@@ -24,11 +24,27 @@ namespace kF::Core
 
     /** @brief FixedString using 8 bit characters */
     template<std::size_t N>
-    using FixedString = FixedStringBase<char, N>;
+    struct FixedString : FixedStringBase<char, N>
+    {
+        using FixedStringBase<char, N>::FixedStringBase;
+    };
 
-    /** @brief FixedString using word characters */
+    /** @brief FixedString deduction guide */
     template<std::size_t N>
-    using FixedWString = FixedStringBase<wchar_t, N>;
+    FixedString(const char (&)[N]) -> FixedString<N>;
+
+
+    /** @brief FixedString using 8 bit characters */
+    template<std::size_t N>
+    struct FixedWString : FixedStringBase<wchar_t, N>
+    {
+        using FixedStringBase<wchar_t, N>::FixedStringBase;
+    };
+
+    /** @brief FixedString deduction guide */
+    template<std::size_t N>
+    FixedWString(const wchar_t (&)[N]) -> FixedWString<N>;
+
 
     namespace Internal
     {

@@ -81,11 +81,11 @@ protected:
 
     /** @brief Allocates a new buffer */
     [[nodiscard]] inline Type *allocate(const Range capacity) noexcept
-        { return reinterpret_cast<Type *>(Allocator::Allocate(sizeof(Type) * capacity, alignof(Type))); }
+        { return reinterpret_cast<Type *>(Allocator::Allocate(sizeof(Type) * static_cast<std::size_t>(capacity), alignof(Type))); }
 
     /** @brief Deallocates a buffer */
     inline void deallocate(Type * const data, const Range capacity) noexcept
-        { Allocator::Deallocate(data, sizeof(Type) * capacity, alignof(Type)); }
+        { Allocator::Deallocate(data, sizeof(Type) * std::size_t(capacity), alignof(Type)); }
 
 
 private:

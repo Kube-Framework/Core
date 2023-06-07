@@ -8,10 +8,10 @@
 template<kF::Core::AllocatorRequirements Allocator, kF::Core::FixedString Name>
 inline void *kF::Core::StaticAllocator<Allocator, Name>::Allocate(const std::size_t bytes, const std::size_t alignment) noexcept
 {
-    if (_Instance.allocator) [[likely]]
+    if (_Instance.allocator) [[likely]] {
 AllocateLabel:
         return _Instance.allocator->allocate(bytes, alignment);
-    else [[unlikely]] {
+    } else [[unlikely]] {
         _Instance.allocator = new Allocator();
         goto AllocateLabel;
     }
