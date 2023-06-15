@@ -177,4 +177,24 @@ private:
     [[nodiscard]] static Range SafeStrlen(const char * const cstring) noexcept;
 };
 
+/** @brief Additional addition operators */
+template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
+    requires std::is_trivially_copyable_v<Type>
+[[nodiscard]] kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> operator+(
+    const Type lhs,
+    const kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> &rhs
+) noexcept;
+template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
+    requires std::is_trivially_copyable_v<Type>
+[[nodiscard]] kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> operator+(
+    const Type * const lhs,
+    const kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> &rhs
+) noexcept;
+template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
+    requires std::is_trivially_copyable_v<Type>
+[[nodiscard]] kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> operator+(
+    const typename kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated>::View &lhs,
+    const kF::Core::Internal::StringDetails<Base, Type, Range, IsRuntimeAllocated> &rhs
+) noexcept;
+
 #include "StringDetails.ipp"
