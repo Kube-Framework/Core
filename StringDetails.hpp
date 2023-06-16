@@ -19,6 +19,10 @@ namespace kF::Core
         template<typename Base, typename Type, std::integral Range, bool IsRuntimeAllocated>
             requires std::is_trivially_copyable_v<Type>
         class StringDetails;
+
+        /** @brief Strlen but with null cstring check */
+        template<std::integral Range, typename Type>
+        [[nodiscard]] static Range SafeStrlen(const Type * const cstring) noexcept;
     }
 }
 
@@ -72,12 +76,12 @@ public:
     /** @brief CString constructor */
     inline StringDetails(const char * const cstring) noexcept
             requires (!IsRuntimeAllocated)
-        { resize(cstring, cstring + SafeStrlen(cstring)); }
+        { resize(cstring, cstring + SafeStrlen<Range>(cstring)); }
 
     /** @brief CString constructor - Allocated version */
     inline StringDetails(IAllocator &allocator, const char * const cstring) noexcept
             requires (IsRuntimeAllocated)
-        : Base(allocator) { resize(cstring, cstring + SafeStrlen(cstring)); }
+        : Base(allocator) { resize(cstring, cstring + SafeStrlen<Range>(cstring)); }
 
 
     /** @brief CString length constructor */
@@ -109,7 +113,7 @@ public:
     inline StringDetails &operator=(StringDetails &&other) noexcept = default;
 
     /** @brief cstring assignment */
-    inline StringDetails &operator=(const char * const cstring) noexcept { resize(cstring, cstring + SafeStrlen(cstring)); return *this; }
+    inline StringDetails &operator=(const char * const cstring) noexcept { resize(cstring, cstring + SafeStrlen<Range>(cstring)); return *this; }
 
     /** @brief View assignment */
     inline StringDetails &operator=(const View &other) noexcept { resize(other.begin(), other.end()); return *this; }
@@ -123,7 +127,7 @@ public:
     /** @brief Comparison operator */
     [[nodiscard]] inline bool operator==(const StringDetails &other) const noexcept { return std::equal(begin(), end(), other.begin(), other.end()); }
     [[nodiscard]] inline bool operator!=(const StringDetails &other) const noexcept { return !operator==(other); }
-    [[nodiscard]] inline bool operator==(const char * const cstring) const noexcept { return std::equal(begin(), end(), cstring, cstring + SafeStrlen(cstring)); }
+    [[nodiscard]] inline bool operator==(const char * const cstring) const noexcept { return std::equal(begin(), end(), cstring, cstring + SafeStrlen<Range>(cstring)); }
     [[nodiscard]] inline bool operator!=(const char * const cstring) const noexcept { return !operator==(cstring); }
     [[nodiscard]] inline bool operator==(const View &other) const noexcept { return std::equal(begin(), end(), other.begin(), other.end()); }
     [[nodiscard]] inline bool operator!=(const View &other) const noexcept { return !operator==(other); }
@@ -132,7 +136,7 @@ public:
     /** @brief Append operator */
     inline StringDetails &operator+=(const StringDetails &other) noexcept { this->insert(end(), other.begin(), other.end()); return *this; }
     inline StringDetails &operator+=(const Type character) noexcept { this->push(character); return *this; }
-    inline StringDetails &operator+=(const char * const cstring) noexcept { this->insert(end(), cstring, cstring + SafeStrlen(cstring)); return *this; }
+    inline StringDetails &operator+=(const char * const cstring) noexcept { this->insert(end(), cstring, cstring + SafeStrlen<Range>(cstring)); return *this; }
     inline StringDetails &operator+=(const View &other) noexcept { this->insert(end(), other.begin(), other.end()); return *this; }
 
 
@@ -170,11 +174,6 @@ public:
 
     /** @brief Check if substring is at end of string */
     [[nodiscard]] inline bool endsWith(const View &view) const noexcept { return toView().substr(size() - view.size()) == view; }
-
-
-private:
-    /** @brief Strlen but with null cstring check */
-    [[nodiscard]] static Range SafeStrlen(const char * const cstring) noexcept;
 };
 
 /** @brief Additional addition operators */
