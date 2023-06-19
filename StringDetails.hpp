@@ -138,6 +138,10 @@ public:
     inline StringDetails &operator+=(const Type character) noexcept { this->push(character); return *this; }
     inline StringDetails &operator+=(const char * const cstring) noexcept { this->insert(end(), cstring, cstring + SafeStrlen<Range>(cstring)); return *this; }
     inline StringDetails &operator+=(const View &other) noexcept { this->insert(end(), other.begin(), other.end()); return *this; }
+    template<typename OtherBase, typename OtherType, std::integral OtherRange, bool OtherIsRuntimeAllocated>
+        requires std::is_trivially_copyable_v<OtherType>
+    inline StringDetails &operator+=(const StringDetails<OtherBase, OtherType, OtherRange, OtherIsRuntimeAllocated> &other) noexcept
+        { return *this += other.toView(); }
 
 
     /** @brief Addition operator */
