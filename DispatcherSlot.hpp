@@ -44,6 +44,10 @@ public:
     /** @brief Move assignment */
     DispatcherSlot &operator=(DispatcherSlot &&other) noexcept;
 
+
+    /** @brief Boolean operator */
+    [[nodiscard]] inline operator bool(void) const noexcept { return _disconnectFunc; }
+
 private:
     /** @brief Private constructor */
     DispatcherSlot(const DisconnectFunc disconnectFunc, void * const data, const Handle handle) noexcept;
