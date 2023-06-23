@@ -27,6 +27,9 @@ public:
     /** @brief Functor handle */
     using Handle = DispatcherSlot::Handle;
 
+    /** @brief Functor handle */
+    using ArgsTuple = std::tuple<Args...>;
+
     /** @brief Removable dispatcher instance */
     struct alignas_half_cacheline Instance
     {
