@@ -177,9 +177,12 @@ namespace kF::Core
     };
 
     /** @brief Simple pair of random access begin / end iterators */
-    template<std::random_access_iterator Iterator>
+    template<std::random_access_iterator Iterator_>
     struct IteratorRange
     {
+        /** @brief Iterator */
+        using Iterator = Iterator_;
+
         /** @brief Reverse iterator */
         using ReverseIterator = std::reverse_iterator<Iterator>;
 
