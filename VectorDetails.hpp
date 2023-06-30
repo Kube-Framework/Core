@@ -179,7 +179,7 @@ public:
 
 
     /** @brief Fast non-empty check */
-    [[nodiscard]] inline operator bool(void) const noexcept { return !empty(); }
+    [[nodiscard]] explicit inline operator bool(void) const noexcept { return !empty(); }
 
 
     /** @brief Begin / End helpers */
