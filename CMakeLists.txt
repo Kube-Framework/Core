@@ -42,6 +42,7 @@ kube_add_library(Core
         MPMCQueue.ipp
         MPSCQueue.hpp
         MPSCQueue.ipp
+        ObservedProperty.hpp
         Platform.cpp
         Platform.hpp
         Random.cpp
