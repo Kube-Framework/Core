@@ -83,7 +83,7 @@ public:
 
 
     /** @brief Implicit cast operator */
-    [[nodiscard]] explicit inline operator const Type &(void) const noexcept { return _value; }
+    [[nodiscard]] inline operator const Type &(void) const noexcept { return _value; }
 
     /** @brief Dereference operator */
     [[nodiscard]] inline const Type &operator->(void) const noexcept { return _value; }
