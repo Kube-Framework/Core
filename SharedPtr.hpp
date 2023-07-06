@@ -69,10 +69,10 @@ public:
 
 
     /** @brief Boolean check operator */
-    [[nodiscard]] inline operator bool(void) const noexcept { return _ptr != nullptr; }
+    [[nodiscard]] explicit inline operator bool(void) const noexcept { return _ptr != nullptr; }
 
     /** @brief Boolean check operator */
-    [[nodiscard]] inline operator Type*(void) const noexcept { return get(); }
+    [[nodiscard]] explicit inline operator Type*(void) const noexcept { return get(); }
 
 
     /** @brief Load atomic reference count */
