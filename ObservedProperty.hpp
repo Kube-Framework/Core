@@ -81,12 +81,24 @@ public:
         return *this;
     }
 
+    /** @brief Assign operator */
+    template<typename Other>
+    inline ObservedProperty &operator=(Other &&other) noexcept
+        requires (std::is_constructible_v<Type, Other> && std::is_move_assignable_v<Type> && !std::is_same_v<Type, Other>)
+        { return *this = Type(std::forward<Other>(other)); }
+
+
+    /** @brief Explicit bool operator */
+    [[nodiscard]] explicit inline operator bool(void) const noexcept
+        requires std::is_convertible_v<Type, bool>
+        { return _value; }
 
     /** @brief Implicit cast operator */
     [[nodiscard]] inline operator const Type &(void) const noexcept { return _value; }
 
     /** @brief Dereference operator */
-    [[nodiscard]] inline const Type &operator->(void) const noexcept { return _value; }
+    [[nodiscard]] inline const Type *operator->(void) const noexcept { return _value; }
+    [[nodiscard]] inline const Type &operator*(void) const noexcept { return _value; }
 
     /** @brief Get value */
     [[nodiscard]] inline const Type &get(void) const noexcept { return _value; }
@@ -95,6 +107,13 @@ public:
     /** @brief Dispatch value changes */
     [[nodiscard]] inline Dispatcher &dispatcher(void) noexcept { return _dispatcher; }
 
+    /** @brief Equality operators */
+    template<typename Other>
+        requires std::equality_comparable_with<Type, Other>
+    [[nodiscard]] constexpr bool operator==(const Other &other) const noexcept { return _value == other; }
+    template<typename Other>
+        requires std::equality_comparable_with<Type, Other>
+    [[nodiscard]] constexpr bool operator!=(const Other &other) const noexcept { return _value != other; }
 private:
     Type _value;
     Dispatcher _dispatcher {};
