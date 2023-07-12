@@ -64,7 +64,8 @@ public:
     [[nodiscard]] explicit inline operator bool(void) const noexcept { return _ptr != nullptr; }
 
     /** @brief Boolean check operator */
-    [[nodiscard]] explicit inline operator Type*(void) const noexcept { return get(); }
+    [[nodiscard]] explicit inline operator Type *(void) noexcept { return get(); }
+    [[nodiscard]] explicit inline operator const Type *(void) const noexcept { return get(); }
 
 
     /** @brief Mutable managed object getter */
