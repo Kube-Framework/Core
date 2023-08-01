@@ -157,7 +157,7 @@ private:
             // Remove slot
             sharedInstance->remove(handle);
             // Decrement reference count
-            sharedInstance.~SharedInstance();
+            sharedInstance.release();
         };
 
         // Increment reference count
