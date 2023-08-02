@@ -142,10 +142,10 @@ namespace kF::Core
         constexpr Ref(const Ref &other) noexcept = default;
 
         /** @brief Data pointer constructor */
-        explicit constexpr Ref(Type * const data) noexcept : _data(data) {}
+        constexpr Ref(Type * const data) noexcept : _data(data) {}
 
         /** @brief Data reference constructor */
-        explicit constexpr Ref(Type &data) noexcept : _data(&data) {}
+        constexpr Ref(Type &data) noexcept : _data(&data) {}
 
         /** @brief Copy constructor */
         constexpr Ref &operator=(const Ref &other) noexcept = default;
@@ -167,10 +167,10 @@ namespace kF::Core
         [[nodiscard]] constexpr Type &operator*(void) const noexcept { return *_data; }
 
         /** @brief Comparison operators */
-        [[nodiscard]] constexpr bool operator==(const Ref &other) const noexcept { return _data == other._data; }
-        [[nodiscard]] constexpr bool operator!=(const Ref &other) const noexcept { return _data != other._data; }
-        [[nodiscard]] constexpr bool operator==(std::nullptr_t) const noexcept { return _data == nullptr; }
-        [[nodiscard]] constexpr bool operator!=(std::nullptr_t) const noexcept { return _data != nullptr; }
+        template<typename Other>
+        [[nodiscard]] constexpr bool operator==(const Ref &other) const noexcept { return _data == other; }
+        template<typename Other>
+        [[nodiscard]] constexpr bool operator!=(const Ref &other) const noexcept { return _data != other; }
 
     private:
         Type *_data {};

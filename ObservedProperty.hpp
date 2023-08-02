@@ -109,10 +109,8 @@ public:
 
     /** @brief Equality operators */
     template<typename Other>
-        requires std::equality_comparable_with<Type, Other>
     [[nodiscard]] constexpr bool operator==(const Other &other) const noexcept { return _value == other; }
     template<typename Other>
-        requires std::equality_comparable_with<Type, Other>
     [[nodiscard]] constexpr bool operator!=(const Other &other) const noexcept { return _value != other; }
 private:
     Type _value;

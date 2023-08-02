@@ -77,7 +77,7 @@ public:
 
 
     /** @brief Load atomic reference count */
-    [[nodiscard]] inline std::uint32_t referenceCount(void) const noexcept { return _ptr->count.load(); }
+    [[nodiscard]] inline std::uint32_t referenceCount(void) const noexcept { return _ptr ? _ptr->count.load() : 0u; }
 
 
     /** @brief Mutable managed object getter */
