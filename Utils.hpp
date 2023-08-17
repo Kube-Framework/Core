@@ -81,6 +81,8 @@ namespace kF::Core
     constexpr std::size_t CacheLineQuarterSize = CacheLineSize / 4;
     constexpr std::size_t CacheLineEighthSize = CacheLineSize / 8;
 
+    /** @brief Pi constant */
+    constexpr auto Pi = 3.14159265358979323846;
 
     /** @brief Get distance converted into UnitType */
     template<typename UnitType, typename Iterator>
@@ -440,13 +442,25 @@ namespace kF::Core
     template<typename Type>
         requires std::is_enum_v<Type>
     [[nodiscard]] constexpr Type BranchlessIf(const bool condition, const Type lhs, const Type rhs) noexcept
-        { return static_cast<Type>(BranchlessIf(condition, Core::ToUnderlying(lhs), Core::ToUnderlying(rhs))); }
+        { return Type(BranchlessIf(condition, Core::ToUnderlying(lhs), Core::ToUnderlying(rhs))); }
 
 
     /** @brief Linear interpolate function */
     template<typename Type, typename RatioType>
     [[nodiscard]] constexpr Type Lerp(const Type min, const Type max, const RatioType ratio) noexcept
-        { return static_cast<Type>(static_cast<RatioType>(min) + static_cast<RatioType>(max - min) * ratio); }
+        { return Type(RatioType(min) + RatioType(max - min) * ratio); }
+
+    /** @brief Linear inversed interpolate function */
+    template<typename RatioType, typename Type>
+        requires (!std::is_floating_point_v<Type>)
+    [[nodiscard]] constexpr RatioType InverseLerp(const Type min, const Type max, const Type value) noexcept
+        { return RatioType(value - min) / RatioType(max - min); }
+
+    /** @brief Linear inversed interpolate function */
+    template<typename Type>
+        requires std::is_floating_point_v<Type>
+    [[nodiscard]] constexpr Type InverseLerp(const Type min, const Type max, const Type value) noexcept
+        { return (value - min) / (max - min); }
 }
 
 #include "Utils.ipp"
