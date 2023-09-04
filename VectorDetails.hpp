@@ -443,7 +443,7 @@ protected:
     using Base::deallocate;
 
     /** @brief Reserve unsafe takes IsSafe as template parameter */
-    template<bool IsSafe = true>
+    template<bool IsSafe = true, bool IsPreserved = true>
     void reserveUnsafe(const Range capacity) noexcept;
 };
 

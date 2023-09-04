@@ -169,10 +169,10 @@ template<typename Base, typename Type, std::integral Range, bool IsSmallOptimize
 inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::resizeUninitialized(const Range count) noexcept
 {
     if (!isSafe()) {
-        reserveUnsafe<false>(count);
+        reserveUnsafe<false, false>(count);
     } else {
         clearUnsafe();
-        reserveUnsafe<true>(count);
+        reserveUnsafe<true, false>(count);
     }
     if (isSafe()) [[likely]]
         setSize(count);
@@ -292,7 +292,7 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
 }
 
 template<typename Base, typename Type, std::integral Range, bool IsSmallOptimized, bool IsRuntimeAllocated>
-template<bool IsSafe>
+template<bool IsSafe, bool IsPreserved>
 inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimized, IsRuntimeAllocated>::reserveUnsafe(const Range capacity) noexcept
 {
     if constexpr (IsSafe) {
@@ -309,7 +309,9 @@ inline void kF::Core::Internal::VectorDetails<Base, Type, Range, IsSmallOptimize
             if (tmpData == currentData)
                 return;
         }
-        std::uninitialized_move_n(currentData, currentSize, tmpData);
+        if constexpr (IsPreserved) {
+            std::uninitialized_move_n(currentData, currentSize, tmpData);
+        }
         std::destroy_n(currentData, currentSize);
         deallocate(currentData, currentCapacity);
     } else {

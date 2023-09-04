@@ -342,7 +342,12 @@ namespace kF::Core
     /** @brief Dummy type used to compile unions at constexpr with a single used type */
     struct DummyType
     {
+        /** @brief Dummy constructor */
         constexpr DummyType(void) noexcept {}
+
+        /** @brief Comparison operators */
+        [[nodiscard]] constexpr bool operator==(const DummyType &other) const noexcept = default;
+        [[nodiscard]] constexpr bool operator!=(const DummyType &other) const noexcept = default;
     };
 
     namespace Internal
