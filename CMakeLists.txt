@@ -95,7 +95,6 @@ kube_add_library(Core
         VectorBase.ipp
         VectorDetails.hpp
         VectorDetails.ipp
-        Version.hpp
 
     LIBRARIES
         pcg-cpp

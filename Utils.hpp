@@ -74,6 +74,26 @@
 
 namespace kF::Core
 {
+    /** @brief Version structure */
+    struct Version
+    {
+        std::uint8_t major {};
+        std::uint8_t minor {};
+        std::uint8_t patch {};
+
+        /** @brief Comparison operators */
+        [[nodiscard]] constexpr bool operator==(const Version &other) const noexcept = default;
+        [[nodiscard]] constexpr bool operator!=(const Version &other) const noexcept = default;
+    };
+
+    /** @brief Kube version*/
+    constexpr Version KubeVersion {
+        .major = 0,
+        .minor = 1,
+        .patch = 0
+    };
+
+
     /** @brief Theorical cacheline size */
     constexpr std::size_t CacheLineSize = sizeof(std::size_t) * 8;
     constexpr std::size_t CacheLineDoubleSize = CacheLineSize * 2;
@@ -83,6 +103,7 @@ namespace kF::Core
 
     /** @brief Pi constant */
     constexpr auto Pi = 3.14159265358979323846;
+
 
     /** @brief Get distance converted into UnitType */
     template<typename UnitType, typename Iterator>
