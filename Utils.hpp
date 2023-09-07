@@ -84,6 +84,17 @@ namespace kF::Core
         /** @brief Comparison operators */
         [[nodiscard]] constexpr bool operator==(const Version &other) const noexcept = default;
         [[nodiscard]] constexpr bool operator!=(const Version &other) const noexcept = default;
+
+        /** @brief Check if version is inferior */
+        [[nodiscard]] constexpr bool operator<(const Version &other) const noexcept
+        {
+            if (major != other.major)
+                return major < other.major;
+            else if (minor != other.minor)
+                return minor < other.minor;
+            else
+                return patch < other.patch;
+        }
     };
 
     /** @brief Kube version*/
