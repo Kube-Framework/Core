@@ -92,9 +92,15 @@ namespace kF::Core
         );
     }
 
+    /** @brief Check if a given functor / function is callable */
+    template<typename Functor, typename Return, typename ...Args>
+    constexpr bool IsInvocable = requires(Functor &functor, Args ...args) {
+        { Invoke(functor, std::forward<Args>(args)...) } -> std::convertible_to<Return>;
+    };
+
     /** @brief Ensure that a given functor / function is callable */
     template<typename Functor, typename Return, typename ...Args>
-    concept InvocableRequirements = std::is_invocable_r_v<Return, decltype(Invoke<Functor, Args...>), Functor, Args...>;
+    concept InvocableRequirements = IsInvocable<Functor, Return, Args...>;
 
     /** @brief Ensure that a given member function is callable */
     template<auto Member, typename ClassType, typename Return, typename ...Args>

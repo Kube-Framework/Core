@@ -90,6 +90,12 @@ public:
     /** @brief Constructor */
     UnsafeAllocator(void) noexcept;
 
+    /** @brief Disable copy constructor */
+    UnsafeAllocator(const UnsafeAllocator &) noexcept = delete;
+
+    /** @brief Disable copy assignment */
+    UnsafeAllocator &operator=(const UnsafeAllocator &) noexcept = delete;
+
 
     /** @brief Allocate function implementation */
     [[nodiscard]] void *allocate(const std::size_t size, const std::size_t alignment) noexcept override;

@@ -84,6 +84,8 @@ kube_add_library(Core
         TrivialDispatcher.hpp
         TrivialFunctor.hpp
         TupleUtils.hpp
+        Unicode.hpp
+        Unicode.ipp
         UniquePtr.hpp
         UnsafeAllocator.cpp
         UnsafeAllocator.hpp

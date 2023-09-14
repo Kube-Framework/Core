@@ -95,6 +95,7 @@ public:
 
     /** @brief Prepare constructor, limited to runtime functors due to template constructor restrictions */
     template<typename ClassFunctor>
+        requires (!std::is_same_v<Functor, std::remove_cvref_t<ClassFunctor>>)
     inline Functor(ClassFunctor &&functor) noexcept
         { prepare(std::forward<ClassFunctor>(functor)); }
 

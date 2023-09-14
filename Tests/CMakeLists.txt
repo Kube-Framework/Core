@@ -21,6 +21,7 @@ kube_add_unit_tests(CoreTests
         tests_TaggedPtr.cpp
         tests_TrivialFunctor.cpp
         tests_UniquePtr.cpp
+        tests_Unicode.cpp
         tests_Utils.cpp
         tests_Vector.cpp
     LIBRARIES

@@ -27,7 +27,7 @@ TEST(TrivialFunctor, FreeBasics)
     ASSERT_TRUE(func);
     ASSERT_EQ(func(4, 2), 8);
     ASSERT_EQ(func(8, 2), 16);
-    auto func2(func);
+    Core::TrivialFunctor<int(int, int)> func2(func);
     ASSERT_TRUE(func);
     ASSERT_TRUE(func2);
     ASSERT_EQ(func2(4, 2), 8);
@@ -46,7 +46,7 @@ TEST(TrivialFunctor, MemberBasics)
     ASSERT_TRUE(func);
     ASSERT_EQ(func(4), 8);
     ASSERT_EQ(func(8), 16);
-    auto func2(func);
+    Core::TrivialFunctor<int(int)> func2(func);
     ASSERT_TRUE(func);
     ASSERT_TRUE(func2);
     ASSERT_EQ(func2(4), 8);
@@ -67,7 +67,7 @@ TEST(TrivialFunctor, TrivialClassFunctorBasics)
     ASSERT_TRUE(func);
     ASSERT_EQ(func(4), 8);
     ASSERT_EQ(func(8), 16);
-    auto func2(func);
+    Core::TrivialFunctor<int(int)> func2(func);
     ASSERT_TRUE(func);
     ASSERT_TRUE(func2);
     ASSERT_EQ(func2(4), 8);
