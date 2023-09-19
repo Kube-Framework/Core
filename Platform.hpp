@@ -34,7 +34,7 @@ static_assert(KUBE_PLATFORM_LINUX || KUBE_PLATFORM_WINDOWS || KUBE_PLATFORM_APPL
 # define KUBE_COMPILER_CLANG    1
 # define KUBE_COMPILER_GCC      0
 # define KUBE_COMPILER_MSVC     0
-# ifdef __arm__
+# ifdef __aarch64__
 #  define KUBE_ARCH_AMD64       0
 #  define KUBE_ARCH_ARM64       1
 # else
@@ -45,7 +45,7 @@ static_assert(KUBE_PLATFORM_LINUX || KUBE_PLATFORM_WINDOWS || KUBE_PLATFORM_APPL
 # define KUBE_COMPILER_CLANG    0
 # define KUBE_COMPILER_GCC      1
 # define KUBE_COMPILER_MSVC     0
-# ifdef __arm__
+# ifdef __aarch64__
 #  define KUBE_ARCH_AMD64       0
 #  define KUBE_ARCH_ARM64       1
 # else
