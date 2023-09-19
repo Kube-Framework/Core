@@ -17,7 +17,8 @@ constexpr Range kF::Core::Unicode::Length(const std::string_view &utf8) noexcept
     return unicodeLength;
 }
 
-constexpr std::uint32_t kF::Core::Unicode::GetNextCharByteCount(const char * const from, const char * const end) noexcept
+template<typename Iterator>
+constexpr std::uint32_t kF::Core::Unicode::GetNextCharByteCount(const Iterator from, const Iterator end) noexcept
 {
     if (from == end)
         return 0u;
@@ -28,14 +29,16 @@ constexpr std::uint32_t kF::Core::Unicode::GetNextCharByteCount(const char * con
     );
 }
 
-constexpr std::uint32_t kF::Core::Unicode::GetPreviousCharByteCount(const char * const from, const char * const begin) noexcept
+template<typename Iterator>
+constexpr std::uint32_t kF::Core::Unicode::GetPreviousCharByteCount(const Iterator from, const Iterator begin) noexcept
 {
     auto it = from;
     while (it != begin && (std::uint32_t(reinterpret_cast<const std::uint8_t &>(*--it)) & 0b11000000u) == 0b10000000u);
     return Core::Distance<std::uint32_t>(it, from);
 }
 
-constexpr std::uint32_t kF::Core::Unicode::GetNextChar(const char *&from, const char * const end) noexcept
+template<typename Iterator>
+constexpr std::uint32_t kF::Core::Unicode::GetNextChar(Iterator &from, const Iterator end) noexcept
 {
     const auto byteCount = GetNextCharByteCount(from, end);
     const auto unicode = Decode(from, byteCount);
@@ -43,14 +46,16 @@ constexpr std::uint32_t kF::Core::Unicode::GetNextChar(const char *&from, const 
     return unicode;
 }
 
-constexpr std::uint32_t kF::Core::Unicode::GetPreviousChar(const char *&from, const char * const begin) noexcept
+template<typename Iterator>
+constexpr std::uint32_t kF::Core::Unicode::GetPreviousChar(Iterator &from, const Iterator begin) noexcept
 {
     const auto byteCount = GetPreviousCharByteCount(from, begin);
     from -= byteCount;
     return Decode(from, byteCount);
 }
 
-constexpr std::uint32_t kF::Core::Unicode::Decode(const char * const data, const std::uint32_t byteCount) noexcept
+template<typename Iterator>
+constexpr std::uint32_t kF::Core::Unicode::Decode(const Iterator data, const std::uint32_t byteCount) noexcept
 {
     if (!byteCount)
         return 0u;
