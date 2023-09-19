@@ -2,6 +2,8 @@
 
 #include "Utils.hpp"
 
+#include <string_view>
+
 namespace kF::Core::Unicode
 {
     /** @brief Get the length on an unicode string from an utf8 one */
