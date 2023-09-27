@@ -111,10 +111,10 @@ public:
     /** @brief Comparison operators */
     [[nodiscard]] inline bool operator==(const SharedPtr &other) const noexcept { return _ptr == other._ptr; }
     [[nodiscard]] inline bool operator!=(const SharedPtr &other) const noexcept { return _ptr != other._ptr; }
-    [[nodiscard]] inline bool operator==(const Type * const other) const noexcept { return _ptr == other; }
-    [[nodiscard]] inline bool operator!=(const Type * const other) const noexcept { return _ptr != other; }
-    [[nodiscard]] inline bool operator==(Type * const other) const noexcept { return _ptr == other; }
-    [[nodiscard]] inline bool operator!=(Type * const other) const noexcept { return _ptr != other; }
+    [[nodiscard]] inline bool operator==(const Type * const other) const noexcept { return get() == other; }
+    [[nodiscard]] inline bool operator!=(const Type * const other) const noexcept { return get() != other; }
+    [[nodiscard]] inline bool operator==(Type * const other) const noexcept { return get() == other; }
+    [[nodiscard]] inline bool operator!=(Type * const other) const noexcept { return get() != other; }
 
 private:
     /** @brief Instance constructor */
